@@ -510,9 +510,9 @@ body {
   letter-spacing: 0.15em;
   text-transform: uppercase;
   padding: 0.65rem 1.5rem;
-  background: #ecb680;
+  background: #856648;
   color: #FFE8E8;
-  border: 1px solid #ecb680;
+  border: 1px solid #856648;
   cursor: pointer;
   transition: all 0.2s;
   box-shadow: 0 2px 6px rgba(139,26,26,0.3);
@@ -521,7 +521,7 @@ body {
 }
 
 .btn-decree:hover {
-  background: linear-gradient(135deg, #A02020, #D42828);
+  background: #193974;
   box-shadow: 0 4px 14px rgba(139,26,26,0.45);
   transform: translateY(-1px);
 }
