@@ -872,3 +872,38 @@ body {
 
   .login-box { margin: 1rem; padding: 2rem 1.5rem; }
 }
+/* ─────────────────────────────────────────────────────
+   AÑADIR al final de styles.css
+   Botón "olvidé mi contraseña" y textos del flujo reset
+───────────────────────────────────────────────────── */
+
+.btn-forgot {
+    display: block;
+    width: 100%;
+    margin-top: 0.75rem;
+    padding: 0.4rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: rgba(184, 146, 42, 0.5);
+    text-align: center;
+    transition: color 0.2s;
+    text-decoration: none;    /* por si se usa como <a> */
+  }
+  
+  .btn-forgot:hover {
+    color: rgba(184, 146, 42, 0.9);
+  }
+  
+  .forgot-hint {
+    font-family: 'EB Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: 0.88rem;
+    color: rgba(184, 146, 42, 0.55);
+    text-align: center;
+    line-height: 1.55;
+    margin-bottom: 1rem;
+  }

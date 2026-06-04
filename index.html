@@ -40,9 +40,35 @@
 
       <div class="login-error" id="loginError"></div>
 
-      <button class="btn-decree" type="button" id="loginBtn" onclick="attemptLogin()">
-        Verificar Identidad ⚑
-      </button>
+      <!-- ── Panel login ── -->
+      <div id="panelLogin">
+        <button class="btn-decree" type="button" id="loginBtn" onclick="attemptLogin()">
+          Verificar Identidad ⚑
+        </button>
+        <button class="btn-forgot" type="button" onclick="showForgot()">
+          ¿Olvidé mi contraseña?
+        </button>
+      </div>
+
+      <!-- ── Panel "olvidé contraseña" (oculto por defecto) ── -->
+      <div id="panelForgot" style="display:none;">
+        <p class="forgot-hint">
+          Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.
+        </p>
+        <div class="form-group">
+          <label class="form-label">Correo electrónico</label>
+          <input class="form-input" type="email" id="forgotEmail"
+            placeholder="tu@correo.com"
+            onkeydown="if(event.key==='Enter')sendReset()">
+        </div>
+        <div class="login-error" id="forgotError"></div>
+        <button class="btn-decree" type="button" id="forgotBtn" onclick="sendReset()">
+          Enviar enlace de recuperación ✉
+        </button>
+        <button class="btn-forgot" type="button" onclick="showLogin()">
+          ← Volver al inicio de sesión
+        </button>
+      </div>
 
       <div class="login-footer">
         Acceso disponible solo para miembros del Gabinete Presidencial.
@@ -203,5 +229,74 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="app.js"></script>
-</body>
+  <script>
+    /* ── Olvidé mi contraseña ── */
+    function showForgot() {
+      document.getElementById('panelLogin').style.display  = 'none';
+      document.getElementById('panelForgot').style.display = '';
+      document.getElementById('loginError').textContent    = '';
+      // Pre-rellenar el email si ya lo escribió
+      const email = document.getElementById('loginUser').value.trim();
+      if (email) document.getElementById('forgotEmail').value = email;
+      document.getElementById('forgotEmail').focus();
+    }
+
+    function showLogin() {
+      document.getElementById('panelForgot').style.display = 'none';
+      document.getElementById('panelLogin').style.display  = '';
+      document.getElementById('forgotError').textContent   = '';
+    }
+
+    async function sendReset() {
+      const email  = document.getElementById('forgotEmail').value.trim();
+      const errEl  = document.getElementById('forgotError');
+      const btn    = document.getElementById('forgotBtn');
+
+      errEl.textContent = '';
+
+      if (!email) {
+        errEl.textContent = 'Escribe tu correo electrónico.';
+        return;
+      }
+
+      // Inicializar Supabase si aún no está listo
+      if (!window.supabaseClient && !window._sbReady) {
+        window._sbClient = window.supabase.createClient(
+          window.SUPABASE_URL, window.SUPABASE_ANON_KEY
+        );
+        window._sbReady = true;
+      }
+      const client = window.supabaseClient || window._sbClient;
+
+      btn.disabled    = true;
+      btn.textContent = 'Enviando…';
+
+      const { error } = await client.auth.resetPasswordForEmail(email, {
+        // ⚠️  Reemplaza esto con tu dominio real antes de subir
+        redirectTo: window.location.origin + '/reset-password.html',
+      });
+
+      btn.disabled    = false;
+      btn.textContent = 'Enviar enlace de recuperación ✉';
+
+      if (error) {
+        errEl.textContent = 'Error: ' + error.message;
+        return;
+      }
+
+      // Éxito — mostrar confirmación
+      document.getElementById('panelForgot').innerHTML = `
+        <div style="text-align:center; padding: 1rem 0;">
+          <div style="font-size:2rem; margin-bottom:.75rem;">✉</div>
+          <p style="font-family:'Courier Prime',monospace; font-size:.8rem;
+                    color:var(--gold-light,#D4A93A); letter-spacing:.08em; line-height:1.6;">
+            Enlace enviado a<br><strong>${email}</strong><br><br>
+            Revisa tu bandeja de entrada y haz clic en el enlace para crear tu nueva contraseña.
+          </p>
+          <button class="btn-forgot" style="margin-top:1rem;" onclick="showLogin()">
+            ← Volver al inicio de sesión
+          </button>
+        </div>`;
+    }
+  </script>
 </html>
