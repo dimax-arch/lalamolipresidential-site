@@ -515,14 +515,12 @@ body {
   border: 1px solid #856648;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 2px 6px rgba(139,26,26,0.3);
   width: 100%;
   display: block;
 }
 
 .btn-decree:hover {
   background: #193974;
-  box-shadow: 0 4px 14px rgba(139,26,26,0.45);
   transform: translateY(-1px);
 }
 
