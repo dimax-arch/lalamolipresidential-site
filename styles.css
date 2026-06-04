@@ -248,7 +248,7 @@ body {
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 3px;
-  background: linear-gradient(90deg, transparent, var(--gold), var(--red), var(--gold), transparent);
+  background: var(--gold);
 }
 
 .header-inner {
