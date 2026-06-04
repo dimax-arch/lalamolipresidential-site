@@ -567,7 +567,7 @@ body {
 .log-ts { color: var(--primary-light); margin-right: 0.5rem; }
 
 .log-role { margin-right: 0.4rem; font-weight: 700; }
-.log-role--president { color: #800020; }
+.log-role--president { color: #EFBF04; }
 .log-role--minister  { color: #c26004; }
 
 .log-msg { color: var(--surface); }
