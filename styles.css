@@ -382,7 +382,7 @@ body {
 }
 
 .panel-header {
-  background: linear-gradient(135deg, var(--text) 0%, var(--primary-dark) 100%);
+  background: var(--text);
   padding: 0.7rem 1.25rem;
   display: flex;
   align-items: center;
@@ -395,7 +395,7 @@ body {
 .panel-title {
   font-family: 'Archivo Black', sans-serif;
   font-size: 0.72rem;
-  color: var(--gold-light);
+  color: #ffffff;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   flex: 1;
@@ -596,7 +596,7 @@ body {
 }
 
 .stat-box {
-  background: linear-gradient(135deg, var(--text), var(--primary-dark));
+  background: var(--text);
   border: 1px solid rgba(139,107,74,0.3);
   padding: 0.6rem 0.5rem;
   text-align: center;
@@ -605,7 +605,7 @@ body {
 .stat-num {
   font-family: 'Archivo Black', sans-serif;
   font-size: 1.6rem;
-  color: var(--gold-light);
+  color: #ffffff;
   line-height: 1;
   display: block;
 }
