@@ -172,7 +172,7 @@ optgroup {
 .login-title {
   font-family: var(--font-main);
   font-size: 1.9rem;
-  color: var(--gold-light);
+  color: #ffffff;
   text-align: center;
   text-shadow: 0 2px 10px rgba(0,0,0,0.6);
   margin-bottom: 0.25rem;
