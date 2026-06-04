@@ -1,0 +1,7 @@
+# Secretos locales
+supabase-config.js
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini
