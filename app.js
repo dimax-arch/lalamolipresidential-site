@@ -915,3 +915,5 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Enter') document.getElementById('loginPass').focus();
   });
 });
+
+console.log('app.js loaded');
