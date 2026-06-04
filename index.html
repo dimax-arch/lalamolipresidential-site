@@ -20,7 +20,7 @@
     <div class="login-bg-particles" id="loginParticles"></div>
 
     <div class="login-box">
-      <div class="login-seal">🦅</div>
+      <div class="login-seal"><img src="coronalaureles.png" alt="Corona de laureles" width="72" height="72"></div>
       <div class="login-eyebrow">Documento Clasificado — Acceso Restringido</div>
       <h1 class="login-title">Gestión presidencial</h1>
       <p class="login-subtitle">Identifíquese ante el sistema</p>
@@ -84,7 +84,7 @@
     <!-- HEADER -->
     <header class="header">
       <div class="header-inner">
-        <div class="escudo">🦅</div>
+        <div class="escudo"><img src="coronalaureles.png" alt="Corona de laureles" width="62" height="62"></div>
         <div class="header-text">
           <div class="header-eyebrow">Documento Clasificado — Uso Interno</div>
           <h1 class="header-title">Gestión Presidencial</h1>
@@ -214,6 +214,43 @@
             <div class="empty-state">
               <div class="empty-icon">🏛</div>
               <div class="empty-text">La agenda está vacía. No hay asuntos de estado pendientes.</div>
+            </div>
+          </div>
+
+          <!-- ─── HISTORIAL DE LOGS ─── -->
+          <div class="logs-section">
+            <div class="logs-section__header">
+              <div class="logs-section__title">
+                <span>📋</span>
+                <span>Historial Oficial de Decretos</span>
+              </div>
+              <span class="panel-badge" id="logsTotalBadge">0 REGISTROS</span>
+            </div>
+
+            <!-- Filtros de logs -->
+            <div class="filter-bar" style="margin-bottom:0.75rem;">
+              <button class="filter-btn log-filter-btn active" onclick="setLogsFilter('all',this)">Todos</button>
+              <button class="filter-btn log-filter-btn" onclick="setLogsFilter('created',this)">📜 Presentados</button>
+              <button class="filter-btn log-filter-btn" onclick="setLogsFilter('approved',this)">✓ Aprobados</button>
+              <button class="filter-btn log-filter-btn" onclick="setLogsFilter('rejected',this)">✗ Rechazados</button>
+              <button class="filter-btn log-filter-btn" onclick="setLogsFilter('deleted',this)">✕ Eliminados</button>
+            </div>
+
+            <!-- Lista de registros -->
+            <div id="logsContainer">
+              <div class="empty-state">
+                <div class="empty-icon">📋</div>
+                <div class="empty-text">El historial está vacío.</div>
+              </div>
+            </div>
+
+            <!-- Paginación -->
+            <div class="logs-pagination">
+              <button class="btn-small btn-small--delete" id="logsPrev"
+                onclick="logsChangePage(-1)" disabled>← Anterior</button>
+              <span class="logs-page-info" id="logsPageInfo">—</span>
+              <button class="btn-small btn-small--delete" id="logsNext"
+                onclick="logsChangePage(1)" disabled>Siguiente →</button>
             </div>
           </div>
         </div>

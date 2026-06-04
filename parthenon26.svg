@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="380" viewBox="0 0 680 380">
+  <!-- Transparent background — no <rect> fill -->
+
+  <!-- ── ESCALONES / PLATFORM ── -->
+  <rect x="90"  y="318" width="500" height="18" fill="#8A7040"/>
+  <rect x="90"  y="316" width="500" height="18" fill="#A08850"/>
+  <rect x="105" y="298" width="470" height="20" fill="#B89A60"/>
+  <rect x="105" y="296" width="470" height="20" fill="#C9A84C"/>
+  <rect x="118" y="278" width="444" height="20" fill="#D4B870"/>
+  <line x1="118" y1="278" x2="562" y2="278" stroke="#C9A84C" stroke-width="0.8" fill="none"/>
+
+  <!-- ── COLUMNAS (8 frente) ── -->
+  <g fill="#D4C090">
+    <rect x="126" y="126" width="28" height="152"/>
+    <rect x="183" y="126" width="28" height="152"/>
+    <rect x="240" y="126" width="28" height="152"/>
+    <rect x="297" y="126" width="28" height="152"/>
+    <rect x="355" y="126" width="28" height="152"/>
+    <rect x="412" y="126" width="28" height="152"/>
+    <rect x="469" y="126" width="28" height="152"/>
+    <rect x="526" y="126" width="28" height="152"/>
+  </g>
+
+  <!-- Estrías de columnas -->
+  <g fill="none" stroke="#A08850" stroke-width="0.7" opacity="0.6">
+    <line x1="131" y1="126" x2="131" y2="278"/><line x1="136" y1="126" x2="136" y2="278"/><line x1="141" y1="126" x2="141" y2="278"/><line x1="146" y1="126" x2="146" y2="278"/><line x1="148" y1="126" x2="148" y2="278"/>
+    <line x1="188" y1="126" x2="188" y2="278"/><line x1="193" y1="126" x2="193" y2="278"/><line x1="198" y1="126" x2="198" y2="278"/><line x1="203" y1="126" x2="203" y2="278"/><line x1="205" y1="126" x2="205" y2="278"/>
+    <line x1="245" y1="126" x2="245" y2="278"/><line x1="250" y1="126" x2="250" y2="278"/><line x1="255" y1="126" x2="255" y2="278"/><line x1="260" y1="126" x2="260" y2="278"/><line x1="262" y1="126" x2="262" y2="278"/>
+    <line x1="302" y1="126" x2="302" y2="278"/><line x1="307" y1="126" x2="307" y2="278"/><line x1="312" y1="126" x2="312" y2="278"/><line x1="317" y1="126" x2="317" y2="278"/><line x1="319" y1="126" x2="319" y2="278"/>
+    <line x1="360" y1="126" x2="360" y2="278"/><line x1="365" y1="126" x2="365" y2="278"/><line x1="370" y1="126" x2="370" y2="278"/><line x1="375" y1="126" x2="375" y2="278"/><line x1="377" y1="126" x2="377" y2="278"/>
+    <line x1="417" y1="126" x2="417" y2="278"/><line x1="422" y1="126" x2="422" y2="278"/><line x1="427" y1="126" x2="427" y2="278"/><line x1="432" y1="126" x2="432" y2="278"/><line x1="434" y1="126" x2="434" y2="278"/>
+    <line x1="474" y1="126" x2="474" y2="278"/><line x1="479" y1="126" x2="479" y2="278"/><line x1="484" y1="126" x2="484" y2="278"/><line x1="489" y1="126" x2="489" y2="278"/><line x1="491" y1="126" x2="491" y2="278"/>
+    <line x1="531" y1="126" x2="531" y2="278"/><line x1="536" y1="126" x2="536" y2="278"/><line x1="541" y1="126" x2="541" y2="278"/><line x1="546" y1="126" x2="546" y2="278"/><line x1="548" y1="126" x2="548" y2="278"/>
+  </g>
+
+  <!-- Capiteles -->
+  <g fill="#D4C090">
+    <rect x="122" y="118" width="36" height="6" rx="1"/><rect x="124" y="112" width="32" height="8" rx="2"/>
+    <rect x="179" y="118" width="36" height="6" rx="1"/><rect x="181" y="112" width="32" height="8" rx="2"/>
+    <rect x="236" y="118" width="36" height="6" rx="1"/><rect x="238" y="112" width="32" height="8" rx="2"/>
+    <rect x="293" y="118" width="36" height="6" rx="1"/><rect x="295" y="112" width="32" height="8" rx="2"/>
+    <rect x="351" y="118" width="36" height="6" rx="1"/><rect x="353" y="112" width="32" height="8" rx="2"/>
+    <rect x="408" y="118" width="36" height="6" rx="1"/><rect x="410" y="112" width="32" height="8" rx="2"/>
+    <rect x="465" y="118" width="36" height="6" rx="1"/><rect x="467" y="112" width="32" height="8" rx="2"/>
+    <rect x="522" y="118" width="36" height="6" rx="1"/><rect x="524" y="112" width="32" height="8" rx="2"/>
+  </g>
+
+  <!-- ── ENTABLATURA ── -->
+  <!-- Arquitrabe -->
+  <rect x="112" y="98" width="456" height="14" fill="#C9A84C"/>
+  <rect x="112" y="96" width="456" height="14" fill="#D4B870"/>
+  <!-- Friso -->
+  <rect x="112" y="78" width="456" height="20" fill="#B89A60"/>
+  <rect x="112" y="76" width="456" height="20" fill="#C9A84C"/>
+  <!-- Metopas -->
+  <g fill="none" stroke="#8A7040" stroke-width="0.6" opacity="0.8">
+    <rect x="120" y="79" width="18" height="14"/><rect x="148" y="79" width="18" height="14"/>
+    <rect x="176" y="79" width="18" height="14"/><rect x="204" y="79" width="18" height="14"/>
+    <rect x="232" y="79" width="18" height="14"/><rect x="260" y="79" width="18" height="14"/>
+    <rect x="288" y="79" width="18" height="14"/><rect x="316" y="79" width="18" height="14"/>
+    <rect x="344" y="79" width="18" height="14"/><rect x="372" y="79" width="18" height="14"/>
+    <rect x="400" y="79" width="18" height="14"/><rect x="428" y="79" width="18" height="14"/>
+    <rect x="456" y="79" width="18" height="14"/><rect x="484" y="79" width="18" height="14"/>
+    <rect x="512" y="79" width="18" height="14"/><rect x="540" y="79" width="18" height="14"/>
+  </g>
+  <!-- Cornisa -->
+  <rect x="108" y="66" width="464" height="12" fill="#D4C090"/>
+  <line x1="108" y1="66" x2="572" y2="66" stroke="#C9A84C" stroke-width="0.8" fill="none"/>
+
+  <!-- ── FRONTÓN ── -->
+  <polygon points="108,66 340,8 572,66" fill="#C9A84C"/>
+  <polygon points="112,64 340,12 568,64" fill="#D4B870" opacity="0.9"/>
+  <!-- Contorno del frontón -->
+  <polyline points="108,66 340,6 572,66" fill="none" stroke="#D4C090" stroke-width="1.8"/>
+  <!-- Tímpano interior vacío (transparente) -->
+  <polygon points="122,64 340,18 558,64" fill="white" opacity="0.0"/>
+
+  <!-- Figuras del frontón -->
+  <g fill="#A08850" opacity="0.6">
+    <ellipse cx="340" cy="40" rx="5" ry="5"/>
+    <rect x="337" y="44" width="6" height="14" rx="1"/>
+    <ellipse cx="298" cy="48" rx="4" ry="4"/>
+    <rect x="295" y="51" width="5" height="12" rx="1"/>
+    <ellipse cx="382" cy="48" rx="4" ry="4"/>
+    <rect x="380" y="51" width="5" height="12" rx="1"/>
+    <ellipse cx="256" cy="56" rx="3.5" ry="3.5"/>
+    <rect x="254" y="59" width="5" height="10" rx="1"/>
+    <ellipse cx="424" cy="56" rx="3.5" ry="3.5"/>
+    <rect x="422" y="59" width="5" height="10" rx="1"/>
+  </g>
+
+  <!-- Akroteras -->
+  <g fill="#D4C090">
+    <polygon points="336,4 340,-6 344,4"/>
+    <rect x="337" y="4" width="6" height="4"/>
+    <polygon points="104,62 108,52 112,62"/>
+    <rect x="104" y="62" width="8" height="4"/>
+    <polygon points="568,62 572,52 576,62"/>
+    <rect x="568" y="62" width="8" height="4"/>
+  </g>
+</svg>

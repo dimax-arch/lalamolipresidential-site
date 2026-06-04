@@ -82,7 +82,7 @@ optgroup {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-overlay);
+  background: #020202;
   z-index: 1000;
   overflow: hidden;
 }
@@ -99,7 +99,7 @@ optgroup {
   width: 2px;
   height: 2px;
   border-radius: 50%;
-  background: var(--gold-dim);
+  background: #ffffff;
   opacity: 0;
   animation: particleFade var(--dur, 6s) ease-in-out var(--delay, 0s) infinite;
 }
@@ -145,7 +145,7 @@ optgroup {
   margin: 0 auto 1.25rem;
   border: 2px solid var(--border-gold);
   border-radius: 50%;
-  background: radial-gradient(circle, #1A2A1A 40%, #0D1A0D 100%);
+  background: radial-gradient(circle, #ffffff 40%, #0D1A0D 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -282,7 +282,7 @@ optgroup {
   flex-shrink: 0;
   border: 2px solid var(--border-gold);
   border-radius: 50%;
-  background: radial-gradient(circle, #1A2A1A 40%, #0D1A0D 100%);
+  background: radial-gradient(circle, #ffffff 40%, #0D1A0D 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -936,3 +936,162 @@ optgroup {
     margin-bottom: 1rem;
   }
 
+
+
+/* ═══════════════════════════════════════════════════════
+   HISTORIAL OFICIAL DE DECRETOS
+   ═══════════════════════════════════════════════════════ */
+
+.logs-section {
+  margin-top: 1.75rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--cream-dark, #E8D9B8);
+}
+
+.logs-section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.6rem 0.9rem;
+  background: linear-gradient(135deg, #1A1208 0%, #2A1E0A 100%);
+  border-bottom: 2px solid var(--border-gold, #C9A84C);
+}
+
+.logs-section__title {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 0.72rem;
+  color: var(--gold-light, #D4A93A);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ── Log record card ── */
+.log-record {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.65rem 0.9rem;
+  background: rgba(255,255,255,0.5);
+  border: 1px solid var(--cream-dark, #E8D9B8);
+  border-left: 3px solid var(--border-gold, #C9A84C);
+  margin-bottom: 0.5rem;
+  animation: fadeSlideIn 0.25s ease both;
+  transition: background 0.15s;
+}
+
+.log-record:hover {
+  background: rgba(255,255,255,0.85);
+}
+
+.log-record__left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.log-record__ts {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.6rem;
+  color: var(--ink-soft, #6B5230);
+  letter-spacing: 0.05em;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.log-record__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.log-record__title {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 0.92rem;
+  color: var(--ink, #1A1208);
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.log-record__meta {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.62rem;
+  color: var(--ink-soft, #6B5230);
+  letter-spacing: 0.05em;
+}
+
+.log-record__actor {
+  color: var(--gold-dim, #8A6E20);
+  font-weight: 700;
+}
+
+/* ── Event badges ── */
+.log-event-badge {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.6rem;
+  padding: 0.15rem 0.45rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.log-event--created  {
+  color: #5A7A3A;
+  border-color: #5A7A3A;
+  background: rgba(90,122,58,0.08);
+}
+
+.log-event--approved {
+  color: var(--green-seal, #1A4A2A);
+  border-color: var(--green-seal, #1A4A2A);
+  background: rgba(26,74,42,0.1);
+}
+
+.log-event--rejected {
+  color: var(--red, #8B1A1A);
+  border-color: var(--red, #8B1A1A);
+  background: rgba(139,26,26,0.08);
+}
+
+.log-event--deleted {
+  color: var(--ink-soft, #6B5230);
+  border-color: var(--ink-soft, #6B5230);
+  background: rgba(107,82,48,0.08);
+}
+
+/* ── Pagination ── */
+.logs-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--cream-dark, #E8D9B8);
+}
+
+.logs-page-info {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.7rem;
+  color: var(--ink-soft, #6B5230);
+  letter-spacing: 0.1em;
+  min-width: 50px;
+  text-align: center;
+}
+
+.logs-pagination .btn-small:disabled {
+  opacity: 0.3;
+  cursor: default;
+}

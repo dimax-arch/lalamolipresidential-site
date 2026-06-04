@@ -59,6 +59,11 @@ let activeFilter   = 'all';
 let realtimeChannel = null;
 let refreshDecretosTimer = null;
 let refreshMensajesTimer = null;
+let decreto_logs    = [];
+let refreshLogsTimer = null;
+let logsFilter      = 'all';   // 'all' | 'created' | 'approved' | 'rejected' | 'deleted'
+let logsPage        = 0;
+const LOGS_PER_PAGE = 20;
 
 /* ─────────────────────────────────────────────
    SUPABASE
@@ -153,6 +158,20 @@ function rowToMessage(row) {
   };
 }
 
+function rowToLog(row) {
+  return {
+    id:             row.id,
+    created_at:     row.created_at,
+    decreto_id:     row.decreto_id,
+    decreto_title:  row.decreto_title,
+    decreto_type:   row.decreto_type,
+    decreto_priority: row.decreto_priority,
+    event_type:     row.event_type,
+    actor_key:      row.actor_key,
+    ts:             formatCreated(row.created_at),
+  };
+}
+
 function dbErrorToast(error, fallback) {
   console.error(error);
   showToast(fallback + (error?.message ? ': ' + error.message : ''), 'error');
@@ -161,9 +180,10 @@ function dbErrorToast(error, fallback) {
 async function loadPalacioData() {
   if (!supabaseClient) return;
 
-  const [decretosRes, mensajesRes] = await Promise.all([
+  const [decretosRes, mensajesRes, logsRes] = await Promise.all([
     supabaseClient.from('decretos').select('*').order('created_at', { ascending: false }),
     supabaseClient.from('mensajes').select('*').order('created_at', { ascending: true }),
+    supabaseClient.from('decreto_logs').select('*').order('created_at', { ascending: false }).limit(200),
   ]);
 
   if (decretosRes.error) {
@@ -178,6 +198,13 @@ async function loadPalacioData() {
     messages = [];
   } else {
     messages = (mensajesRes.data || []).map(rowToMessage);
+  }
+
+  if (logsRes.error) {
+    console.error(logsRes.error);
+    decreto_logs = [];
+  } else {
+    decreto_logs = (logsRes.data || []).map(rowToLog);
   }
 
   lastSeenMsgCount = messages.length;
@@ -210,6 +237,23 @@ async function refreshMensajesFromServer() {
   }
 }
 
+async function refreshLogsFromServer() {
+  if (!supabaseClient || !currentUser) return;
+  const { data, error } = await supabaseClient
+    .from('decreto_logs')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(200);
+  if (error) return;
+  decreto_logs = (data || []).map(rowToLog);
+  renderLogs();
+}
+
+function scheduleRefreshLogs() {
+  clearTimeout(refreshLogsTimer);
+  refreshLogsTimer = setTimeout(refreshLogsFromServer, 120);
+}
+
 function scheduleRefreshDecretos() {
   clearTimeout(refreshDecretosTimer);
   refreshDecretosTimer = setTimeout(refreshDecretosFromServer, 120);
@@ -233,15 +277,22 @@ function subscribeRealtime() {
     )
     .on(
       'postgres_changes',
+      { event: '*', schema: 'public', table: 'decreto_logs' },
+      () => scheduleRefreshLogs()
+    )
+    .on(
+      'postgres_changes',
       { event: '*', schema: 'public', table: 'mensajes' },
       () => scheduleRefreshMensajes()
     )
+    
     .subscribe();
 }
 
 function unsubscribeRealtime() {
   clearTimeout(refreshDecretosTimer);
   clearTimeout(refreshMensajesTimer);
+  clearTimeout(refreshLogsTimer);
   if (realtimeChannel && supabaseClient) {
     supabaseClient.removeChannel(realtimeChannel);
   }
@@ -329,6 +380,7 @@ async function enterApp(user, showWelcomeToast) {
 
   renderItems();
   renderLog();
+  renderLogs();
   updateStats();
 
   if (showWelcomeToast) {
@@ -363,6 +415,29 @@ async function logout() {
 function togglePass() {
   const input = document.getElementById('loginPass');
   input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+/* ─────────────────────────────────────────────
+   WRITE LOG
+───────────────────────────────────────────── */
+async function writeLog(eventType, item) {
+  if (!supabaseClient || !currentAuthId) return;
+  const { data, error } = await supabaseClient
+    .from('decreto_logs')
+    .insert({
+      decreto_id:       item.id || null,
+      decreto_title:    item.title,
+      decreto_type:     item.type,
+      decreto_priority: item.priority,
+      event_type:       eventType,
+      actor_key:        currentUser,
+      actor_id:         currentAuthId,
+    })
+    .select()
+    .single();
+  if (error) { console.error('[writeLog]', error); return; }
+  decreto_logs.unshift(rowToLog(data));
+  renderLogs();
 }
 
 /* ─────────────────────────────────────────────
@@ -414,7 +489,10 @@ async function submitItem() {
   document.getElementById('itemDate').value  = '';
   document.getElementById('itemTime').value  = '';
 
-  await addLogEntry(currentUser, `[DECRETO] "${title}" — ${TYPE_LABELS[type]}`);
+  await Promise.all([
+    writeLog('created', rowToItem(data)),
+    addLogEntry(currentUser, `[DECRETO] "${title}" — ${TYPE_LABELS[type]}`),
+  ]);
   showToast('Decreto presentado al Consejo. ⚑', 'success');
 }
 
@@ -443,7 +521,10 @@ async function approveItem(id) {
   item.status = 'approved';
   renderItems();
   updateStats();
-  await addLogEntry(currentUser, `[APROBADO] "${item.title}"`);
+  await Promise.all([
+    writeLog('approved', item),
+    addLogEntry(currentUser, `[APROBADO] "${item.title}"`),
+  ]);
   showToast('Decreto aprobado. ✓', 'success');
 }
 
@@ -464,7 +545,10 @@ async function rejectItem(id) {
   item.status = 'rejected';
   renderItems();
   updateStats();
-  await addLogEntry(currentUser, `[RECHAZADO] "${item.title}"`);
+  await Promise.all([
+    writeLog('rejected', item),
+    addLogEntry(currentUser, `[RECHAZADO] "${item.title}"`),
+  ]);
   showToast('Decreto rechazado.', 'error');
 }
 
@@ -472,12 +556,15 @@ async function deleteItem(id) {
   if (!confirm('¿Eliminar este asunto del registro oficial?')) return;
   if (!supabaseClient) return;
 
+  const item = items.find(i => i.id === id);
+
   const { error } = await supabaseClient.from('decretos').delete().eq('id', id);
   if (error) {
     dbErrorToast(error, 'No se pudo eliminar');
     return;
   }
 
+  if (item) await writeLog('deleted', item);
   items = items.filter(i => i.id !== id);
   renderItems();
   updateStats();
@@ -584,6 +671,93 @@ function buildItemCard(item) {
         ${deleteBtn}
       </div>
     </div>`;
+}
+
+/* ─────────────────────────────────────────────
+   HISTORIAL DE LOGS
+───────────────────────────────────────────── */
+const EVENT_META = {
+  created:  { label: 'Presentado',  badge: 'log-event--created',  icon: '📜' },
+  approved: { label: 'Aprobado',    badge: 'log-event--approved', icon: '✓'  },
+  rejected: { label: 'Rechazado',   badge: 'log-event--rejected', icon: '✗'  },
+  deleted:  { label: 'Eliminado',   badge: 'log-event--deleted',  icon: '✕'  },
+};
+
+function setLogsFilter(filter, btn) {
+  logsFilter = filter;
+  logsPage   = 0;
+  document.querySelectorAll('.log-filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderLogs();
+}
+
+function logsChangePage(dir) {
+  const filtered = logsFilter === 'all'
+    ? decreto_logs
+    : decreto_logs.filter(l => l.event_type === logsFilter);
+  const maxPage = Math.max(0, Math.ceil(filtered.length / LOGS_PER_PAGE) - 1);
+  logsPage = Math.min(maxPage, Math.max(0, logsPage + dir));
+  renderLogs();
+}
+
+function renderLogs() {
+  const container = document.getElementById('logsContainer');
+  if (!container) return;
+
+  const filtered = logsFilter === 'all'
+    ? decreto_logs
+    : decreto_logs.filter(l => l.event_type === logsFilter);
+
+  // Pagination info
+  const total    = filtered.length;
+  const maxPage  = Math.max(0, Math.ceil(total / LOGS_PER_PAGE) - 1);
+  logsPage       = Math.min(logsPage, maxPage);
+  const start    = logsPage * LOGS_PER_PAGE;
+  const page     = filtered.slice(start, start + LOGS_PER_PAGE);
+
+  // Update counter badge
+  const countEl = document.getElementById('logsTotalBadge');
+  if (countEl) countEl.textContent = total + ' REGISTROS';
+
+  // Pagination controls
+  const prevBtn = document.getElementById('logsPrev');
+  const nextBtn = document.getElementById('logsNext');
+  const pageEl  = document.getElementById('logsPageInfo');
+  if (prevBtn) prevBtn.disabled = logsPage === 0;
+  if (nextBtn) nextBtn.disabled = logsPage >= maxPage;
+  if (pageEl)  pageEl.textContent = total === 0 ? '—' : `${logsPage + 1} / ${maxPage + 1}`;
+
+  if (page.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <div class="empty-text">No hay registros en esta categoría.</div>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = page.map(log => {
+    const meta       = EVENT_META[log.event_type] || { label: log.event_type, badge: '', icon: '·' };
+    const authorUser = USERS[log.actor_key];
+    const authorName = authorUser ? authorUser.short : log.actor_key;
+    const typeLabel  = TYPE_LABELS[log.decreto_type] || log.decreto_type;
+    const prioLabel  = PRIORITY_LABELS[log.decreto_priority] || log.decreto_priority;
+
+    return `
+      <div class="log-record">
+        <div class="log-record__left">
+          <span class="log-event-badge ${meta.badge}">${meta.icon} ${meta.label}</span>
+          <span class="log-record__ts">${log.ts}</span>
+        </div>
+        <div class="log-record__body">
+          <div class="log-record__title">${escHtml(log.decreto_title)}</div>
+          <div class="log-record__meta">
+            ${typeLabel} &nbsp;·&nbsp; ${prioLabel} &nbsp;·&nbsp;
+            <span class="log-record__actor">por ${escHtml(authorName)}</span>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
 }
 
 /* ─────────────────────────────────────────────
