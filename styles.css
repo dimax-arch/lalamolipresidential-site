@@ -885,7 +885,7 @@ body {
     background: transparent;
     border: none;
     cursor: pointer;
-    font-family: 'Courier Prime', monospace;
+    font-family: 'Nunito', sans-serif;
     font-size: 0.72rem;
     letter-spacing: 0.1em;
     color: rgba(184, 146, 42, 0.5);
@@ -899,7 +899,7 @@ body {
   }
   
   .forgot-hint {
-    font-family: 'EB Garamond', Georgia, serif;
+    font-family: 'Nunito', sans-serif;
     font-style: italic;
     font-size: 0.88rem;
     color: rgba(184, 146, 42, 0.55);
