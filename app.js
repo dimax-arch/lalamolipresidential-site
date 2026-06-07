@@ -552,11 +552,94 @@ async function rejectItem(id) {
   showToast('Decreto rechazado.', 'error');
 }
 
+/* ─────────────────────────────────────────────
+   MODAL DE CONFIRMACIÓN
+───────────────────────────────────────────── */
+let _confirmResolve = null;   // promesa pendiente del modal
+
+function showConfirmModal(item) {
+  return new Promise((resolve) => {
+    _confirmResolve = resolve;
+
+    // Rellenar datos del decreto en el modal
+    const titleEl = document.getElementById('confirmDecreeTitle');
+    const metaEl  = document.getElementById('confirmDecreeMeta');
+    if (titleEl) titleEl.textContent = item.title;
+    if (metaEl) {
+      const typeLabel = TYPE_LABELS[item.type] || item.type;
+      const prioLabel = PRIORITY_LABELS[item.priority] || item.priority;
+      const dateStr   = item.date ? ` · ${item.date}` : '';
+      metaEl.textContent = `${typeLabel} · ${prioLabel}${dateStr}`;
+    }
+
+    // Mostrar backdrop con animación
+    const backdrop = document.getElementById('confirmBackdrop');
+    if (backdrop) {
+      backdrop.classList.add('is-visible');
+      // Foco al botón cancelar por defecto (más seguro)
+      setTimeout(() => {
+        document.getElementById('confirmCancelBtn')?.focus();
+      }, 50);
+    }
+  });
+}
+
+function closeConfirmModal(result) {
+  const backdrop = document.getElementById('confirmBackdrop');
+  if (backdrop) backdrop.classList.remove('is-visible');
+  if (_confirmResolve) {
+    _confirmResolve(result);
+    _confirmResolve = null;
+  }
+}
+
+function shakeConfirmCard() {
+  const card = document.getElementById('confirmCard');
+  if (!card) return;
+  card.classList.remove('shake');
+  // Force reflow para reiniciar la animación
+  void card.offsetWidth;
+  card.classList.add('shake');
+  card.addEventListener('animationend', () => card.classList.remove('shake'), { once: true });
+}
+
+function initConfirmModal() {
+  const backdrop  = document.getElementById('confirmBackdrop');
+  const cancelBtn = document.getElementById('confirmCancelBtn');
+  const deleteBtn = document.getElementById('confirmDeleteBtn');
+  if (!backdrop) return;
+
+  // Botón cancelar
+  cancelBtn?.addEventListener('click', () => closeConfirmModal(false));
+
+  // Botón confirmar borrado
+  deleteBtn?.addEventListener('click', () => closeConfirmModal(true));
+
+  // Clic fuera de la card → shake, no cerrar
+  backdrop.addEventListener('click', (e) => {
+    if (e.target === backdrop) shakeConfirmCard();
+  });
+
+  // Escape → cancelar
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && backdrop.classList.contains('is-visible')) {
+      closeConfirmModal(false);
+    }
+  });
+}
+
+/* ─────────────────────────────────────────────
+   DELETE ITEM
+───────────────────────────────────────────── */
 async function deleteItem(id) {
-  if (!confirm('¿Eliminar este asunto del registro oficial?')) return;
   if (!supabaseClient) return;
 
   const item = items.find(i => i.id === id);
+  if (!item) return;
+
+  // Mostrar modal y esperar respuesta
+  const confirmed = await showConfirmModal(item);
+  if (!confirmed) return;
 
   const { error } = await supabaseClient.from('decretos').delete().eq('id', id);
   if (error) {
@@ -677,10 +760,10 @@ function buildItemCard(item) {
    HISTORIAL DE LOGS
 ───────────────────────────────────────────── */
 const EVENT_META = {
-  created:  { label: 'Presentado',  badge: 'log-event--created',  icon: '📜' },
-  approved: { label: 'Aprobado',    badge: 'log-event--approved', icon: '✓'  },
-  rejected: { label: 'Rechazado',   badge: 'log-event--rejected', icon: '✗'  },
-  deleted:  { label: 'Eliminado',   badge: 'log-event--deleted',  icon: '✕'  },
+  created:  { label: 'PRESENTADO',  badge: 'log-event--created',  icon: '📜' },
+  approved: { label: 'APROBADO',    badge: 'log-event--approved', icon: '✅'  },
+  rejected: { label: 'RECHAZADO',   badge: 'log-event--rejected', icon: '❌'  },
+  deleted:  { label: 'ELIMINADO',   badge: 'log-event--deleted',  icon: '🗑️'  },
 };
 
 function setLogsFilter(filter, btn) {
@@ -910,9 +993,9 @@ function escHtml(str) {
 document.addEventListener('DOMContentLoaded', () => {
   spawnParticles();
   initAuth();
+  initConfirmModal();
 
   document.getElementById('loginUser').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') document.getElementById('loginPass').focus();
   });
 });
-

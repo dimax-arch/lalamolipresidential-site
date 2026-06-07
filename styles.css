@@ -1024,7 +1024,7 @@ optgroup {
 }
 
 .log-record__meta {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-main);
   font-size: 0.62rem;
   color: var(--ink-soft, #6B5230);
   letter-spacing: 0.05em;
@@ -1037,7 +1037,7 @@ optgroup {
 
 /* ── Event badges ── */
 .log-event-badge {
-  font-family: 'Courier Prime', monospace;
+  font-family: var(--font-main);
   font-size: 0.6rem;
   padding: 0.15rem 0.45rem;
   letter-spacing: 0.08em;
@@ -1048,14 +1048,14 @@ optgroup {
 }
 
 .log-event--created  {
-  color: #5A7A3A;
-  border-color: #5A7A3A;
-  background: rgba(90,122,58,0.08);
+  color: #1962a1;
+  border-color: #1962a1;
+  background: rgba(58, 77, 122, 0.08);
 }
 
 .log-event--approved {
-  color: var(--green-seal, #1A4A2A);
-  border-color: var(--green-seal, #1A4A2A);
+  color:  #176531;
+  border-color: #25b053;
   background: rgba(26,74,42,0.1);
 }
 
@@ -1094,4 +1094,209 @@ optgroup {
 .logs-pagination .btn-small:disabled {
   opacity: 0.3;
   cursor: default;
+}
+
+
+/* ═══════════════════════════════════════════════════════
+   MODAL DE CONFIRMACIÓN
+   ═══════════════════════════════════════════════════════ */
+
+.confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(15, 10, 5, 0.75);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.confirm-backdrop.is-visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.confirm-card {
+  position: relative;
+  background: var(--bg-elevated, #332B28);
+  border: 1px solid rgba(139, 107, 74, 0.4);
+  border-top: 3px solid var(--primary, #8B6B4A);
+  width: 100%;
+  max-width: 400px;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.4),
+    0 24px 60px rgba(0, 0, 0, 0.7),
+    0 0 40px rgba(139, 107, 74, 0.08);
+  transform: translateY(16px) scale(0.97);
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity  0.2s ease;
+  opacity: 0;
+}
+
+.confirm-backdrop.is-visible .confirm-card {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+/* Línea decorativa superior */
+.confirm-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--primary, #8B6B4A),
+    #8B1A1A,
+    var(--primary, #8B6B4A),
+    transparent
+  );
+}
+
+.confirm-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem 0.75rem;
+  border-bottom: 1px solid rgba(139, 107, 74, 0.2);
+}
+
+.confirm-header-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: rgba(139, 26, 26, 0.15);
+  border: 1px solid rgba(139, 26, 26, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.confirm-header-text {
+  flex: 1;
+}
+
+.confirm-title {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #F0E8D8;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.1rem;
+}
+
+.confirm-eyebrow {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(139, 107, 74, 0.6);
+}
+
+.confirm-body {
+  padding: 1.1rem 1.5rem 0.5rem;
+}
+
+.confirm-decree-card {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(139, 107, 74, 0.2);
+  border-left: 3px solid #8B1A1A;
+  padding: 0.65rem 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.confirm-decree-title {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #E8D8C0;
+  line-height: 1.3;
+  margin-bottom: 0.3rem;
+  word-break: break-word;
+}
+
+.confirm-decree-meta {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.62rem;
+  color: rgba(139, 107, 74, 0.7);
+  letter-spacing: 0.06em;
+}
+
+.confirm-warning {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-style: italic;
+  font-size: 0.82rem;
+  color: rgba(240, 200, 150, 0.7);
+  line-height: 1.55;
+  text-align: center;
+  margin-bottom: 0.25rem;
+}
+
+.confirm-footer {
+  display: flex;
+  gap: 0.6rem;
+  padding: 1rem 1.5rem 1.25rem;
+}
+
+.confirm-btn {
+  flex: 1;
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid;
+  cursor: pointer;
+  transition: all 0.18s;
+  background: transparent;
+}
+
+.confirm-btn--cancel {
+  color: rgba(139, 107, 74, 0.8);
+  border-color: rgba(139, 107, 74, 0.35);
+}
+
+.confirm-btn--cancel:hover {
+  background: rgba(139, 107, 74, 0.1);
+  border-color: rgba(139, 107, 74, 0.6);
+  color: #A58568;
+}
+
+.confirm-btn--delete {
+  background: linear-gradient(135deg, #6B1515, #8B1A1A);
+  color: #FFE8E8;
+  border-color: #A02020;
+  box-shadow: 0 2px 8px rgba(139, 26, 26, 0.3);
+}
+
+.confirm-btn--delete:hover {
+  background: linear-gradient(135deg, #8B1A1A, #C22020);
+  box-shadow: 0 4px 14px rgba(139, 26, 26, 0.5);
+  transform: translateY(-1px);
+}
+
+.confirm-btn--delete:active {
+  transform: translateY(0);
+}
+
+/* Shake animation si el usuario hace clic fuera */
+@keyframes confirmShake {
+  0%, 100% { transform: translateX(0) scale(1); }
+  20%       { transform: translateX(-6px) scale(1); }
+  40%       { transform: translateX(6px) scale(1); }
+  60%       { transform: translateX(-4px) scale(1); }
+  80%       { transform: translateX(4px) scale(1); }
+}
+
+.confirm-card.shake {
+  animation: confirmShake 0.35s ease;
 }

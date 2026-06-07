@@ -265,6 +265,42 @@
 
   </div><!-- /app-wrapper -->
 
+  <!-- ══════════════════ MODAL CONFIRMACIÓN BORRADO ══════════════════ -->
+  <div class="confirm-backdrop" id="confirmBackdrop" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="confirm-card" id="confirmCard">
+
+      <div class="confirm-header">
+        <div class="confirm-header-icon">⚠</div>
+        <div class="confirm-header-text">
+          <div class="confirm-eyebrow">Acción irreversible</div>
+          <div class="confirm-title" id="confirmTitle">Eliminar Decreto</div>
+        </div>
+      </div>
+
+      <div class="confirm-body">
+        <!-- Minicard con los datos del decreto a eliminar -->
+        <div class="confirm-decree-card">
+          <div class="confirm-decree-title" id="confirmDecreeTitle">—</div>
+          <div class="confirm-decree-meta" id="confirmDecreeMeta">—</div>
+        </div>
+        <p class="confirm-warning">
+          Este decreto será eliminado del registro oficial.<br>
+          El evento quedará registrado en el historial.
+        </p>
+      </div>
+
+      <div class="confirm-footer">
+        <button class="confirm-btn confirm-btn--cancel" id="confirmCancelBtn">
+          ← Cancelar
+        </button>
+        <button class="confirm-btn confirm-btn--delete" id="confirmDeleteBtn">
+          Eliminar ✕
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="app.js"></script>
