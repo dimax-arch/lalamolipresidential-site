@@ -61,9 +61,14 @@ let refreshDecretosTimer = null;
 let refreshMensajesTimer = null;
 let decreto_logs    = [];
 let refreshLogsTimer = null;
-let logsFilter      = 'all';   // 'all' | 'created' | 'approved' | 'rejected' | 'deleted'
+let logsFilter      = 'all';
 let logsPage        = 0;
 const LOGS_PER_PAGE = 20;
+
+// ── Push notifications ──
+let swRegistration  = null;   // ServiceWorkerRegistration
+// Pega aquí tu VAPID public key (la que generarás en el paso de setup)
+const VAPID_PUBLIC_KEY = 'BPSNRGSqEYNFFFBtN38k5oTZgG_T6fpke0Fvq23kIhp20MekDxbN2V1b-t29z9Ds9lPIycwJ7Tl5xHKR9a5tYcI';
 
 /* ─────────────────────────────────────────────
    SUPABASE
@@ -386,6 +391,9 @@ async function enterApp(user, showWelcomeToast) {
   if (showWelcomeToast) {
     showToast('Acceso concedido. Bienvenido/a, ' + profile.short + '.', 'success');
   }
+
+  // Iniciar push notifications (no bloqueante)
+  setupPushNotifications();
 }
 
 function leaveApp(clearForm) {
@@ -552,94 +560,11 @@ async function rejectItem(id) {
   showToast('Decreto rechazado.', 'error');
 }
 
-/* ─────────────────────────────────────────────
-   MODAL DE CONFIRMACIÓN
-───────────────────────────────────────────── */
-let _confirmResolve = null;   // promesa pendiente del modal
-
-function showConfirmModal(item) {
-  return new Promise((resolve) => {
-    _confirmResolve = resolve;
-
-    // Rellenar datos del decreto en el modal
-    const titleEl = document.getElementById('confirmDecreeTitle');
-    const metaEl  = document.getElementById('confirmDecreeMeta');
-    if (titleEl) titleEl.textContent = item.title;
-    if (metaEl) {
-      const typeLabel = TYPE_LABELS[item.type] || item.type;
-      const prioLabel = PRIORITY_LABELS[item.priority] || item.priority;
-      const dateStr   = item.date ? ` · ${item.date}` : '';
-      metaEl.textContent = `${typeLabel} · ${prioLabel}${dateStr}`;
-    }
-
-    // Mostrar backdrop con animación
-    const backdrop = document.getElementById('confirmBackdrop');
-    if (backdrop) {
-      backdrop.classList.add('is-visible');
-      // Foco al botón cancelar por defecto (más seguro)
-      setTimeout(() => {
-        document.getElementById('confirmCancelBtn')?.focus();
-      }, 50);
-    }
-  });
-}
-
-function closeConfirmModal(result) {
-  const backdrop = document.getElementById('confirmBackdrop');
-  if (backdrop) backdrop.classList.remove('is-visible');
-  if (_confirmResolve) {
-    _confirmResolve(result);
-    _confirmResolve = null;
-  }
-}
-
-function shakeConfirmCard() {
-  const card = document.getElementById('confirmCard');
-  if (!card) return;
-  card.classList.remove('shake');
-  // Force reflow para reiniciar la animación
-  void card.offsetWidth;
-  card.classList.add('shake');
-  card.addEventListener('animationend', () => card.classList.remove('shake'), { once: true });
-}
-
-function initConfirmModal() {
-  const backdrop  = document.getElementById('confirmBackdrop');
-  const cancelBtn = document.getElementById('confirmCancelBtn');
-  const deleteBtn = document.getElementById('confirmDeleteBtn');
-  if (!backdrop) return;
-
-  // Botón cancelar
-  cancelBtn?.addEventListener('click', () => closeConfirmModal(false));
-
-  // Botón confirmar borrado
-  deleteBtn?.addEventListener('click', () => closeConfirmModal(true));
-
-  // Clic fuera de la card → shake, no cerrar
-  backdrop.addEventListener('click', (e) => {
-    if (e.target === backdrop) shakeConfirmCard();
-  });
-
-  // Escape → cancelar
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && backdrop.classList.contains('is-visible')) {
-      closeConfirmModal(false);
-    }
-  });
-}
-
-/* ─────────────────────────────────────────────
-   DELETE ITEM
-───────────────────────────────────────────── */
 async function deleteItem(id) {
+  if (!confirm('¿Eliminar este asunto del registro oficial?')) return;
   if (!supabaseClient) return;
 
   const item = items.find(i => i.id === id);
-  if (!item) return;
-
-  // Mostrar modal y esperar respuesta
-  const confirmed = await showConfirmModal(item);
-  if (!confirmed) return;
 
   const { error } = await supabaseClient.from('decretos').delete().eq('id', id);
   if (error) {
@@ -977,6 +902,144 @@ function spawnParticles() {
 }
 
 /* ─────────────────────────────────────────────
+   PUSH NOTIFICATIONS
+───────────────────────────────────────────── */
+
+// Convierte una VAPID public key base64url → Uint8Array
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64  = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw     = atob(base64);
+  return Uint8Array.from(raw, c => c.charCodeAt(0));
+}
+
+async function setupPushNotifications() {
+  // Comprobar soporte del navegador
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    console.log('[Push] No soportado en este navegador.');
+    return;
+  }
+
+  if (VAPID_PUBLIC_KEY === 'TU_VAPID_PUBLIC_KEY_AQUI') {
+    console.warn('[Push] VAPID_PUBLIC_KEY no configurada todavía.');
+    return;
+  }
+
+  try {
+    // Registrar service worker
+    swRegistration = await navigator.serviceWorker.register('/service-worker.js');
+    console.log('[Push] Service Worker registrado ✓');
+
+    // Comprobar permiso actual
+    const permission = Notification.permission;
+
+    if (permission === 'denied') {
+      console.log('[Push] Permiso denegado por el usuario.');
+      return;
+    }
+
+    if (permission === 'default') {
+      // Mostrar un toast amigable antes de pedir permiso
+      showPushPrompt();
+      return;
+    }
+
+    // permission === 'granted' → suscribir directamente
+    await subscribeToPush();
+
+  } catch (err) {
+    console.error('[Push] Error en setup:', err);
+  }
+}
+
+function showPushPrompt() {
+  // Toast especial con botón para pedir permiso
+  const c  = document.getElementById('toastContainer');
+  const el = document.createElement('div');
+  el.className   = 'toast toast--push-prompt';
+  el.style.cssText = 'max-width:320px; cursor:default;';
+  el.innerHTML = `
+    <div style="margin-bottom:.5rem; font-size:.8rem; letter-spacing:.06em;">
+      🔔 ¿Activar notificaciones?
+    </div>
+    <div style="font-size:.72rem; opacity:.75; margin-bottom:.75rem; line-height:1.5;">
+      Recibe un aviso cuando llegue un decreto o mensaje nuevo.
+    </div>
+    <div style="display:flex; gap:.5rem;">
+      <button id="pushYes" style="
+        flex:1; font-family:inherit; font-size:.7rem; letter-spacing:.1em;
+        text-transform:uppercase; padding:.35rem; background:rgba(184,146,42,0.2);
+        border:1px solid rgba(184,146,42,0.5); color:#D4A93A; cursor:pointer;">
+        Activar
+      </button>
+      <button id="pushNo" style="
+        flex:1; font-family:inherit; font-size:.7rem; letter-spacing:.1em;
+        text-transform:uppercase; padding:.35rem; background:transparent;
+        border:1px solid rgba(255,255,255,0.15); color:rgba(255,255,255,0.4); cursor:pointer;">
+        Ahora no
+      </button>
+    </div>`;
+
+  c.appendChild(el);
+
+  el.querySelector('#pushYes').addEventListener('click', async () => {
+    el.remove();
+    const permission = await Notification.requestPermission();
+    if (permission === 'granted') {
+      await subscribeToPush();
+      showToast('Notificaciones activadas. ✓', 'success');
+    }
+  });
+
+  el.querySelector('#pushNo').addEventListener('click', () => el.remove());
+}
+
+async function subscribeToPush() {
+  if (!swRegistration) return;
+
+  try {
+    // Ver si ya hay una suscripción activa
+    let subscription = await swRegistration.pushManager.getSubscription();
+
+    if (!subscription) {
+      // Crear nueva suscripción
+      subscription = await swRegistration.pushManager.subscribe({
+        userVisibleOnly:      true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+      });
+    }
+
+    // Guardar/actualizar en Supabase
+    await savePushSubscription(subscription);
+    console.log('[Push] Suscripción activa ✓');
+
+  } catch (err) {
+    console.error('[Push] Error al suscribir:', err);
+  }
+}
+
+async function savePushSubscription(subscription) {
+  if (!supabaseClient || !currentAuthId || !currentUser) return;
+
+  const { endpoint, keys } = subscription.toJSON();
+
+  const { error } = await supabaseClient
+    .from('push_subscriptions')
+    .upsert({
+      user_id:    currentAuthId,
+      user_key:   currentUser,          // 'presidente' | 'ministro'
+      endpoint,
+      p256dh:     keys.p256dh,
+      auth:       keys.auth,
+      user_agent: navigator.userAgent.slice(0, 200),
+    }, { onConflict: 'user_id' });     // sobreescribe si ya existe
+
+  if (error) {
+    console.error('[Push] Error guardando suscripción:', error);
+  }
+}
+
+/* ─────────────────────────────────────────────
    UTILS
 ───────────────────────────────────────────── */
 function escHtml(str) {
@@ -993,7 +1056,6 @@ function escHtml(str) {
 document.addEventListener('DOMContentLoaded', () => {
   spawnParticles();
   initAuth();
-  initConfirmModal();
 
   document.getElementById('loginUser').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') document.getElementById('loginPass').focus();
