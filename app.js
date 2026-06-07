@@ -953,36 +953,52 @@ async function setupPushNotifications() {
 }
 
 function showPushPrompt() {
-  // Toast especial con botón para pedir permiso
-  const c  = document.getElementById('toastContainer');
+  // Overlay propio — fuera del toastContainer que tiene pointer-events:none
   const el = document.createElement('div');
-  el.className   = 'toast toast--push-prompt';
-  el.style.cssText = 'max-width:320px; cursor:default;';
+  el.id = 'pushPrompt';
+  el.style.cssText = `
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    z-index: 9999;
+    max-width: 300px;
+    background: #1A1208;
+    border: 1px solid rgba(184,146,42,0.5);
+    border-top: 2px solid #C9A84C;
+    padding: 1rem 1.25rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+    pointer-events: all;
+    animation: toastIn 0.3s ease both;
+  `;
   el.innerHTML = `
-    <div style="margin-bottom:.5rem; font-size:.8rem; letter-spacing:.06em;">
+    <div style="font-family:'Courier Prime',monospace; font-size:.78rem;
+                color:#D4A93A; letter-spacing:.06em; margin-bottom:.4rem;">
       🔔 ¿Activar notificaciones?
     </div>
-    <div style="font-size:.72rem; opacity:.75; margin-bottom:.75rem; line-height:1.5;">
+    <div style="font-family:'EB Garamond',Georgia,serif; font-size:.85rem;
+                color:rgba(212,169,58,0.7); line-height:1.5; margin-bottom:.85rem;">
       Recibe un aviso cuando llegue un decreto o mensaje nuevo.
     </div>
     <div style="display:flex; gap:.5rem;">
       <button id="pushYes" style="
-        flex:1; font-family:inherit; font-size:.7rem; letter-spacing:.1em;
-        text-transform:uppercase; padding:.35rem; background:rgba(184,146,42,0.2);
-        border:1px solid rgba(184,146,42,0.5); color:#D4A93A; cursor:pointer;">
+        flex:1; font-family:'Courier Prime',monospace; font-size:.7rem;
+        letter-spacing:.12em; text-transform:uppercase; padding:.4rem .5rem;
+        background:rgba(184,146,42,0.2); border:1px solid rgba(184,146,42,0.6);
+        color:#D4A93A; cursor:pointer;">
         Activar
       </button>
       <button id="pushNo" style="
-        flex:1; font-family:inherit; font-size:.7rem; letter-spacing:.1em;
-        text-transform:uppercase; padding:.35rem; background:transparent;
-        border:1px solid rgba(255,255,255,0.15); color:rgba(255,255,255,0.4); cursor:pointer;">
+        flex:1; font-family:'Courier Prime',monospace; font-size:.7rem;
+        letter-spacing:.12em; text-transform:uppercase; padding:.4rem .5rem;
+        background:transparent; border:1px solid rgba(255,255,255,0.15);
+        color:rgba(255,255,255,0.35); cursor:pointer;">
         Ahora no
       </button>
     </div>`;
 
-  c.appendChild(el);
+  document.body.appendChild(el);
 
-  el.querySelector('#pushYes').addEventListener('click', async () => {
+  document.getElementById('pushYes').addEventListener('click', async () => {
     el.remove();
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
@@ -991,7 +1007,7 @@ function showPushPrompt() {
     }
   });
 
-  el.querySelector('#pushNo').addEventListener('click', () => el.remove());
+  document.getElementById('pushNo').addEventListener('click', () => el.remove());
 }
 
 async function subscribeToPush() {
