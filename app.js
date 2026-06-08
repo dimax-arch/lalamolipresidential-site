@@ -84,8 +84,9 @@ const CONFIRM_COPY = {
 
 // ── Push notifications ──
 let swRegistration  = null;   // ServiceWorkerRegistration
-// Pega aquí tu VAPID public key (la que generarás en el paso de setup)
-const VAPID_PUBLIC_KEY = 'BPSNRGSqEYNFFFBtN38k5oTZgG_T6fpke0Fvq23kIhp20MekDxbN2V1b-t29z9Ds9lPIycwJ7Tl5xHKR9a5tYcI';
+// Genera el par con `npx web-push generate-vapid-keys`.
+// Pega aquí la CLAVE PÚBLICA (debe coincidir con VAPID_PRIVATE_KEY en Supabase).
+const VAPID_PUBLIC_KEY = 'BNrIu5oG4vTER3NnkfUwzjSPiokF5NPwoeeF8JQNXqfdbNOiYeICfK-CgsUCGOYec2K4AQ0aUaR_A8HDQz_98h4';
 
 /* ─────────────────────────────────────────────
    SUPABASE
