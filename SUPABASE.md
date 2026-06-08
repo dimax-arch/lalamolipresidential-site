@@ -57,7 +57,14 @@ Genera un par de claves VAPID (por ejemplo con `npx web-push generate-vapid-keys
 
 ### 6.2 Edge Function `send-push`
 
-Despliega la función en `supabase/functions/send-push/`.
+Despliega la función en `supabase/functions/send-push/`:
+
+```bash
+supabase functions deploy send-push
+```
+
+El cifrado Web Push (RFC 8291) y la firma VAPID se delegan en la librería
+`@negrel/webpush` (importada vía `jsr:`), así que no hay criptografía hecha a mano.
 
 Secrets requeridos en **Edge Functions → Secrets**:
 
@@ -76,8 +83,13 @@ En **Database → Webhooks**, crea dos webhooks (o uno por tabla):
 |-------|-------|
 | Tabla | `decretos` / `mensajes` |
 | Evento | `INSERT` |
-| URL | URL de la Edge Function `send-push` |
-| Header HTTP | `Authorization: Bearer <WEBHOOK_SECRET>` |
+| Tipo | `Supabase Edge Functions` → `send-push` |
+| Header HTTP | `x-webhook-secret: <WEBHOOK_SECRET>` |
+
+> Si eliges el tipo **HTTP Request** en su lugar, usa el header
+> `Authorization: Bearer <WEBHOOK_SECRET>`. Con el tipo **Edge Functions**,
+> Supabase rellena `Authorization` automáticamente, por eso se usa
+> `x-webhook-secret`. La función acepta cualquiera de los dos.
 
 La función rechaza peticiones sin el secreto correcto.
 
