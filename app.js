@@ -1151,18 +1151,36 @@ function showPushPrompt() {
   document.getElementById('pushNo').addEventListener('click', () => el.remove());
 }
 
+function sameApplicationServerKey(subscription, expectedKey) {
+  const existing = subscription.options?.applicationServerKey;
+  if (!existing) return false;
+  const a = new Uint8Array(existing);
+  if (a.length !== expectedKey.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== expectedKey[i]) return false;
+  }
+  return true;
+}
+
 async function subscribeToPush() {
   if (!swRegistration) return;
 
   try {
-    // Ver si ya hay una suscripción activa
+    const appServerKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
     let subscription = await swRegistration.pushManager.getSubscription();
 
+    // Si la suscripción existente se creó con otra clave VAPID, FCM devolverá
+    // 403. La descartamos y volvemos a suscribir con la clave actual.
+    if (subscription && !sameApplicationServerKey(subscription, appServerKey)) {
+      console.log('[Push] Clave VAPID cambiada; renovando suscripción.');
+      try { await subscription.unsubscribe(); } catch (_) { /* noop */ }
+      subscription = null;
+    }
+
     if (!subscription) {
-      // Crear nueva suscripción
       subscription = await swRegistration.pushManager.subscribe({
         userVisibleOnly:      true,
-        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+        applicationServerKey: appServerKey,
       });
     }
 
