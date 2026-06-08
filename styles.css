@@ -1232,6 +1232,7 @@ optgroup {
 }
 
 .confirm-warning {
+  white-space: pre-line;
   font-family: 'Libre Baskerville', Georgia, serif;
   font-style: italic;
   font-size: 0.82rem;
@@ -1285,6 +1286,23 @@ optgroup {
 }
 
 .confirm-btn--delete:active {
+  transform: translateY(0);
+}
+
+.confirm-btn--reject {
+  background: linear-gradient(135deg, #5A3A10, #8B5A18);
+  color: #FFE8C8;
+  border-color: #A07020;
+  box-shadow: 0 2px 8px rgba(139, 90, 24, 0.3);
+}
+
+.confirm-btn--reject:hover {
+  background: linear-gradient(135deg, #8B5A18, #B8922A);
+  box-shadow: 0 4px 14px rgba(184, 146, 42, 0.45);
+  transform: translateY(-1px);
+}
+
+.confirm-btn--reject:active {
   transform: translateY(0);
 }
 

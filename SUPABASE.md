@@ -10,7 +10,7 @@
 ## 2. Configurar la app
 
 ```bash
-copy supabase-config.example.js supabase-config.js
+cp supabase-config.example.js supabase-config.js
 ```
 
 Edita `supabase-config.js` y pega tu URL y clave anon.
@@ -28,21 +28,72 @@ Crea dos usuarios (marca **Auto Confirm User**):
 
 El campo `role` debe ser exactamente `president` o `minister` para que la app asigne el perfil correcto.
 
-## 4. Sincronización en tiempo real (obligatorio)
+## 4. Base de datos (obligatorio)
 
-En **SQL Editor**, ejecuta todo el archivo `supabase/sync-tables.sql`.
+En **SQL Editor**, ejecuta en este orden:
 
-En el dashboard: **Database → Publications** (o **Replication**) y confirma que `decretos` y `mensajes` están en la publicación **supabase_realtime**.
+1. `supabase/sync-tables.sql` — decretos, mensajes y políticas RLS
+2. `decreto_logs.sql` — historial oficial
+3. `supabase/push-subscriptions.sql` — tabla de notificaciones push
+
+**Si ya tenías una versión anterior** del esquema, ejecuta además:
+
+- `supabase/migrate-security.sql` — endurece RLS y añade `author_id` a mensajes
+
+En **Database → Publications**, confirma que `decretos`, `mensajes` y `decreto_logs` están en **supabase_realtime**.
 
 ## 5. (Opcional) Tabla de perfiles
 
 Ejecuta `supabase/setup.sql` si quieres perfiles en base de datos.
 
-## 6. Probar
+## 6. Notificaciones push (opcional)
 
-Abre la app con un servidor local (p. ej. `python -m http.server 5500`) e inicia sesión con dos navegadores o dispositivos (presidente y ministro). Los decretos y mensajes deben aparecer al instante en ambos.
+### 6.1 Claves VAPID
 
-## Notas
+Genera un par de claves VAPID (por ejemplo con `npx web-push generate-vapid-keys`).
 
-- Los datos viven en Supabase; ya no se usan en `localStorage`.
-- No subas `supabase-config.js` a repositorios públicos; ya está en `.gitignore`.
+- Pega la **clave pública** en `app.js` → `VAPID_PUBLIC_KEY`
+- Guarda la **clave privada** como secreto en Supabase
+
+### 6.2 Edge Function `send-push`
+
+Despliega la función en `supabase/functions/send-push/`.
+
+Secrets requeridos en **Edge Functions → Secrets**:
+
+| Secret | Descripción |
+|--------|-------------|
+| `VAPID_PUBLIC_KEY` | Clave pública VAPID |
+| `VAPID_PRIVATE_KEY` | Clave privada VAPID |
+| `VAPID_SUBJECT` | `mailto:tu@correo.com` |
+| `WEBHOOK_SECRET` | Cadena aleatoria larga (tú la defines) |
+
+### 6.3 Webhooks de base de datos
+
+En **Database → Webhooks**, crea dos webhooks (o uno por tabla):
+
+| Campo | Valor |
+|-------|-------|
+| Tabla | `decretos` / `mensajes` |
+| Evento | `INSERT` |
+| URL | URL de la Edge Function `send-push` |
+| Header HTTP | `Authorization: Bearer <WEBHOOK_SECRET>` |
+
+La función rechaza peticiones sin el secreto correcto.
+
+## 7. Probar
+
+Abre la app con un servidor local (p. ej. `python -m http.server 5500`) e inicia sesión con dos navegadores (presidente y ministro). Los decretos y mensajes deben aparecer al instante en ambos.
+
+Tests locales:
+
+```bash
+npm test
+```
+
+## Notas de seguridad
+
+- Los datos viven en Supabase; no se usa `localStorage` para la agenda.
+- No subas `supabase-config.js` a repositorios públicos (está en `.gitignore`).
+- RLS impide auto-aprobación, suplantación de `user_key` y borrados no autorizados.
+- La recuperación de contraseña redirige a `reset-password.html` en el mismo origen.

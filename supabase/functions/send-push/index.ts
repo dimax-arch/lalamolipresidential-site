@@ -11,6 +11,7 @@
 //    VAPID_PUBLIC_KEY        ← generada con web-push
 //    VAPID_PRIVATE_KEY       ← generada con web-push
 //    VAPID_SUBJECT           ← tu email o URL, ej: mailto:tu@email.com
+//    WEBHOOK_SECRET          ← secreto compartido con el Database Webhook
 // ═══════════════════════════════════════════════════════
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -181,17 +182,41 @@ function buildInfo(type: string, clientKey: Uint8Array, serverKey: Uint8Array, e
   return info;
 }
 
+// ── Autenticación del webhook ──────────────────────────
+function verifyWebhook(req: Request): boolean {
+  const secret = Deno.env.get('WEBHOOK_SECRET');
+  if (!secret) {
+    console.error('WEBHOOK_SECRET no configurado');
+    return false;
+  }
+  const bearer = req.headers.get('Authorization');
+  const header = req.headers.get('x-webhook-secret');
+  return bearer === `Bearer ${secret}` || header === secret;
+}
+
 // ── Handler principal ──────────────────────────────────
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: { 'Access-Control-Allow-Origin': '*' } });
   }
 
+  if (req.method !== 'POST') {
+    return new Response('Method not allowed', { status: 405 });
+  }
+
+  if (!verifyWebhook(req)) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
   try {
     const body = await req.json();
 
     // El webhook de Supabase envía { type, table, record, ... }
-    const { table, record } = body;
+    const { type, table, record } = body;
+
+    if (type && type !== 'INSERT') {
+      return new Response('Event ignored', { status: 200 });
+    }
 
     if (!record) {
       return new Response('No record', { status: 400 });
@@ -247,10 +272,10 @@ Deno.serve(async (req) => {
     const payload = JSON.stringify({
       title,
       body:  notifBody,
-      icon:  '/parthenon26.svg',
-      badge: '/parthenon26.svg',
+      icon:  'parthenon26.svg',
+      badge: 'parthenon26.svg',
       tag:   isDecreto ? 'decreto' : 'mensaje',
-      url:   '/',
+      url:   './',
     });
 
     // Leer claves VAPID

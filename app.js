@@ -65,6 +65,23 @@ let logsFilter      = 'all';
 let logsPage        = 0;
 const LOGS_PER_PAGE = 20;
 
+const CONFIRM_COPY = {
+  delete: {
+    eyebrow: 'Acción irreversible',
+    title: 'Eliminar Decreto',
+    warning: 'Este decreto será eliminado del registro oficial.\nEl evento quedará registrado en el historial.',
+    actionLabel: 'Eliminar ✕',
+    actionClass: 'confirm-btn--delete',
+  },
+  reject: {
+    eyebrow: 'Confirmar rechazo',
+    title: 'Rechazar Decreto',
+    warning: 'Este decreto quedará marcado como rechazado.\nEl evento quedará registrado en el historial.',
+    actionLabel: 'Rechazar ✗',
+    actionClass: 'confirm-btn--reject',
+  },
+};
+
 // ── Push notifications ──
 let swRegistration  = null;   // ServiceWorkerRegistration
 // Pega aquí tu VAPID public key (la que generarás en el paso de setup)
@@ -90,7 +107,13 @@ function initSupabase() {
   }
 
   supabaseClient = window.supabase.createClient(url, key);
+  window.supabaseClient = supabaseClient;
   return true;
+}
+
+function getSupabaseClient() {
+  if (!supabaseClient && !initSupabase()) return null;
+  return supabaseClient;
 }
 
 function userKeyFromAuthUser(user) {
@@ -221,7 +244,10 @@ async function refreshDecretosFromServer() {
     .from('decretos')
     .select('*')
     .order('created_at', { ascending: false });
-  if (error) return;
+  if (error) {
+    dbErrorToast(error, 'No se pudieron actualizar los decretos');
+    return;
+  }
   items = (data || []).map(rowToItem);
   renderItems();
   updateStats();
@@ -233,7 +259,10 @@ async function refreshMensajesFromServer() {
     .from('mensajes')
     .select('*')
     .order('created_at', { ascending: true });
-  if (error) return;
+  if (error) {
+    dbErrorToast(error, 'No se pudo actualizar el canal');
+    return;
+  }
   const prevCount = messages.length;
   messages = (data || []).map(rowToMessage);
   renderLog();
@@ -249,7 +278,10 @@ async function refreshLogsFromServer() {
     .select('*')
     .order('created_at', { ascending: false })
     .limit(200);
-  if (error) return;
+  if (error) {
+    dbErrorToast(error, 'No se pudo actualizar el historial');
+    return;
+  }
   decreto_logs = (data || []).map(rowToLog);
   renderLogs();
 }
@@ -400,6 +432,10 @@ function leaveApp(clearForm) {
   unsubscribeRealtime();
   items = [];
   messages = [];
+  decreto_logs = [];
+  lastSeenMsgCount = 0;
+  logsPage = 0;
+  logsFilter = 'all';
   currentUser   = null;
   currentAuthId = null;
   document.getElementById('loginOverlay').style.display = '';
@@ -499,7 +535,7 @@ async function submitItem() {
 
   await Promise.all([
     writeLog('created', rowToItem(data)),
-    addLogEntry(currentUser, `[DECRETO] "${title}" — ${TYPE_LABELS[type]}`),
+    addLogEntry(`[DECRETO] "${title}" — ${TYPE_LABELS[type]}`),
   ]);
   showToast('Decreto presentado al Consejo. ⚑', 'success');
 }
@@ -531,7 +567,7 @@ async function approveItem(id) {
   updateStats();
   await Promise.all([
     writeLog('approved', item),
-    addLogEntry(currentUser, `[APROBADO] "${item.title}"`),
+    addLogEntry(`[APROBADO] "${item.title}"`),
   ]);
   showToast('Decreto aprobado. ✓', 'success');
 }
@@ -539,6 +575,9 @@ async function approveItem(id) {
 async function rejectItem(id) {
   const item = items.find(i => i.id === id);
   if (!item || !supabaseClient) return;
+
+  const confirmed = await showConfirmModal(item, 'reject');
+  if (!confirmed) return;
 
   const { error } = await supabaseClient
     .from('decretos')
@@ -555,7 +594,7 @@ async function rejectItem(id) {
   updateStats();
   await Promise.all([
     writeLog('rejected', item),
-    addLogEntry(currentUser, `[RECHAZADO] "${item.title}"`),
+    addLogEntry(`[RECHAZADO] "${item.title}"`),
   ]);
   showToast('Decreto rechazado.', 'error');
 }
@@ -566,14 +605,28 @@ async function rejectItem(id) {
 ───────────────────────────────────────────── */
 let _confirmResolve = null;   // promesa pendiente del modal
 
-function showConfirmModal(item) {
+function showConfirmModal(item, action = 'delete') {
+  if (_confirmResolve) closeConfirmModal(false);
+
   return new Promise((resolve) => {
     _confirmResolve = resolve;
+    const copy = CONFIRM_COPY[action] || CONFIRM_COPY.delete;
 
-    // Rellenar datos del decreto en el modal
-    const titleEl = document.getElementById('confirmDecreeTitle');
-    const metaEl  = document.getElementById('confirmDecreeMeta');
-    if (titleEl) titleEl.textContent = item.title;
+    const eyebrowEl = document.getElementById('confirmEyebrow');
+    const titleEl   = document.getElementById('confirmTitle');
+    const warningEl = document.getElementById('confirmWarning');
+    const actionBtn = document.getElementById('confirmActionBtn');
+    const decreeTitleEl = document.getElementById('confirmDecreeTitle');
+    const metaEl        = document.getElementById('confirmDecreeMeta');
+
+    if (eyebrowEl) eyebrowEl.textContent = copy.eyebrow;
+    if (titleEl) titleEl.textContent = copy.title;
+    if (warningEl) warningEl.textContent = copy.warning;
+    if (actionBtn) {
+      actionBtn.textContent = copy.actionLabel;
+      actionBtn.className = `confirm-btn ${copy.actionClass}`;
+    }
+    if (decreeTitleEl) decreeTitleEl.textContent = item.title;
     if (metaEl) {
       const typeLabel = TYPE_LABELS[item.type] || item.type;
       const prioLabel = PRIORITY_LABELS[item.priority] || item.priority;
@@ -581,7 +634,6 @@ function showConfirmModal(item) {
       metaEl.textContent = `${typeLabel} · ${prioLabel}${dateStr}`;
     }
 
-    // Mostrar backdrop con animación
     const backdrop = document.getElementById('confirmBackdrop');
     if (backdrop) {
       backdrop.classList.add('is-visible');
@@ -615,14 +667,11 @@ function shakeConfirmCard() {
 function initConfirmModal() {
   const backdrop  = document.getElementById('confirmBackdrop');
   const cancelBtn = document.getElementById('confirmCancelBtn');
-  const deleteBtn = document.getElementById('confirmDeleteBtn');
+  const actionBtn = document.getElementById('confirmActionBtn');
   if (!backdrop) return;
 
-  // Botón cancelar
   cancelBtn?.addEventListener('click', () => closeConfirmModal(false));
-
-  // Botón confirmar borrado
-  deleteBtn?.addEventListener('click', () => closeConfirmModal(true));
+  actionBtn?.addEventListener('click', () => closeConfirmModal(true));
 
   // Clic fuera de la card → shake, no cerrar
   backdrop.addEventListener('click', (e) => {
@@ -648,7 +697,7 @@ async function deleteItem(id) {
   if (!item) return;
 
   // Mostrar modal y esperar respuesta
-  const confirmed = await showConfirmModal(item);
+  const confirmed = await showConfirmModal(item, 'delete');
   if (!confirmed) return;
 
   const { error } = await supabaseClient.from('decretos').delete().eq('id', id);
@@ -727,15 +776,15 @@ function buildItemCard(item) {
   const canReject    = canAct;
   const canDelete    = !canAct || isOwnItem;
 
-  const idAttr = escHtml(item.id);
+  const idAttr = escAttr(item.id);
   const approveBtn = canApprove
-    ? `<button class="btn-small btn-small--approve" onclick="approveItem('${idAttr}')">✓ Aprobar</button>`
+    ? `<button type="button" class="btn-small btn-small--approve" data-action="approve" data-id="${idAttr}">✓ Aprobar</button>`
     : '';
   const rejectBtn  = canReject
-    ? `<button class="btn-small btn-small--reject"  onclick="rejectItem('${idAttr}')">✗ Rechazar</button>`
+    ? `<button type="button" class="btn-small btn-small--reject" data-action="reject" data-id="${idAttr}">✗ Rechazar</button>`
     : '';
   const deleteBtn  = canDelete
-    ? `<button class="btn-small btn-small--delete"  onclick="deleteItem('${idAttr}')">✕ Eliminar</button>`
+    ? `<button type="button" class="btn-small btn-small--delete" data-action="delete" data-id="${idAttr}">✕ Eliminar</button>`
     : '';
 
   const descHtml = item.desc
@@ -873,7 +922,7 @@ async function sendMessage() {
 
   const { data, error } = await supabaseClient
     .from('mensajes')
-    .insert({ user_key: currentUser, body: text })
+    .insert({ user_key: currentUser, author_id: currentAuthId, body: text })
     .select()
     .single();
 
@@ -884,15 +933,16 @@ async function sendMessage() {
 
   messages.push(rowToMessage(data));
   input.value = '';
+  lastSeenMsgCount = messages.length;
   renderLog();
 }
 
-async function addLogEntry(userKey, text) {
-  if (!supabaseClient) return;
+async function addLogEntry(text) {
+  if (!supabaseClient || !currentAuthId || !currentUser) return;
 
   const { data, error } = await supabaseClient
     .from('mensajes')
-    .insert({ user_key: userKey, body: text })
+    .insert({ user_key: currentUser, author_id: currentAuthId, body: text })
     .select()
     .single();
 
@@ -931,7 +981,10 @@ function renderLog() {
 
   area.scrollTop = area.scrollHeight;
 
-  if (messages.length > lastSeenMsgCount) {
+  const lastMsg = messages[messages.length - 1];
+  const incomingFromOther = lastMsg && lastMsg.userKey !== currentUser;
+
+  if (incomingFromOther && messages.length > lastSeenMsgCount) {
     const badge = document.getElementById('unreadBadge');
     badge.style.display = '';
     setTimeout(() => {
@@ -1012,7 +1065,8 @@ async function setupPushNotifications() {
 
   try {
     // Registrar service worker
-    swRegistration = await navigator.serviceWorker.register('/service-worker.js');
+    const swUrl = new URL('service-worker.js', window.location.href).pathname;
+    swRegistration = await navigator.serviceWorker.register(swUrl);
     console.log('[Push] Service Worker registrado ✓');
 
     // Comprobar permiso actual
@@ -1038,7 +1092,8 @@ async function setupPushNotifications() {
 }
 
 function showPushPrompt() {
-  // Overlay propio — fuera del toastContainer que tiene pointer-events:none
+  if (document.getElementById('pushPrompt')) return;
+
   const el = document.createElement('div');
   el.id = 'pushPrompt';
   el.style.cssText = `
@@ -1148,7 +1203,96 @@ function escHtml(str) {
     .replace(/&/g,  '&amp;')
     .replace(/</g,  '&lt;')
     .replace(/>/g,  '&gt;')
-    .replace(/"/g,  '&quot;');
+    .replace(/"/g,  '&quot;')
+    .replace(/'/g,  '&#39;');
+}
+
+function escAttr(str) {
+  return escHtml(str);
+}
+
+function initItemListActions() {
+  const list = document.getElementById('itemList');
+  if (!list || list.dataset.actionsBound) return;
+  list.dataset.actionsBound = '1';
+  list.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    const { action, id } = btn.dataset;
+    if (!id) return;
+    if (action === 'approve') approveItem(id);
+    else if (action === 'reject') rejectItem(id);
+    else if (action === 'delete') deleteItem(id);
+  });
+}
+
+/* ─────────────────────────────────────────────
+   OLVIDÉ MI CONTRASEÑA
+───────────────────────────────────────────── */
+function showForgot() {
+  document.getElementById('panelLogin').style.display  = 'none';
+  document.getElementById('panelForgot').style.display = '';
+  document.getElementById('panelForgotForm').style.display = '';
+  document.getElementById('panelForgotSuccess').style.display = 'none';
+  document.getElementById('loginError').textContent    = '';
+  document.getElementById('forgotError').textContent     = '';
+  const email = document.getElementById('loginUser').value.trim();
+  if (email) document.getElementById('forgotEmail').value = email;
+  document.getElementById('forgotEmail').focus();
+}
+
+function showLogin() {
+  document.getElementById('panelForgot').style.display = 'none';
+  document.getElementById('panelLogin').style.display  = '';
+  document.getElementById('panelForgotForm').style.display = '';
+  document.getElementById('panelForgotSuccess').style.display = 'none';
+  document.getElementById('forgotError').textContent   = '';
+}
+
+function showForgotSuccess(email) {
+  const msgEl = document.getElementById('forgotSuccessMsg');
+  msgEl.replaceChildren();
+  msgEl.append('Enlace enviado a', document.createElement('br'));
+  const strong = document.createElement('strong');
+  strong.textContent = email;
+  msgEl.append(strong, document.createElement('br'), document.createElement('br'));
+  msgEl.append('Revisa tu bandeja de entrada y haz clic en el enlace para crear tu nueva contraseña.');
+
+  document.getElementById('panelForgotForm').style.display = 'none';
+  document.getElementById('panelForgotSuccess').style.display = '';
+}
+
+async function sendReset() {
+  const email = document.getElementById('forgotEmail').value.trim();
+  const errEl = document.getElementById('forgotError');
+  const btn   = document.getElementById('forgotBtn');
+
+  errEl.textContent = '';
+
+  if (!email) {
+    errEl.textContent = 'Escribe tu correo electrónico.';
+    return;
+  }
+
+  const client = getSupabaseClient();
+  if (!client) return;
+
+  btn.disabled = true;
+  btn.textContent = 'Enviando…';
+
+  const { error } = await client.auth.resetPasswordForEmail(email, {
+    redirectTo: new URL('reset-password.html', window.location.href).href,
+  });
+
+  btn.disabled = false;
+  btn.textContent = 'Enviar enlace de recuperación ✉';
+
+  if (error) {
+    errEl.textContent = 'Error: ' + error.message;
+    return;
+  }
+
+  showForgotSuccess(email);
 }
 
 /* ─────────────────────────────────────────────
@@ -1158,8 +1302,11 @@ document.addEventListener('DOMContentLoaded', () => {
   spawnParticles();
   initAuth();
   initConfirmModal();
+  initItemListActions();
 
   document.getElementById('loginUser').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') document.getElementById('loginPass').focus();
   });
 });
+
+window.getSupabaseClient = getSupabaseClient;
