@@ -1,13 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-
-const ROLE_TO_USER_KEY = {
-  president: 'presidente',
-  minister: 'ministro',
-};
+import { ROLE_TO_USER_KEY } from '../src/lib/constants.js';
 
 function userKeyFromAuthUser(user) {
-  const role = user.user_metadata?.role;
+  const role = user?.user_metadata?.role;
   return ROLE_TO_USER_KEY[role] || null;
 }
 

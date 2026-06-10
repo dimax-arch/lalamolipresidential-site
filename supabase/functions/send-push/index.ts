@@ -16,6 +16,9 @@
 //    VAPID_PRIVATE_KEY       ← clave privada VAPID (base64url)
 //    VAPID_SUBJECT           ← mailto:tu@email.com
 //    WEBHOOK_SECRET          ← secreto compartido con el Database Webhook
+//    RESEND_API_KEY          ← API key de Resend (notificaciones por email)
+//    EMAIL_FROM              ← remitente verificado, ej:
+//                              Palacio Presidencial <noreply@tudominio.com>
 // ═══════════════════════════════════════════════════════
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -53,6 +56,58 @@ function vapidKeysToJwk(publicB64: string, privateB64: string) {
       kty: 'EC', crv: 'P-256', x, y, d, ext: true, key_ops: ['sign'],
     } as JsonWebKey,
   };
+}
+
+// ── Email (Resend) ─────────────────────────────────────
+const ROLE_BY_USER_KEY: Record<string, string> = {
+  presidente: 'president',
+  ministro:   'minister',
+};
+
+function escapeHtml(str: string): string {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// deno-lint-ignore no-explicit-any
+async function lookupEmailByUserKey(supabase: any, userKey: string): Promise<string | null> {
+  const role = ROLE_BY_USER_KEY[userKey];
+  if (!role) return null;
+  const { data, error } = await supabase.auth.admin.listUsers();
+  if (error) {
+    console.error('[Email] No se pudo listar usuarios:', error.message);
+    return null;
+  }
+  // deno-lint-ignore no-explicit-any
+  const user = (data?.users || []).find((u: any) => u.user_metadata?.role === role);
+  return user?.email ?? null;
+}
+
+async function sendEmail(to: string, subject: string, html: string): Promise<void> {
+  const apiKey = Deno.env.get('RESEND_API_KEY');
+  const from   = Deno.env.get('EMAIL_FROM');
+  if (!apiKey || !from) {
+    console.error('[Email] RESEND_API_KEY o EMAIL_FROM no configurados');
+    return;
+  }
+
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type':  'application/json',
+    },
+    body: JSON.stringify({ from, to, subject, html }),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Resend ${res.status}: ${text}`);
+  }
 }
 
 // ── Autenticación del webhook ──────────────────────────
@@ -163,39 +218,97 @@ Deno.serve(async (req) => {
       .eq('user_key', targetKey)
       .maybeSingle();
 
+    // ── Push (no bloquea el email si no hay suscripción) ──
     if (subError || !sub) {
       console.log(`No push subscription for ${targetKey}:`, subError?.message);
-      return new Response('No subscription', { status: 200 });
+    } else {
+      const payload = JSON.stringify({
+        title,
+        body:  notifBody,
+        icon:  'parthenon26.svg',
+        badge: 'parthenon26.svg',
+        tag:   isDecreto ? 'decreto' : 'mensaje',
+        url:   './',
+      });
+
+      // Cifrar y enviar mediante la librería (RFC 8291 + VAPID)
+      const appServer = await getAppServer();
+      const subscriber = appServer.subscribe({
+        endpoint: sub.endpoint,
+        keys: { p256dh: sub.p256dh, auth: sub.auth },
+      });
+
+      try {
+        await subscriber.pushTextMessage(payload, {});
+        console.log(`Push enviado a ${targetKey} ✓`);
+      } catch (err) {
+        const status = (err as { response?: Response })?.response?.status;
+        // 404 / 410 = suscripción expirada → borrarla
+        if (status === 404 || status === 410) {
+          await supabase.from('push_subscriptions').delete().eq('user_key', targetKey);
+          console.log(`Suscripción expirada para ${targetKey}, eliminada.`);
+        } else {
+          console.error('Push failed:', status ?? '', err);
+        }
+      }
     }
 
-    // Construir payload JSON para la notificación
-    const payload = JSON.stringify({
-      title,
-      body:  notifBody,
-      icon:  'parthenon26.svg',
-      badge: 'parthenon26.svg',
-      tag:   isDecreto ? 'decreto' : 'mensaje',
-      url:   './',
-    });
+    // ── Email (Resend) — independiente del push ──
+    // Reglas: decretos en ambos sentidos; mensajes solo ministro → presidente.
+    const shouldEmail = isDecreto || (isMensaje && authorKey === 'ministro');
 
-    // Cifrar y enviar mediante la librería (RFC 8291 + VAPID)
-    const appServer = await getAppServer();
-    const subscriber = appServer.subscribe({
-      endpoint: sub.endpoint,
-      keys: { p256dh: sub.p256dh, auth: sub.auth },
-    });
+    if (shouldEmail) {
+      try {
+        const toEmail = await lookupEmailByUserKey(supabase, targetKey);
+        if (!toEmail) {
+          console.log(`[Email] Sin email para ${targetKey}, se omite.`);
+        } else {
+          const authorLabel = authorKey === 'presidente' ? 'Presidenta' : 'Ministro';
+          let subject: string;
+          let html: string;
 
-    try {
-      await subscriber.pushTextMessage(payload, {});
-      console.log(`Push enviado a ${targetKey} ✓`);
-    } catch (err) {
-      const status = (err as { response?: Response })?.response?.status;
-      // 404 / 410 = suscripción expirada → borrarla
-      if (status === 404 || status === 410) {
-        await supabase.from('push_subscriptions').delete().eq('user_key', targetKey);
-        console.log(`Suscripción expirada para ${targetKey}, eliminada.`);
-      } else {
-        console.error('Push failed:', status ?? '', err);
+          if (isDecreto) {
+            const typeLabels: Record<string, string> = {
+              reunion: 'Reunión', plan: 'Plan', decreto: 'Decreto',
+              mision: 'Misión', pelicula: 'Cine', juego: 'Gaming',
+            };
+            const prioLabels: Record<string, string> = {
+              alta: 'Alta', media: 'Media', baja: 'Baja',
+            };
+            const typeLabel = typeLabels[record.type] || record.type;
+            const prioLabel = prioLabels[record.priority] || record.priority || '—';
+            subject = `Nuevo decreto — ${escapeHtml(record.title)}`;
+            html = `
+              <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;">
+                <h2 style="color:#8B6B4A;">Nuevo decreto presentado</h2>
+                <p><strong>${escapeHtml(record.title)}</strong></p>
+                <p style="color:#555;">
+                  Tipo: ${escapeHtml(typeLabel)} · Prioridad: ${escapeHtml(prioLabel)}<br>
+                  Presentado por: ${authorLabel}
+                </p>
+                ${record.description ? `<p>${escapeHtml(record.description)}</p>` : ''}
+                <hr style="border:none;border-top:1px solid #ddd;">
+                <p style="color:#999;font-size:.85em;">Palacio Presidencial — notificación automática.</p>
+              </div>`;
+          } else {
+            subject = `Nuevo mensaje del ${authorLabel}`;
+            html = `
+              <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;">
+                <h2 style="color:#8B6B4A;">Mensaje en la Línea Directa</h2>
+                <p style="color:#555;">De: ${authorLabel}</p>
+                <blockquote style="border-left:3px solid #8B6B4A;margin:0;padding:.5em 1em;color:#333;">
+                  ${escapeHtml(record.body)}
+                </blockquote>
+                <hr style="border:none;border-top:1px solid #ddd;">
+                <p style="color:#999;font-size:.85em;">Palacio Presidencial — notificación automática.</p>
+              </div>`;
+          }
+
+          await sendEmail(toEmail, subject, html);
+          console.log(`Email enviado a ${targetKey} via Resend ✓`);
+        }
+      } catch (err) {
+        console.error('[Email] Error al enviar:', err);
       }
     }
 

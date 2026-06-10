@@ -1,0 +1,406 @@
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap');
+
+/* ═══════════════════════════════════════════════════════
+   PALACIO PRESIDENCIAL — globals (variables, reset, base,
+   keyframes y primitivas compartidas: formularios, botones,
+   badges, empty-state, partículas).
+   Los estilos específicos de cada componente viven en su
+   propio archivo *.module.css.
+   ═══════════════════════════════════════════════════════ */
+
+:root {
+  --background: #f8f4ef;
+  --surface: #ede4d8;
+  --primary: #8b6b4a;
+  --primary-dark: #6d4c41;
+  --primary-light: #a58568;
+  --text: #3c2f2f;
+  --text-muted: #8d8178;
+  --bg-dark: #2a2321;
+  --bg-overlay: #1f1a18;
+  --bg-elevated: #332b28;
+
+  --cream: var(--background);
+  --cream-dark: var(--surface);
+  --gold: var(--primary);
+  --gold-light: var(--primary-light);
+  --gold-dim: var(--primary-dark);
+  --ink: var(--text);
+  --ink-mid: var(--primary-dark);
+  --ink-soft: var(--text-muted);
+  --parchment: var(--background);
+  --border-gold: var(--primary);
+
+  --font-main: 'Libre Baskerville', Georgia, 'Times New Roman', serif;
+
+  --red: #8b1a1a;
+  --red-light: #c22020;
+  --green-seal: #1a4a2a;
+  --shadow: rgba(60, 47, 47, 0.2);
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-family: var(--font-main);
+}
+
+body {
+  background-color: var(--bg-dark);
+  background-image: radial-gradient(ellipse at 20% 20%, rgba(139, 107, 74, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 80%, rgba(139, 26, 26, 0.05) 0%, transparent 60%);
+  min-height: 100vh;
+  font-family: inherit;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+button,
+input,
+select,
+textarea,
+optgroup {
+  font-family: inherit;
+  font-weight: inherit;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--primary-dark);
+  border-radius: 3px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   PARTÍCULAS (fondo del login)
+   ═══════════════════════════════════════════════════════ */
+.login-bg-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: #ffffff;
+  opacity: 0;
+  animation: particleFade var(--dur, 6s) ease-in-out var(--delay, 0s) infinite;
+}
+
+/* ═══════════════════════════════════════════════════════
+   PRIMITIVAS DE FORMULARIO (compartidas)
+   ═══════════════════════════════════════════════════════ */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  font-family: var(--font-main);
+  font-size: 0.68rem;
+  color: var(--ink-soft);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  font-family: var(--font-main);
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--cream-dark);
+  border-bottom: 2px solid var(--border-gold);
+  padding: 0.5rem 0.75rem;
+  outline: none;
+  transition: all 0.2s;
+  border-radius: 0;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  background: #fff;
+  border-color: var(--gold);
+  box-shadow: 0 2px 8px rgba(139, 107, 74, 0.15);
+}
+
+.form-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238B6B4A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2rem;
+  cursor: pointer;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.6;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+/* ═══════════════════════════════════════════════════════
+   BOTONES (compartidos)
+   ═══════════════════════════════════════════════════════ */
+.btn-decree {
+  font-family: var(--font-main);
+  font-size: 0.78rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.65rem 1.5rem;
+  background: #856648;
+  color: #ffe8e8;
+  border: 1px solid #856648;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  display: block;
+}
+
+.btn-decree:hover {
+  background: #193974;
+  transform: translateY(-1px);
+}
+
+.btn-decree:active {
+  transform: translateY(0);
+}
+
+.btn-decree:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-send {
+  width: auto;
+  padding: 0.5rem 1rem;
+  white-space: nowrap;
+}
+
+.btn-small {
+  font-family: var(--font-main);
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.28rem 0.7rem;
+  background: transparent;
+  border: 1px solid currentColor;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-radius: 0;
+}
+
+.btn-small:hover {
+  opacity: 0.75;
+  transform: translateY(-1px);
+}
+
+.btn-small:disabled {
+  opacity: 0.3;
+  cursor: default;
+  transform: none;
+}
+
+.btn-small--approve {
+  color: var(--green-seal);
+}
+.btn-small--reject {
+  color: var(--red);
+}
+.btn-small--delete {
+  color: var(--ink-soft);
+}
+
+/* ═══════════════════════════════════════════════════════
+   STATUS BADGES (compartidos)
+   ═══════════════════════════════════════════════════════ */
+.status-badge {
+  font-family: var(--font-main);
+  font-size: 0.6rem;
+  padding: 0.15rem 0.5rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.status-badge--pending {
+  color: var(--primary-dark);
+  border-color: var(--primary-dark);
+  background: rgba(139, 107, 74, 0.1);
+}
+.status-badge--approved {
+  color: var(--green-seal);
+  border-color: var(--green-seal);
+  background: rgba(26, 74, 42, 0.08);
+}
+.status-badge--rejected {
+  color: var(--red);
+  border-color: var(--red);
+  background: rgba(139, 26, 26, 0.08);
+}
+
+/* ═══════════════════════════════════════════════════════
+   EMPTY STATE (compartido)
+   ═══════════════════════════════════════════════════════ */
+.empty-state {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--ink-soft);
+}
+
+.empty-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.empty-text {
+  font-family: var(--font-main);
+  font-style: italic;
+  font-size: 0.95rem;
+}
+
+/* ═══════════════════════════════════════════════════════
+   KEYFRAMES (compartidos)
+   ═══════════════════════════════════════════════════════ */
+@keyframes particleFade {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  20% {
+    opacity: 0.4;
+  }
+  80% {
+    opacity: 0.2;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-120px);
+  }
+}
+
+@keyframes loginAppear {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes sealGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(139, 107, 74, 0.25), inset 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(139, 107, 74, 0.45), inset 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-6px);
+  }
+  75% {
+    transform: translateX(6px);
+  }
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes toastOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+}
+
+@keyframes confirmShake {
+  0%,
+  100% {
+    transform: translateX(0) scale(1);
+  }
+  20% {
+    transform: translateX(-6px) scale(1);
+  }
+  40% {
+    transform: translateX(6px) scale(1);
+  }
+  60% {
+    transform: translateX(-4px) scale(1);
+  }
+  80% {
+    transform: translateX(4px) scale(1);
+  }
+}

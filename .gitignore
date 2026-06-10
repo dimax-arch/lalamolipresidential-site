@@ -1,5 +1,11 @@
 # Secretos locales
+.env
+.env.local
 supabase-config.js
+
+# Build / deps
+node_modules
+dist
 
 # Sistema
 .DS_Store

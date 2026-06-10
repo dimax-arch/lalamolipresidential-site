@@ -1,6 +1,3 @@
--- Palacio Presidencial — suscripciones Web Push
--- Ejecutar en SQL Editor después de sync-tables.sql
-
 create table if not exists public.push_subscriptions (
   user_id    uuid primary key references auth.users (id) on delete cascade,
   user_key   text not null check (user_key in ('presidente', 'ministro')),

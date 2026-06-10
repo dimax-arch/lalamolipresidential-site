@@ -1,0 +1,63 @@
+.logArea {
+  background: rgba(60, 47, 47, 0.92);
+  border: 1px solid rgba(139, 107, 74, 0.25);
+  padding: 0.75rem 1rem;
+  max-height: 210px;
+  min-height: 120px;
+  overflow-y: auto;
+  font-family: var(--font-main);
+  font-size: 0.75rem;
+}
+
+.logArea::-webkit-scrollbar {
+  width: 4px;
+}
+.logArea::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+.logArea::-webkit-scrollbar-thumb {
+  background: var(--primary-dark);
+}
+
+.entry {
+  margin-bottom: 0.4rem;
+  line-height: 1.55;
+  animation: fadeSlideIn 0.3s ease both;
+}
+
+.ts {
+  color: var(--primary-light);
+  margin-right: 0.5rem;
+}
+
+.role {
+  margin-right: 0.4rem;
+  font-weight: 700;
+}
+
+.president {
+  color: #efbf04;
+}
+
+.minister {
+  color: #c26004;
+}
+
+.msg {
+  color: var(--surface);
+}
+
+.system {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.inputRow {
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.inputRow :global(.form-input) {
+  flex: 1;
+}
