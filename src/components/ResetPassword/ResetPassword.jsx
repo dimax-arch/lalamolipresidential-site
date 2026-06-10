@@ -4,6 +4,8 @@ import Particles from '../Particles/Particles.jsx';
 import { useToast } from '../../context/ToastContext.jsx';
 import styles from './ResetPassword.module.css';
 
+const crown = `${import.meta.env.BASE_URL}coronalaureles.png`;
+
 const STRENGTH_LEVELS = [
   { pct: '0%', color: 'transparent', text: '' },
   { pct: '25%', color: '#C22020', text: 'Débil' },
@@ -100,7 +102,9 @@ export default function ResetPassword() {
       <Particles />
 
       <div className={styles.box}>
-        <div className={styles.seal}>🦅</div>
+        <div className={styles.seal}>
+          <img src={crown} alt="Corona de laureles" width="72" height="72" />
+        </div>
         <div className={styles.eyebrow}>Gabinete Presidencial</div>
         <h1 className={styles.title}>Nueva Contraseña</h1>
 
