@@ -60,7 +60,7 @@ export const CONFIRM_COPY = {
   },
 };
 
-export const LOGS_PER_PAGE = 20;
+export const LOGS_PER_PAGE = 10;
 
 // Clave pública VAPID. Debe coincidir con VAPID_PRIVATE_KEY en Supabase.
 // Genera el par con `npx web-push generate-vapid-keys`.

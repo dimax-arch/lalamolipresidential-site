@@ -4,6 +4,7 @@ import Header from '../Header/Header.jsx';
 import DecretoForm from '../DecretoForm/DecretoForm.jsx';
 import MessagePanel from '../MessagePanel/MessagePanel.jsx';
 import Agenda from '../Agenda/Agenda.jsx';
+import Calendar from '../Calendar/Calendar.jsx';
 import PushPrompt from '../PushPrompt/PushPrompt.jsx';
 import styles from './Dashboard.module.css';
 
@@ -19,6 +20,7 @@ export default function Dashboard() {
       <main className={styles.layout}>
         <DecretoForm onSubmit={submitItem} />
         <MessagePanel messages={messages} onSend={sendMessage} />
+        <Calendar items={items} />
         <Agenda
           items={items}
           logs={logs}

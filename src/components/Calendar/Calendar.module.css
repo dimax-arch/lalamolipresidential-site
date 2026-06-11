@@ -1,0 +1,296 @@
+/* ─── Toolbar (navegación de mes + leyenda) ─── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.monthLabel {
+  font-family: var(--font-main);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  min-width: 170px;
+  text-align: center;
+}
+
+.navBtn {
+  color: var(--gold-dim);
+}
+
+.todayBtn {
+  color: var(--green-seal);
+  margin-left: 0.25rem;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
+.legendItem {
+  font-family: var(--font-main);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  display: inline-block;
+  border: 1px solid;
+}
+
+.dotPending {
+  background: rgba(139, 107, 74, 0.3);
+  border-color: var(--primary-dark);
+}
+
+.dotApproved {
+  background: rgba(26, 74, 42, 0.3);
+  border-color: var(--green-seal);
+}
+
+.dotRejected {
+  background: rgba(139, 26, 26, 0.25);
+  border-color: var(--red);
+}
+
+/* ─── Rejilla del mes ─── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.weekday {
+  font-family: var(--font-main);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: var(--text);
+  text-align: center;
+  padding: 0.42rem 0;
+  border-bottom: 2px solid var(--border-gold);
+}
+
+.cell {
+  min-height: 88px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--cream-dark);
+  padding: 0.3rem 0.35rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 3px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+  font-family: var(--font-main);
+}
+
+.cell:hover {
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 2px 8px rgba(139, 107, 74, 0.18);
+}
+
+.outside {
+  opacity: 0.38;
+}
+
+.today {
+  border-color: var(--gold);
+  box-shadow: inset 0 0 0 1px var(--gold);
+}
+
+.today .dayNum {
+  color: var(--gold-dim);
+  font-weight: 700;
+}
+
+.selected {
+  background: rgba(139, 107, 74, 0.14);
+  border-color: var(--gold);
+}
+
+.dayNum {
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.countBubble {
+  display: none;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--primary-dark);
+  border-radius: 8px;
+}
+
+/* ─── Chips de eventos dentro de cada día ─── */
+.chips {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.chip {
+  display: block;
+  font-size: 0.58rem;
+  line-height: 1.4;
+  padding: 1px 4px;
+  border-left: 2px solid var(--primary-dark);
+  background: rgba(139, 107, 74, 0.12);
+  color: var(--ink-mid);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chipTime {
+  font-weight: 700;
+  margin-right: 3px;
+}
+
+.chip_approved {
+  border-left-color: var(--green-seal);
+  background: rgba(26, 74, 42, 0.1);
+  color: #176531;
+}
+
+.chip_rejected {
+  border-left-color: var(--red);
+  background: rgba(139, 26, 26, 0.08);
+  color: var(--red);
+  opacity: 0.75;
+}
+
+.more {
+  font-size: 0.56rem;
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+/* ─── Detalle del día seleccionado ─── */
+.detail {
+  margin-top: 1.1rem;
+  border-top: 2px solid var(--cream-dark);
+  padding-top: 0.9rem;
+}
+
+.detailHeader {
+  font-family: var(--font-main);
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  margin-bottom: 0.6rem;
+}
+
+.detailEmpty {
+  font-family: var(--font-main);
+  font-style: italic;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+}
+
+.eventRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--cream-dark);
+  border-left: 3px solid var(--border-gold);
+  padding: 0.55rem 0.8rem;
+  margin-bottom: 0.45rem;
+  animation: fadeSlideIn 0.25s ease both;
+}
+
+.row_approved {
+  border-left-color: var(--green-seal);
+}
+
+.row_rejected {
+  border-left-color: var(--red);
+  opacity: 0.75;
+}
+
+.eventTime {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.68rem;
+  color: var(--ink-soft);
+  letter-spacing: 0.05em;
+  min-width: 64px;
+  flex-shrink: 0;
+}
+
+.eventBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.eventTitle {
+  font-family: var(--font-main);
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.3;
+}
+
+.eventMeta {
+  font-family: var(--font-main);
+  font-size: 0.62rem;
+  color: var(--ink-soft);
+  letter-spacing: 0.05em;
+  margin-top: 2px;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 720px) {
+  .cell {
+    min-height: 52px;
+    padding: 0.25rem;
+  }
+
+  .chips {
+    display: none;
+  }
+
+  .countBubble {
+    display: inline-flex;
+  }
+
+  .monthLabel {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .legend {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 0.25rem;
+  }
+}
