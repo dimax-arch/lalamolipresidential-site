@@ -21,9 +21,9 @@ export default function DecretoForm({ onSubmit }) {
         <label className="form-label">Tipo de asunto</label>
         <select className="form-select" value={form.type} onChange={update('type')}>
           <option value="reunion">📅 Reunión / Sesión</option>
-          <option value="plan">🗺 Plan Estratégico</option>
+          <option value="plan">📝 Solicitud</option>
           <option value="decreto">📜 Decreto Oficial</option>
-          <option value="mision">🎯 Misión Conjunta</option>
+          <option value="mision">🪶 Petición Formal</option>
           <option value="pelicula">🎬 Selección Cinematográfica</option>
           <option value="juego">🎮 Operación Gaming</option>
         </select>

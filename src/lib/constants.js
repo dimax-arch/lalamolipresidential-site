@@ -21,9 +21,9 @@ export const ROLE_TO_USER_KEY = {
 
 export const TYPE_LABELS = {
   reunion: '📅 Reunión',
-  plan: '🗺 Plan',
+  plan: '📝 Solicitud',
   decreto: '📜 Decreto',
-  mision: '🎯 Misión',
+  mision: '🪶 Petición Formal',
   pelicula: '🎬 Cine',
   juego: '🎮 Gaming',
 };

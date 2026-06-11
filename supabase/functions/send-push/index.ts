@@ -117,8 +117,8 @@ const APP_URL = (Deno.env.get('APP_URL') || 'https://lalamoliypipe.com').replace
 const CROWN_URL = `${APP_URL}/coronalaureles.png`;
 
 const TYPE_LABELS_EMAIL: Record<string, string> = {
-  reunion: '📅 Reunión', plan: '🗺 Plan', decreto: '📜 Decreto',
-  mision: '🎯 Misión', pelicula: '🎬 Cine', juego: '🎮 Gaming',
+  reunion: '📅 Reunión', plan: '📝 Solicitud', decreto: '📜 Decreto',
+  mision: '🪶 Petición Formal', pelicula: '🎬 Cine', juego: '🎮 Gaming',
 };
 
 const PRIORITY_EMAIL: Record<string, { label: string; color: string }> = {
@@ -357,8 +357,8 @@ Deno.serve(async (req) => {
 
     if (isDecreto) {
       const typeLabels: Record<string, string> = {
-        reunion: '📅 Reunión', plan: '🗺 Plan', decreto: '📜 Decreto',
-        mision: '🎯 Misión', pelicula: '🎬 Cine', juego: '🎮 Gaming',
+        reunion: '📅 Reunión', plan: '📝 Solicitud', decreto: '📜 Decreto',
+        mision: '🪶 Petición Formal', pelicula: '🎬 Cine', juego: '🎮 Gaming',
       };
       const authorLabel = authorKey === 'presidente' ? 'Presidenta' : 'Ministro';
       title    = `Nuevo decreto — ${typeLabels[record.type] || record.type}`;
