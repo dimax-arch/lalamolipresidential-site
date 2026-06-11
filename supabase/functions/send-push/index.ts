@@ -110,6 +110,108 @@ async function sendEmail(to: string, subject: string, html: string): Promise<voi
   }
 }
 
+// ── Plantilla de email ─────────────────────────────────
+// URL pública del sitio (para el botón y la imagen de la corona).
+// Configurable con el secret APP_URL; por defecto el dominio de producción.
+const APP_URL = (Deno.env.get('APP_URL') || 'https://lalamoliypipe.com').replace(/\/+$/, '');
+const CROWN_URL = `${APP_URL}/coronalaureles.png`;
+
+const TYPE_LABELS_EMAIL: Record<string, string> = {
+  reunion: '📅 Reunión', plan: '🗺 Plan', decreto: '📜 Decreto',
+  mision: '🎯 Misión', pelicula: '🎬 Cine', juego: '🎮 Gaming',
+};
+
+const PRIORITY_EMAIL: Record<string, { label: string; color: string }> = {
+  alta:  { label: 'Alta',  color: '#8B1A1A' },
+  media: { label: 'Media', color: '#8B6B4A' },
+  baja:  { label: 'Baja',  color: '#1A4A2A' },
+};
+
+const MONTHS_ES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+
+function formatProposedDate(dateStr?: string | null, timeStr?: string | null): string | null {
+  if (!dateStr) return null;
+  const [y, m, d] = String(dateStr).split('-').map(Number);
+  if (!y || !m || !d) return String(dateStr);
+  let out = `${d} ${MONTHS_ES[m - 1] ?? ''} ${y}`;
+  if (timeStr) out += ` · ${String(timeStr).slice(0, 5)}`;
+  return out;
+}
+
+function formatTimestamp(iso?: string | null): string {
+  if (!iso) return '';
+  try {
+    return new Date(iso).toLocaleString('es-CO', {
+      day: '2-digit', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit', timeZone: 'America/Bogota',
+    });
+  } catch {
+    return '';
+  }
+}
+
+function detailRow(label: string, value: string): string {
+  return `
+    <tr>
+      <td style="padding:7px 0;font:600 11px/1.4 'Courier New',monospace;color:#8D8178;text-transform:uppercase;letter-spacing:.06em;width:135px;vertical-align:top;">${label}</td>
+      <td style="padding:7px 0;font:400 15px/1.5 Georgia,serif;color:#3C2F2F;">${value}</td>
+    </tr>`;
+}
+
+function renderEmailShell(opts: {
+  preheader: string;
+  heading: string;
+  bodyHtml: string;
+  ctaLabel: string;
+}): string {
+  const { preheader, heading, bodyHtml, ctaLabel } = opts;
+  return `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+</head>
+<body style="margin:0;padding:0;background:#1F1A18;">
+  <span style="display:none;max-height:0;overflow:hidden;opacity:0;color:#1F1A18;">${preheader}</span>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#1F1A18;padding:24px 12px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="width:100%;max-width:560px;background:#F8F4EF;border:1px solid #6D4C41;border-top:3px solid #8B6B4A;box-shadow:0 20px 60px rgba(0,0,0,.4);">
+          <tr>
+            <td style="background:#2A2321;padding:26px 24px;text-align:center;border-bottom:2px solid #8B6B4A;">
+              <img src="${CROWN_URL}" width="56" height="56" alt="Palacio Presidencial" style="display:block;margin:0 auto 12px;border:0;">
+              <div style="font:600 11px/1 'Courier New',monospace;letter-spacing:.22em;text-transform:uppercase;color:#A58568;margin-bottom:8px;">Documento Clasificado — Uso Interno</div>
+              <div style="font:700 22px/1.2 Georgia,serif;color:#FFFFFF;">Gestión Presidencial</div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:28px 28px 8px;">
+              <h1 style="margin:0 0 18px;font:700 16px/1.3 Georgia,serif;color:#8B6B4A;letter-spacing:.02em;">${heading}</h1>
+              ${bodyHtml}
+              <table role="presentation" cellpadding="0" cellspacing="0" style="margin:26px 0 6px;">
+                <tr>
+                  <td style="background:#8B6B4A;">
+                    <a href="${APP_URL}" style="display:inline-block;padding:13px 30px;font:600 13px/1 Georgia,serif;letter-spacing:.1em;text-transform:uppercase;color:#FFFFFF;text-decoration:none;">${ctaLabel} →</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:18px 28px 24px;border-top:1px solid #E0D5C5;">
+              <div style="font:italic 400 13px/1.5 Georgia,serif;color:#8D8178;">Palacio Presidencial — notificación automática.</div>
+              <div style="font:400 11px/1.5 'Courier New',monospace;color:#B3A99E;margin-top:6px;">No respondas a este correo. Ingresa al sistema para gestionar los asuntos de Estado.</div>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
 // ── Autenticación del webhook ──────────────────────────
 function verifyWebhook(req: Request): boolean {
   const secret = Deno.env.get('WEBHOOK_SECRET');
@@ -268,40 +370,58 @@ Deno.serve(async (req) => {
           let html: string;
 
           if (isDecreto) {
-            const typeLabels: Record<string, string> = {
-              reunion: 'Reunión', plan: 'Plan', decreto: 'Decreto',
-              mision: 'Misión', pelicula: 'Cine', juego: 'Gaming',
-            };
-            const prioLabels: Record<string, string> = {
-              alta: 'Alta', media: 'Media', baja: 'Baja',
-            };
-            const typeLabel = typeLabels[record.type] || record.type;
-            const prioLabel = prioLabels[record.priority] || record.priority || '—';
-            subject = `Nuevo decreto — ${escapeHtml(record.title)}`;
-            html = `
-              <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;">
-                <h2 style="color:#8B6B4A;">Nuevo decreto presentado</h2>
-                <p><strong>${escapeHtml(record.title)}</strong></p>
-                <p style="color:#555;">
-                  Tipo: ${escapeHtml(typeLabel)} · Prioridad: ${escapeHtml(prioLabel)}<br>
-                  Presentado por: ${authorLabel}
-                </p>
-                ${record.description ? `<p>${escapeHtml(record.description)}</p>` : ''}
-                <hr style="border:none;border-top:1px solid #ddd;">
-                <p style="color:#999;font-size:.85em;">Palacio Presidencial — notificación automática.</p>
-              </div>`;
+            const typeLabel = TYPE_LABELS_EMAIL[record.type] || record.type;
+            const prio = PRIORITY_EMAIL[record.priority] ||
+              { label: record.priority || '—', color: '#8B6B4A' };
+            const fecha = formatProposedDate(record.proposed_date, record.proposed_time);
+            const registrado = formatTimestamp(record.created_at);
+
+            const rows = [
+              detailRow('Tipo', escapeHtml(typeLabel)),
+              detailRow(
+                'Prioridad',
+                `<span style="display:inline-block;padding:2px 10px;border:1px solid ${prio.color};color:${prio.color};font:600 12px/1.4 'Courier New',monospace;text-transform:uppercase;letter-spacing:.05em;">${escapeHtml(prio.label)}</span>`,
+              ),
+              fecha ? detailRow('Fecha propuesta', escapeHtml(fecha)) : '',
+              detailRow('Presentado por', escapeHtml(authorLabel)),
+              registrado ? detailRow('Registrado', escapeHtml(registrado)) : '',
+            ].join('');
+
+            const descBlock = record.description
+              ? `<div style="margin:20px 0 0;padding:14px 16px;background:#EDE4D8;border-left:3px solid #8B6B4A;font:400 15px/1.6 Georgia,serif;color:#3C2F2F;white-space:pre-wrap;">${escapeHtml(record.description)}</div>`
+              : '';
+
+            const body = `
+              <p style="margin:0 0 20px;font:700 21px/1.3 Georgia,serif;color:#3C2F2F;">${escapeHtml(record.title)}</p>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #E0D5C5;border-bottom:1px solid #E0D5C5;">
+                ${rows}
+              </table>
+              ${descBlock}
+              <p style="margin:22px 0 0;font:italic 400 14px/1.6 Georgia,serif;color:#6D4C41;">Ingresa al Palacio para aprobar o rechazar este decreto.</p>`;
+
+            subject = `📜 Nuevo decreto — ${record.title}`;
+            html = renderEmailShell({
+              preheader: `${authorLabel} presentó: ${escapeHtml(record.title)}`,
+              heading: 'Nuevo decreto presentado',
+              bodyHtml: body,
+              ctaLabel: 'Abrir el Palacio',
+            });
           } else {
-            subject = `Nuevo mensaje de ${authorLabel}`;
-            html = `
-              <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;">
-                <h2 style="color:#8B6B4A;">Mensaje en la Línea Directa</h2>
-                <p style="color:#555;">De: ${authorLabel}</p>
-                <blockquote style="border-left:3px solid #8B6B4A;margin:0;padding:.5em 1em;color:#333;">
-                  ${escapeHtml(record.body)}
-                </blockquote>
-                <hr style="border:none;border-top:1px solid #ddd;">
-                <p style="color:#999;font-size:.85em;">Palacio Presidencial — notificación automática.</p>
-              </div>`;
+            const cuando = formatTimestamp(record.created_at);
+            const body = `
+              <p style="margin:0 0 14px;font:400 15px/1.5 Georgia,serif;color:#3C2F2F;">
+                <span style="color:#8D8178;">De:</span> <strong>${escapeHtml(authorLabel)}</strong>${cuando ? ` <span style="color:#B3A99E;font:400 13px/1 'Courier New',monospace;">· ${escapeHtml(cuando)}</span>` : ''}
+              </p>
+              <div style="margin:0;padding:16px 18px;background:#EDE4D8;border-left:3px solid #8B6B4A;font:400 16px/1.6 Georgia,serif;color:#3C2F2F;white-space:pre-wrap;">${escapeHtml(record.body)}</div>
+              <p style="margin:22px 0 0;font:italic 400 14px/1.6 Georgia,serif;color:#6D4C41;">Responde desde la Línea Directa del Palacio.</p>`;
+
+            subject = `📡 Nuevo mensaje de ${authorLabel}`;
+            html = renderEmailShell({
+              preheader: `${escapeHtml(authorLabel)}: ${escapeHtml(String(record.body).slice(0, 90))}`,
+              heading: 'Mensaje en la Línea Directa',
+              bodyHtml: body,
+              ctaLabel: 'Responder en el Palacio',
+            });
           }
 
           await sendEmail(toEmail, subject, html);
