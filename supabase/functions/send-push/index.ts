@@ -158,13 +158,73 @@ function detailRow(label: string, value: string): string {
     </tr>`;
 }
 
+// ── Enlace "Añadir a Google Calendar" ──────────────────
+// Usa la URL "template" de Google Calendar (sin API ni OAuth):
+// abre el calendario con el evento pre-rellenado para que el
+// destinatario solo confirme "Guardar".
+const APP_TIMEZONE = 'America/Bogota';
+
+function shiftDateTime(ymd: string, hhmm: string, addMinutes: number): string {
+  const y = +ymd.slice(0, 4), mo = +ymd.slice(4, 6), d = +ymd.slice(6, 8);
+  const h = +hhmm.slice(0, 2), mi = +hhmm.slice(2, 4);
+  const dt = new Date(Date.UTC(y, mo - 1, d, h, mi));
+  dt.setUTCMinutes(dt.getUTCMinutes() + addMinutes);
+  const p = (n: number) => String(n).padStart(2, '0');
+  return `${dt.getUTCFullYear()}${p(dt.getUTCMonth() + 1)}${p(dt.getUTCDate())}T${p(dt.getUTCHours())}${p(dt.getUTCMinutes())}00`;
+}
+
+function nextDay(ymd: string): string {
+  const y = +ymd.slice(0, 4), mo = +ymd.slice(4, 6), d = +ymd.slice(6, 8);
+  const dt = new Date(Date.UTC(y, mo - 1, d));
+  dt.setUTCDate(dt.getUTCDate() + 1);
+  const p = (n: number) => String(n).padStart(2, '0');
+  return `${dt.getUTCFullYear()}${p(dt.getUTCMonth() + 1)}${p(dt.getUTCDate())}`;
+}
+
+function buildCalendarUrl(opts: {
+  title: string;
+  dateStr?: string | null;
+  timeStr?: string | null;
+  details?: string | null;
+}): string | null {
+  const { title, dateStr, timeStr, details } = opts;
+  if (!dateStr) return null;
+  const ymd = String(dateStr).replace(/-/g, '');
+  if (ymd.length !== 8) return null;
+
+  const params = new URLSearchParams({ action: 'TEMPLATE', text: title });
+
+  if (timeStr) {
+    const hhmm = String(timeStr).slice(0, 5).replace(':', '');
+    const start = `${ymd}T${hhmm}00`;
+    const end = shiftDateTime(ymd, hhmm, 60); // duración por defecto: 1 hora
+    params.set('dates', `${start}/${end}`);
+    params.set('ctz', APP_TIMEZONE);
+  } else {
+    // Evento de todo el día (la fecha de fin es exclusiva → día siguiente)
+    params.set('dates', `${ymd}/${nextDay(ymd)}`);
+  }
+
+  if (details) params.set('details', details);
+  params.set('location', 'Palacio Presidencial');
+
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
 function renderEmailShell(opts: {
   preheader: string;
   heading: string;
   bodyHtml: string;
   ctaLabel: string;
+  secondaryCta?: { label: string; url: string; icon?: string };
 }): string {
-  const { preheader, heading, bodyHtml, ctaLabel } = opts;
+  const { preheader, heading, bodyHtml, ctaLabel, secondaryCta } = opts;
+  const secondaryHtml = secondaryCta
+    ? `<td style="width:12px;"></td>
+                  <td style="background:#FFFFFF;border:1px solid #DADCE0;border-radius:4px;">
+                    <a href="${secondaryCta.url}" style="display:inline-block;height:40px;padding:0 18px;font:500 14px/40px Arial,'Roboto',sans-serif;color:#3C4043;text-decoration:none;white-space:nowrap;">${secondaryCta.icon ? `<img src="${secondaryCta.icon}" width="18" height="18" alt="" style="vertical-align:middle;margin-right:10px;border:0;">` : ''}${secondaryCta.label}</a>
+                  </td>`
+    : '';
   return `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -194,6 +254,7 @@ function renderEmailShell(opts: {
                   <td style="background:#8B6B4A;">
                     <a href="${APP_URL}" style="display:inline-block;padding:13px 30px;font:600 13px/1 Georgia,serif;letter-spacing:.1em;text-transform:uppercase;color:#FFFFFF;text-decoration:none;">${ctaLabel} →</a>
                   </td>
+                  ${secondaryHtml}
                 </tr>
               </table>
             </td>
@@ -399,12 +460,27 @@ Deno.serve(async (req) => {
               ${descBlock}
               <p style="margin:22px 0 0;font:italic 400 14px/1.6 Georgia,serif;color:#6D4C41;">Ingresa al Palacio para aprobar o rechazar este decreto.</p>`;
 
+            const calDetails = [
+              record.description ? String(record.description) : '',
+              `Decreto presentado por ${authorLabel}.`,
+              `Gestiónalo en ${APP_URL}`,
+            ].filter(Boolean).join('\n\n');
+            const calUrl = buildCalendarUrl({
+              title: record.title,
+              dateStr: record.proposed_date,
+              timeStr: record.proposed_time,
+              details: calDetails,
+            });
+
             subject = `📜 Nuevo decreto — ${record.title}`;
             html = renderEmailShell({
               preheader: `${authorLabel} presentó: ${escapeHtml(record.title)}`,
               heading: 'Nuevo decreto presentado',
               bodyHtml: body,
-              ctaLabel: 'Abrir el Palacio',
+              ctaLabel: 'Abrir la aplicación',
+              secondaryCta: calUrl
+                ? { label: 'Añadir a Google Calendar', url: calUrl, icon: `${APP_URL}/google-calendar.png` }
+                : undefined,
             });
           } else {
             const cuando = formatTimestamp(record.created_at);
@@ -420,7 +496,7 @@ Deno.serve(async (req) => {
               preheader: `${escapeHtml(authorLabel)}: ${escapeHtml(String(record.body).slice(0, 90))}`,
               heading: 'Mensaje en la Línea Directa',
               bodyHtml: body,
-              ctaLabel: 'Responder en el Palacio',
+              ctaLabel: 'Responder en la aplicación',
             });
           }
 
