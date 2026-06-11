@@ -254,8 +254,8 @@ Deno.serve(async (req) => {
     }
 
     // ── Email (Resend) — independiente del push ──
-    // Reglas: decretos en ambos sentidos; mensajes solo ministro → presidente.
-    const shouldEmail = isDecreto || (isMensaje && authorKey === 'ministro');
+    // Reglas: decretos y mensajes notifican por email en ambos sentidos.
+    const shouldEmail = isDecreto || isMensaje;
 
     if (shouldEmail) {
       try {
@@ -291,7 +291,7 @@ Deno.serve(async (req) => {
                 <p style="color:#999;font-size:.85em;">Palacio Presidencial — notificación automática.</p>
               </div>`;
           } else {
-            subject = `Nuevo mensaje del ${authorLabel}`;
+            subject = `Nuevo mensaje de ${authorLabel}`;
             html = `
               <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;">
                 <h2 style="color:#8B6B4A;">Mensaje en la Línea Directa</h2>
