@@ -1,36 +1,51 @@
-.shell {
-  max-width: none;
-  margin: 0 auto;
-  padding: 2rem;
+/* App-shell de altura fija: header arriba, dos columnas que scrollean
+   independientemente, footer fijo abajo. */
+.wrapper {
+  height: 100vh;
   display: flex;
-  align-items: flex-start;
-  gap: 1.5rem;
+  flex-direction: column;
 }
 
+.shell {
+  flex: 1 1 auto;
+  min-height: 0; /* imprescindible para que las columnas internas puedan scrollear */
+  padding: 2rem;
+  display: flex;
+  align-items: stretch;
+  gap: 1.5rem;
+  overflow: hidden; /* el shell no scrollea; lo hacen sus columnas */
+}
+
+/* ── Columna izquierda: contenido principal (decreto, línea directa,
+      calendario, agenda/logs) — scroll propio ── */
 .content {
   flex: 1 1 auto;
   min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
   display: grid;
   grid-template-columns: 1fr 1fr;
+  align-content: start;
   gap: 1.5rem;
+  padding-right: 0.4rem; /* aire para la barra de scroll */
 }
 
+/* ── Columna derecha: Spotify + Archivos — scroll propio e independiente,
+      para que muchos archivos no desborden ni afeen el resto ── */
 .rail {
   flex: 0 0 28%;
+  min-height: 0;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  position: sticky;
-  top: 1.5rem;
-  max-height: calc(100vh - 3rem);
-  overflow-y: auto;
+  padding-right: 0.2rem;
 }
 
 .footer {
-  max-width: none;
-  margin: 0 auto;
+  flex: 0 0 auto;
   text-align: center;
-  padding: 1.5rem 2rem 2.5rem;
+  padding: 1rem 2rem 1.25rem;
   border-top: 1px solid rgba(139, 107, 74, 0.2);
 }
 
@@ -49,17 +64,26 @@
   color: rgba(141, 129, 120, 0.55);
 }
 
+/* ── Responsive: por debajo de 1024px se apila y la página vuelve a
+      scrollear como una sola (sin altura fija ni scrolls anidados) ── */
 @media (max-width: 1024px) {
+  .wrapper {
+    height: auto;
+  }
+
   .shell {
     flex-direction: column;
+    overflow: visible;
+  }
+
+  .content,
+  .rail {
+    overflow: visible;
   }
 
   .rail {
-    position: static;
     flex: 1 1 auto;
     width: 100%;
-    max-height: none;
-    overflow: visible;
   }
 }
 
