@@ -17,17 +17,23 @@
 }
 
 /* ── Columna izquierda: decreto, línea directa, calendario, agenda/logs
-      + pie de página, con scroll propio ── */
+      + pie de página, con scroll propio ──
+   El scroller (.content) es un bloque simple; la grilla vive en .contentInner
+   para que el contenido crezca libre y el contenedor scrollee de verdad
+   (una grilla que también es scroller recorta el contenido en vez de scrollear). */
 .content {
   flex: 1 1 auto;
   min-width: 0;
   min-height: 0;
   overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.contentInner {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  align-content: start;
+  align-items: start;
   gap: 1.5rem;
-  padding-right: 0.5rem;
 }
 
 /* ── Columna derecha: Spotify + Archivos, scroll propio e independiente
@@ -36,10 +42,13 @@
   flex: 0 0 28%;
   min-height: 0;
   overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.railInner {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  padding-right: 0.25rem;
 }
 
 .footer {
@@ -80,6 +89,7 @@
   .rail {
     overflow: visible;
     min-height: 0;
+    padding-right: 0;
   }
 
   .rail {
@@ -93,7 +103,7 @@
     padding: 1rem;
   }
 
-  .content {
+  .contentInner {
     grid-template-columns: 1fr;
   }
 }

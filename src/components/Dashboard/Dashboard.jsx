@@ -21,27 +21,31 @@ export default function Dashboard() {
 
       <main className={styles.shell}>
         <div className={styles.content}>
-          <DecretoForm onSubmit={submitItem} />
-          <MessagePanel messages={messages} onSend={sendMessage} />
-          <Calendar items={items} />
-          <Agenda
-            items={items}
-            logs={logs}
-            onApprove={approveItem}
-            onReject={rejectItem}
-            onDelete={deleteItem}
-          />
-          <footer className={styles.footer}>
-            <div className={styles.divider}>✦ ✦ ✦</div>
-            <p>
-              Este documento es de carácter confidencial. Acceso restringido al Gabinete
-              Presidencial.
-            </p>
-          </footer>
+          <div className={styles.contentInner}>
+            <DecretoForm onSubmit={submitItem} />
+            <MessagePanel messages={messages} onSend={sendMessage} />
+            <Calendar items={items} />
+            <Agenda
+              items={items}
+              logs={logs}
+              onApprove={approveItem}
+              onReject={rejectItem}
+              onDelete={deleteItem}
+            />
+            <footer className={styles.footer}>
+              <div className={styles.divider}>✦ ✦ ✦</div>
+              <p>
+                Este documento es de carácter confidencial. Acceso restringido al Gabinete
+                Presidencial.
+              </p>
+            </footer>
+          </div>
         </div>
         <aside className={styles.rail}>
-          <SpotifyPanel />
-          <DocumentsPanel />
+          <div className={styles.railInner}>
+            <SpotifyPanel />
+            <DocumentsPanel />
+          </div>
         </aside>
       </main>
 
