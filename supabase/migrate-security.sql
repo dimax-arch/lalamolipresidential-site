@@ -7,7 +7,12 @@ returns text
 language sql
 stable
 as $$
-  select case (auth.jwt() -> 'user_metadata' ->> 'role')
+  -- app_metadata tiene prioridad (lo controla el servidor y sobrevive al login
+  -- OAuth); user_metadata queda como respaldo para sesiones de email/contraseña.
+  select case coalesce(
+      auth.jwt() -> 'app_metadata' ->> 'role',
+      auth.jwt() -> 'user_metadata' ->> 'role'
+    )
     when 'president' then 'presidente'
     when 'minister'  then 'ministro'
     else null

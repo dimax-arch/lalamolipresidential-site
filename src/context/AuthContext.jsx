@@ -6,7 +6,10 @@ import { disconnect as disconnectSpotify, seedProviderTokens } from '../lib/spot
 const AuthContext = createContext(null);
 
 export function userKeyFromAuthUser(user) {
-  const role = user?.user_metadata?.role;
+  // app_metadata (controlado por el servidor) tiene prioridad: sobrevive al
+  // login OAuth de Spotify y no es editable por el usuario. user_metadata
+  // queda como respaldo para sesiones antiguas de email/contraseña.
+  const role = user?.app_metadata?.role || user?.user_metadata?.role;
   return ROLE_TO_USER_KEY[role] || null;
 }
 
