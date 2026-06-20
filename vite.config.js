@@ -11,6 +11,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         reset: resolve(__dirname, 'reset-password.html'),
+        spotifyCallback: resolve(__dirname, 'spotify-callback.html'),
       },
     },
   },

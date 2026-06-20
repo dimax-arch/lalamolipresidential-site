@@ -132,10 +132,13 @@ export function usePalacioData() {
     async (eventType, item) => {
       const supabase = getSupabaseClient();
       if (!supabase || !authId) return;
+      // Para 'deleted' el decreto ya no existe; referenciar su id violaría la
+      // foreign key. Se guarda null (estado final equivalente al ON DELETE SET NULL).
+      const decretoId = eventType === 'deleted' ? null : item.id || null;
       const { data, error } = await supabase
         .from('decreto_logs')
         .insert({
-          decreto_id: item.id || null,
+          decreto_id: decretoId,
           decreto_title: item.title,
           decreto_type: item.type,
           decreto_priority: item.priority,
