@@ -107,7 +107,11 @@ export function AuthProvider({ children }) {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'spotify',
       options: {
-        scopes: 'user-read-currently-playing',
+        // user-read-email es imprescindible: sin él Spotify no entrega el email
+        // y Supabase no puede enlazar la identidad con la cuenta del gabinete
+        // (crearía un usuario huérfano sin email ni rol). user-read-currently-playing
+        // se mantiene para reutilizar el provider_token en el panel "now playing".
+        scopes: 'user-read-email user-read-currently-playing',
         redirectTo: `${window.location.origin}/`,
       },
     });
