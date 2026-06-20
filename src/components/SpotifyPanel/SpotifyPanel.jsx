@@ -102,7 +102,7 @@ function MemberCard({ memberKey, data, isSelf, selfConnected, configured, onConn
       ) : (
         <div className={styles.idle}>
           <span className={styles.idleText}>
-            {stale ? 'No está en el Palacio ahora.' : 'Nada sonando.'}
+            {stale ? 'No está en Spotify por ahora.' : 'Nada sonando.'}
           </span>
         </div>
       )}

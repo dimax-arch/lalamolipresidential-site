@@ -1,5 +1,5 @@
 .shell {
-  max-width: 1460px;
+  max-width: 1540px;
   margin: 0 auto;
   padding: 2rem;
   display: flex;
@@ -16,13 +16,13 @@
 }
 
 .rail {
-  flex: 0 0 330px;
+  flex: 0 0 410px;
   position: sticky;
   top: 1.5rem;
 }
 
 .footer {
-  max-width: 1460px;
+  max-width: 1540px;
   margin: 0 auto;
   text-align: center;
   padding: 1.5rem 2rem 2.5rem;
