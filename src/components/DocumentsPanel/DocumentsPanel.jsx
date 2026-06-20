@@ -59,7 +59,6 @@ export default function DocumentsPanel() {
       icon="🗂️"
       title="Archivos del Gabinete"
       badge={<PanelBadge green>{documentos.length} ARCHIVOS</PanelBadge>}
-      full
     >
       {documentos.length === 0 ? (
         <div className="empty-state">
@@ -134,7 +133,7 @@ export default function DocumentsPanel() {
           placeholder="Descripción (opcional)"
           maxLength={120}
         />
-        <button className="btn-decree btn-send" type="button" disabled={adding} onClick={handleAdd}>
+        <button className="btn-decree" type="button" disabled={adding} onClick={handleAdd}>
           {adding ? 'Añadiendo…' : 'Añadir ＋'}
         </button>
       </div>

@@ -24,7 +24,6 @@ export default function Dashboard() {
           <DecretoForm onSubmit={submitItem} />
           <MessagePanel messages={messages} onSend={sendMessage} />
           <Calendar items={items} />
-          <DocumentsPanel />
           <Agenda
             items={items}
             logs={logs}
@@ -35,6 +34,7 @@ export default function Dashboard() {
         </div>
         <aside className={styles.rail}>
           <SpotifyPanel />
+          <DocumentsPanel />
         </aside>
       </main>
 

@@ -114,16 +114,9 @@
 }
 
 .addRow {
-  display: grid;
-  grid-template-columns: 1.2fr 1.6fr 1.2fr auto;
+  display: flex;
+  flex-direction: column;
   gap: 0.5rem;
-  align-items: center;
   border-top: 1px solid var(--cream-dark);
   padding-top: 0.9rem;
-}
-
-@media (max-width: 640px) {
-  .addRow {
-    grid-template-columns: 1fr;
-  }
 }
