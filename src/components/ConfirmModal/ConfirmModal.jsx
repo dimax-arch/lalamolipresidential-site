@@ -22,14 +22,16 @@ export default function ConfirmModal({ state, onClose }) {
 
   const copy = CONFIRM_COPY[action] || CONFIRM_COPY.delete;
 
-  const meta = item
-    ? (() => {
-        const typeLabel = TYPE_LABELS[item.type] || item.type;
-        const prioLabel = PRIORITY_LABELS[item.priority] || item.priority;
-        const dateStr = item.date ? ` · ${item.date}` : '';
-        return `${typeLabel} · ${prioLabel}${dateStr}`;
-      })()
-    : '';
+  const meta = item?.meta
+    ? item.meta
+    : item
+      ? (() => {
+          const typeLabel = TYPE_LABELS[item.type] || item.type;
+          const prioLabel = PRIORITY_LABELS[item.priority] || item.priority;
+          const dateStr = item.date ? ` · ${item.date}` : '';
+          return `${typeLabel} · ${prioLabel}${dateStr}`;
+        })()
+      : '';
 
   const triggerShake = () => {
     setShake(false);

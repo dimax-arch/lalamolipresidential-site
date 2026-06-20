@@ -58,6 +58,13 @@ export const CONFIRM_COPY = {
     actionLabel: 'Rechazar ✗',
     actionClass: 'reject',
   },
+  deleteDoc: {
+    eyebrow: 'Quitar de la lista',
+    title: 'Quitar archivo',
+    warning: 'El archivo se quitará de la lista compartida.\nEl documento en Google no se elimina.',
+    actionLabel: 'Quitar ✕',
+    actionClass: 'delete',
+  },
 };
 
 export const LOGS_PER_PAGE = 10;
