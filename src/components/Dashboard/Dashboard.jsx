@@ -18,18 +18,22 @@ export default function Dashboard() {
     <div className={styles.wrapper}>
       <Header />
 
-      <main className={styles.layout}>
-        <DecretoForm onSubmit={submitItem} />
-        <MessagePanel messages={messages} onSend={sendMessage} />
-        <SpotifyPanel />
-        <Calendar items={items} />
-        <Agenda
-          items={items}
-          logs={logs}
-          onApprove={approveItem}
-          onReject={rejectItem}
-          onDelete={deleteItem}
-        />
+      <main className={styles.shell}>
+        <div className={styles.content}>
+          <DecretoForm onSubmit={submitItem} />
+          <MessagePanel messages={messages} onSend={sendMessage} />
+          <Calendar items={items} />
+          <Agenda
+            items={items}
+            logs={logs}
+            onApprove={approveItem}
+            onReject={rejectItem}
+            onDelete={deleteItem}
+          />
+        </div>
+        <aside className={styles.rail}>
+          <SpotifyPanel />
+        </aside>
       </main>
 
       <footer className={styles.footer}>

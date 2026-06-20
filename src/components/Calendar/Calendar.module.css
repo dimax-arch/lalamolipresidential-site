@@ -71,7 +71,7 @@
 /* ─── Rejilla del mes ─── */
 .grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 4px;
 }
 
@@ -88,7 +88,9 @@
 }
 
 .cell {
-  min-height: 88px;
+  height: 88px;
+  min-width: 0;
+  overflow: hidden;
   background: rgba(255, 255, 255, 0.55);
   border: 1px solid var(--cream-dark);
   padding: 0.3rem 0.35rem;
@@ -151,6 +153,8 @@
 
 /* ─── Chips de eventos dentro de cada día ─── */
 .chips {
+  flex: 1 1 auto;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -271,7 +275,7 @@
 /* ─── Responsive ─── */
 @media (max-width: 720px) {
   .cell {
-    min-height: 52px;
+    height: 52px;
     padding: 0.25rem;
   }
 

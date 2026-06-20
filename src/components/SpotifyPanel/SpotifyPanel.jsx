@@ -129,7 +129,7 @@ export default function SpotifyPanel() {
   }, []);
 
   return (
-    <Panel icon="🎧" title="Sala de Escucha — Spotify" full>
+    <Panel icon="🎧" title="Sala de Escucha — Spotify">
       <div className={styles.grid}>
         {ORDER.map((key) => (
           <MemberCard
