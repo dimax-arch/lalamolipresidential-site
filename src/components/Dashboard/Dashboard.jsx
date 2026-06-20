@@ -31,19 +31,19 @@ export default function Dashboard() {
             onReject={rejectItem}
             onDelete={deleteItem}
           />
+          <footer className={styles.footer}>
+            <div className={styles.divider}>✦ ✦ ✦</div>
+            <p>
+              Este documento es de carácter confidencial. Acceso restringido al Gabinete
+              Presidencial.
+            </p>
+          </footer>
         </div>
         <aside className={styles.rail}>
           <SpotifyPanel />
           <DocumentsPanel />
         </aside>
       </main>
-
-      <footer className={styles.footer}>
-        <div className={styles.divider}>✦ ✦ ✦</div>
-        <p>
-          Este documento es de carácter confidencial. Acceso restringido al Gabinete Presidencial.
-        </p>
-      </footer>
 
       {showPrompt && <PushPrompt onEnable={enable} onDismiss={dismiss} />}
     </div>
