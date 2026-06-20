@@ -16,7 +16,17 @@ function fmtTime(ms) {
   return `${m}:${String(s).padStart(2, '0')}`;
 }
 
-function MemberCard({ memberKey, data, isSelf, selfConnected, configured, onConnect, onDisconnect, clock }) {
+function MemberCard({
+  memberKey,
+  data,
+  isSelf,
+  selfConnected,
+  selfSource,
+  configured,
+  onConnect,
+  onDisconnect,
+  clock,
+}) {
   const user = USERS[memberKey];
   const name = user ? user.short : memberKey;
   const roleClass = memberKey === 'presidente' ? styles.president : styles.minister;
@@ -52,7 +62,7 @@ function MemberCard({ memberKey, data, isSelf, selfConnected, configured, onConn
       {showConnect ? (
         <div className={styles.idle}>
           {configured ? (
-            <div>
+            <div className={styles.connectBox}>
               <p className={styles.idleText}>Conecta tu cuenta para compartir lo que escuchas.</p>
               <button type="button" className={`btn-decree ${styles.connectBtn}`} onClick={onConnect}>
                 Conectar Spotify
@@ -107,7 +117,7 @@ function MemberCard({ memberKey, data, isSelf, selfConnected, configured, onConn
         </div>
       )}
 
-      {isSelf && selfConnected && (
+      {isSelf && selfConnected && selfSource !== 'provider' && (
         <div className={styles.selfActions}>
           <button type="button" className={styles.disconnect} onClick={onDisconnect}>
             Desconectar Spotify
@@ -119,7 +129,7 @@ function MemberCard({ memberKey, data, isSelf, selfConnected, configured, onConn
 }
 
 export default function SpotifyPanel() {
-  const { configured, connected, connect, disconnect, nowPlaying } = useSpotify();
+  const { configured, connected, connect, disconnect, nowPlaying, tokenSource } = useSpotify();
   const { userKey } = useAuth();
   const [clock, setClock] = useState(() => Date.now());
 
@@ -138,6 +148,7 @@ export default function SpotifyPanel() {
             data={nowPlaying[key]}
             isSelf={key === userKey}
             selfConnected={connected}
+            selfSource={tokenSource}
             configured={configured}
             onConnect={connect}
             onDisconnect={disconnect}

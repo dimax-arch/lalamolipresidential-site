@@ -5,6 +5,7 @@ import {
   beginAuth,
   disconnect as spotifyDisconnect,
   getCurrentlyPlaying,
+  getTokenSource,
   hasTokens,
   isSpotifyConfigured,
 } from '../lib/spotify.js';
@@ -160,5 +161,7 @@ export function useSpotify() {
     publish({ isPlaying: false });
   }, [publish]);
 
-  return { configured, connected, connect, disconnect, nowPlaying };
+  const tokenSource = connected ? getTokenSource() : null;
+
+  return { configured, connected, connect, disconnect, nowPlaying, tokenSource };
 }

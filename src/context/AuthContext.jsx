@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { getConfigError, getSupabaseClient } from '../lib/supabase';
 import { ROLE_TO_USER_KEY, USERS } from '../lib/constants';
+import { disconnect as disconnectSpotify, seedProviderTokens } from '../lib/spotify';
 
 const AuthContext = createContext(null);
 
@@ -23,6 +24,7 @@ export function AuthProvider({ children }) {
   const [authId, setAuthId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [configError, setConfigError] = useState(null);
+  const [authNotice, setAuthNotice] = useState(null);
 
   useEffect(() => {
     const supabase = getSupabaseClient();
@@ -39,6 +41,13 @@ export function AuthProvider({ children }) {
       const key = user ? userKeyFromAuthUser(user) : null;
       setUserKey(key);
       setAuthId(user?.id ?? null);
+
+      // Sesión válida pero sin rol (p. ej. una cuenta de Spotify no
+      // reconocida): no se permite el acceso y se cierra la sesión.
+      if (user && !key) {
+        setAuthNotice('Esta cuenta no está autorizada en el Palacio (sin rol asignado).');
+        supabase.auth.signOut();
+      }
     };
 
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -49,9 +58,19 @@ export function AuthProvider({ children }) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (!mounted) return;
       applySession(session);
+
+      // Login con Spotify (OAuth de Supabase): reutilizamos el token del
+      // proveedor para el panel "now playing" (una sola conexión).
+      if (event === 'SIGNED_IN' && session?.provider_token) {
+        seedProviderTokens({
+          accessToken: session.provider_token,
+          refreshToken: session.provider_refresh_token,
+          expiresIn: 3600,
+        });
+      }
     });
 
     return () => {
@@ -78,9 +97,25 @@ export function AuthProvider({ children }) {
     return { ok: true, profile: USERS[key] };
   }
 
+  async function loginWithSpotify() {
+    const supabase = getSupabaseClient();
+    if (!supabase) return { error: getConfigError() || 'Supabase no configurado.' };
+    setAuthNotice(null);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'spotify',
+      options: {
+        scopes: 'user-read-currently-playing',
+        redirectTo: `${window.location.origin}/`,
+      },
+    });
+    if (error) return { error: error.message };
+    return { ok: true }; // el navegador redirige a Spotify
+  }
+
   async function logout() {
     const supabase = getSupabaseClient();
     if (supabase) await supabase.auth.signOut();
+    disconnectSpotify();
     setUserKey(null);
     setAuthId(null);
   }
@@ -88,7 +123,19 @@ export function AuthProvider({ children }) {
   const profile = userKey ? USERS[userKey] : null;
 
   return (
-    <AuthContext.Provider value={{ userKey, authId, profile, loading, configError, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        userKey,
+        authId,
+        profile,
+        loading,
+        configError,
+        authNotice,
+        login,
+        loginWithSpotify,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

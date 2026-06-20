@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useToast } from '../../context/ToastContext.jsx';
 import { getSupabaseClient } from '../../lib/supabase';
@@ -8,7 +8,7 @@ import styles from './Login.module.css';
 const crown = `${import.meta.env.BASE_URL}coronalaureles.png`;
 
 export default function Login() {
-  const { login, configError } = useAuth();
+  const { login, loginWithSpotify, configError, authNotice } = useAuth();
   const showToast = useToast();
 
   const [mode, setMode] = useState('login'); // login | forgot | forgotSuccess
@@ -23,6 +23,17 @@ export default function Login() {
   const [forgotLoading, setForgotLoading] = useState(false);
   const [sentEmail, setSentEmail] = useState('');
   const passRef = useRef(null);
+
+  useEffect(() => {
+    if (authNotice) setError(authNotice);
+  }, [authNotice]);
+
+  async function handleSpotifyLogin() {
+    setError('');
+    const result = await loginWithSpotify();
+    if (result?.error) setError(result.error);
+    // Si todo va bien, el navegador redirige a Spotify.
+  }
 
   async function handleLogin() {
     if (!email.trim() || !pass) {
@@ -134,6 +145,15 @@ export default function Login() {
             </button>
             <button className={styles.forgot} type="button" onClick={openForgot}>
               ¿Olvidé mi contraseña?
+            </button>
+
+            <div className={styles.orSep}>o</div>
+
+            <button className={styles.spotifyBtn} type="button" onClick={handleSpotifyLogin}>
+              <svg className={styles.spotifyIcon} viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.52 17.34c-.24.36-.66.48-1.02.24-2.82-1.74-6.36-2.1-10.56-1.14-.42.12-.78-.18-.9-.54-.12-.42.18-.78.54-.9 4.56-1.02 8.52-.6 11.64 1.32.42.18.48.66.3 1.02zm1.44-3.3c-.3.42-.84.6-1.26.3-3.24-1.98-8.16-2.58-11.94-1.38-.48.12-1.02-.12-1.14-.6-.12-.48.12-1.02.6-1.14 4.38-1.32 9.78-.66 13.5 1.62.36.18.6.78.24 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.3c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.72 1.62.54.3.72 1.02.42 1.56-.3.42-1.02.66-1.56.36z" />
+              </svg>
+              Entrar con Spotify
             </button>
           </>
         )}

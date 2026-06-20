@@ -1,10 +1,16 @@
 // ═══════════════════════════════════════════════════════
-//  spotify.js — OAuth PKCE + lectura de "Ahora Suena"
+//  spotify.js — tokens de Spotify + lectura de "Ahora Suena"
 //
-//  Flujo Authorization Code + PKCE, 100% en el cliente
-//  (sin client_secret). Los tokens viven en localStorage.
-//  Solo se pide el scope de lectura de reproducción actual.
+//  Dos orígenes de token posibles (marcados en LS_SOURCE):
+//   - 'pkce'     → "Connect Spotify" del panel (Authorization
+//                  Code + PKCE en el cliente, sin secret).
+//   - 'provider' → "Entrar con Spotify" (OAuth de Supabase);
+//                  el refresco pasa por la Edge Function
+//                  spotify-refresh (usa el client secret).
+//  Los tokens viven en localStorage.
 // ═══════════════════════════════════════════════════════
+
+import { getSupabaseClient } from './supabase';
 
 const AUTHORIZE_URL = 'https://accounts.spotify.com/authorize';
 const TOKEN_URL = 'https://accounts.spotify.com/api/token';
@@ -15,6 +21,7 @@ const SCOPE = 'user-read-currently-playing';
 const LS_ACCESS = 'sp_access_token';
 const LS_REFRESH = 'sp_refresh_token';
 const LS_EXPIRES = 'sp_expires_at';
+const LS_SOURCE = 'sp_token_source'; // 'pkce' | 'provider'
 
 // sessionStorage (solo durante el handshake de OAuth)
 const SS_VERIFIER = 'sp_code_verifier';
@@ -71,6 +78,22 @@ export function disconnect() {
   localStorage.removeItem(LS_ACCESS);
   localStorage.removeItem(LS_REFRESH);
   localStorage.removeItem(LS_EXPIRES);
+  localStorage.removeItem(LS_SOURCE);
+}
+
+// Origen del token actual ('pkce' | 'provider' | null).
+export function getTokenSource() {
+  return localStorage.getItem(LS_SOURCE);
+}
+
+// Tokens obtenidos vía el login de Supabase con Spotify (provider_token).
+// Su refresco pasa por la Edge Function spotify-refresh.
+export function seedProviderTokens({ accessToken, refreshToken, expiresIn }) {
+  if (!accessToken) return;
+  localStorage.setItem(LS_ACCESS, accessToken);
+  if (refreshToken) localStorage.setItem(LS_REFRESH, refreshToken);
+  localStorage.setItem(LS_EXPIRES, String(Date.now() + (expiresIn || 3600) * 1000));
+  localStorage.setItem(LS_SOURCE, 'provider');
 }
 
 // ── Inicio del flujo OAuth ─────────────────────────────
@@ -123,6 +146,7 @@ export async function exchangeCode(code, state) {
   }
   const data = await res.json();
   storeTokens(data);
+  localStorage.setItem(LS_SOURCE, 'pkce');
   sessionStorage.removeItem(SS_VERIFIER);
   sessionStorage.removeItem(SS_STATE);
 }
@@ -152,12 +176,40 @@ async function refreshAccessToken() {
   return data.access_token;
 }
 
+// Refresco para tokens de origen 'provider' (login de Supabase):
+// el client secret vive en la Edge Function, no en el navegador.
+async function refreshViaEdge() {
+  const refresh = localStorage.getItem(LS_REFRESH);
+  if (!refresh) throw new Error('No hay refresh token de Spotify');
+  const supabase = getSupabaseClient();
+  if (!supabase) throw new Error('Supabase no configurado');
+
+  const { data, error } = await supabase.functions.invoke('spotify-refresh', {
+    body: { refresh_token: refresh },
+  });
+  if (error || !data?.access_token) {
+    disconnect();
+    throw new Error('No se pudo refrescar el token de Spotify (provider).');
+  }
+  localStorage.setItem(LS_ACCESS, data.access_token);
+  if (data.refresh_token) localStorage.setItem(LS_REFRESH, data.refresh_token);
+  localStorage.setItem(LS_EXPIRES, String(Date.now() + (data.expires_in || 3600) * 1000));
+  return data.access_token;
+}
+
+// Refresca según el origen del token.
+async function forceRefresh() {
+  return localStorage.getItem(LS_SOURCE) === 'provider'
+    ? refreshViaEdge()
+    : refreshAccessToken();
+}
+
 async function getValidAccessToken() {
   const access = localStorage.getItem(LS_ACCESS);
   const expiresAt = Number(localStorage.getItem(LS_EXPIRES) || 0);
   // 30s de margen para evitar usar un token a punto de expirar.
   if (access && Date.now() < expiresAt - 30000) return access;
-  return refreshAccessToken();
+  return forceRefresh();
 }
 
 // ── Normalización de la respuesta de Spotify ───────────
@@ -189,7 +241,7 @@ export async function getCurrentlyPlaying() {
 
   // 401: token rechazado → refrescar una vez y reintentar.
   if (res.status === 401) {
-    token = await refreshAccessToken();
+    token = await forceRefresh();
     res = await fetch(CURRENTLY_PLAYING_URL, {
       headers: { Authorization: `Bearer ${token}` },
     });
