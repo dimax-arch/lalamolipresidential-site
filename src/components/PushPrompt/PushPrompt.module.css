@@ -7,8 +7,9 @@
   background: #1a1208;
   border: 1px solid rgba(184, 146, 42, 0.5);
   border-top: 2px solid #c9a84c;
+  border-radius: var(--radius-md);
   padding: 1rem 1.25rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  box-shadow: var(--shadow-lg);
   pointer-events: all;
   animation: toastIn 0.3s ease both;
 }
@@ -42,6 +43,7 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   padding: 0.4rem 0.5rem;
+  border-radius: var(--radius-sm);
   cursor: pointer;
 }
 

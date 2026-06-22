@@ -8,12 +8,14 @@
   background: rgba(255, 255, 255, 0.55);
   border: 1px solid var(--cream-dark);
   border-left: 3px solid var(--gold);
+  border-radius: var(--radius-sm);
   padding: 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.7rem;
   height: 176px;
   overflow: hidden;
+  box-shadow: var(--shadow-sm);
 }
 
 .cardPlaying {
@@ -28,9 +30,10 @@
 }
 
 .member {
-  font-family: var(--font-main);
-  font-size: 0.66rem;
-  letter-spacing: 0.14em;
+  font-family: var(--font-ui);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
@@ -46,8 +49,10 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  font-size: 0.58rem;
-  letter-spacing: 0.1em;
+  font-family: var(--font-ui);
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-soft);
   white-space: nowrap;
@@ -78,6 +83,7 @@
   height: 60px;
   flex-shrink: 0;
   border: 1px solid var(--cream-dark);
+  border-radius: var(--radius-sm);
 }
 
 .art {
@@ -124,8 +130,10 @@
   margin-top: 0.4rem;
   color: #1a9c47;
   text-decoration: none;
-  font-size: 0.64rem;
-  letter-spacing: 0.08em;
+  font-family: var(--font-ui);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -141,6 +149,7 @@
   height: 4px;
   background: var(--cream-dark);
   overflow: hidden;
+  border-radius: var(--radius-pill);
 }
 
 .fill {
@@ -205,10 +214,11 @@
   border: none;
   cursor: pointer;
   color: var(--ink-soft);
-  font-size: 0.58rem;
-  letter-spacing: 0.1em;
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  font-family: var(--font-main);
+  font-family: var(--font-ui);
   padding: 0;
   text-decoration: underline;
 }

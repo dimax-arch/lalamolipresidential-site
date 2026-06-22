@@ -9,7 +9,8 @@
 .statBox {
   background: var(--text);
   border: 1px solid rgba(139, 107, 74, 0.3);
-  padding: 0.6rem 0.5rem;
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.5rem;
   text-align: center;
 }
 
@@ -22,10 +23,11 @@
 }
 
 .statLbl {
-  font-family: var(--font-main);
-  font-size: 0.6rem;
+  font-family: var(--font-ui);
+  font-size: 0.58rem;
+  font-weight: 600;
   color: var(--gold-dim);
-  letter-spacing: 0.15em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
@@ -38,13 +40,15 @@
 }
 
 .filterBtn {
-  font-family: var(--font-main);
-  font-size: 0.66rem;
-  letter-spacing: 0.1em;
+  font-family: var(--font-ui);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 0.3rem 0.75rem;
+  padding: 0.32rem 0.8rem;
   background: transparent;
   border: 1px solid rgba(139, 107, 74, 0.3);
+  border-radius: var(--radius-pill);
   color: var(--gold-dim);
   cursor: pointer;
   transition: all 0.2s;
@@ -86,15 +90,17 @@
   background: rgba(255, 255, 255, 0.65);
   border: 1px solid var(--cream-dark);
   border-left: 3px solid var(--border-gold);
-  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  padding: 0.8rem 1rem;
   transition: all 0.2s;
   position: relative;
   animation: fadeSlideIn 0.3s ease both;
+  box-shadow: var(--shadow-sm);
 }
 
 .itemCard:hover {
   background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 2px 10px rgba(139, 107, 74, 0.18);
+  box-shadow: var(--shadow-md);
 }
 
 .red {
@@ -124,10 +130,11 @@
 }
 
 .itemMeta {
-  font-family: var(--font-main);
-  font-size: 0.63rem;
+  font-family: var(--font-ui);
+  font-size: 0.62rem;
+  font-weight: 500;
   color: var(--ink-soft);
-  letter-spacing: 0.07em;
+  letter-spacing: 0.04em;
   margin-bottom: 0.3rem;
 }
 
@@ -184,6 +191,7 @@
   background: rgba(255, 255, 255, 0.5);
   border: 1px solid var(--cream-dark, #e8d9b8);
   border-left: 3px solid var(--border-gold, #c9a84c);
+  border-radius: var(--radius-sm);
   margin-bottom: 0.5rem;
   animation: fadeSlideIn 0.25s ease both;
   transition: background 0.15s;
@@ -229,10 +237,11 @@
 }
 
 .logMeta {
-  font-family: var(--font-main);
-  font-size: 0.62rem;
+  font-family: var(--font-ui);
+  font-size: 0.6rem;
+  font-weight: 500;
   color: var(--ink-soft, #6b5230);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
 }
 
 .logActor {
@@ -241,12 +250,14 @@
 }
 
 .logEventBadge {
-  font-family: var(--font-main);
-  font-size: 0.6rem;
-  padding: 0.15rem 0.45rem;
-  letter-spacing: 0.08em;
+  font-family: var(--font-ui);
+  font-size: 0.56rem;
+  font-weight: 600;
+  padding: 0.18rem 0.55rem;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   border: 1px solid;
+  border-radius: var(--radius-pill);
   white-space: nowrap;
   text-align: center;
 }

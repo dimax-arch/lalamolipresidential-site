@@ -1,7 +1,8 @@
 .logArea {
   background: rgba(60, 47, 47, 0.92);
   border: 1px solid rgba(139, 107, 74, 0.25);
-  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1rem;
   max-height: 480px;
   min-height: 360px;
   overflow-y: auto;

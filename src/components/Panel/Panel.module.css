@@ -1,8 +1,9 @@
 .panel {
   background: var(--parchment);
-  border: 1px solid var(--border-gold);
+  border: 1px solid rgba(139, 107, 74, 0.18);
   border-top: 3px solid var(--gold);
-  box-shadow: 0 4px 20px var(--shadow);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
   animation: fadeSlideIn 0.5s ease both;
 }
@@ -25,22 +26,25 @@
 }
 
 .title {
-  font-family: var(--font-main);
-  font-size: 0.72rem;
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  font-weight: 600;
   color: #ffffff;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   flex: 1;
 }
 
 .badge {
-  font-family: var(--font-main);
-  font-size: 0.62rem;
+  font-family: var(--font-ui);
+  font-size: 0.58rem;
+  font-weight: 600;
   background: var(--red);
   color: #ffd0d0;
-  padding: 0.15rem 0.5rem;
-  letter-spacing: 0.1em;
+  padding: 0.2rem 0.6rem;
+  letter-spacing: 0.08em;
   border: 1px solid #c22020;
+  border-radius: var(--radius-pill);
 }
 
 .badgeGreen {
@@ -50,7 +54,7 @@
 }
 
 .body {
-  padding: 1.25rem;
+  padding: 1.4rem;
 }
 
 @media (max-width: 720px) {

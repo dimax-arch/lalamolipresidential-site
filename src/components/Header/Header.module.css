@@ -43,10 +43,11 @@
 }
 
 .eyebrow {
-  font-family: var(--font-main);
-  font-size: 0.65rem;
+  font-family: var(--font-ui);
+  font-size: 0.64rem;
+  font-weight: 600;
   color: var(--gold-dim);
-  letter-spacing: 0.2em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   margin-bottom: 0.2rem;
 }
@@ -82,21 +83,24 @@
 }
 
 .sessionLabel {
-  font-family: var(--font-main);
-  font-size: 0.75rem;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 600;
   color: var(--gold-light);
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 .logout {
-  font-family: var(--font-main);
-  font-size: 0.65rem;
-  letter-spacing: 0.1em;
+  font-family: var(--font-ui);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 0.3rem 0.75rem;
+  padding: 0.34rem 0.85rem;
   background: transparent;
   border: 1px solid rgba(139, 107, 74, 0.35);
+  border-radius: var(--radius-pill);
   color: rgba(165, 133, 104, 0.75);
   cursor: pointer;
   transition: all 0.2s;

@@ -36,9 +36,10 @@
 }
 
 .legendItem {
-  font-family: var(--font-main);
-  font-size: 0.6rem;
-  letter-spacing: 0.08em;
+  font-family: var(--font-ui);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink-soft);
   display: flex;
@@ -51,6 +52,7 @@
   height: 9px;
   display: inline-block;
   border: 1px solid;
+  border-radius: 3px;
 }
 
 .dotPending {
@@ -76,15 +78,17 @@
 }
 
 .weekday {
-  font-family: var(--font-main);
-  font-size: 0.6rem;
-  letter-spacing: 0.15em;
+  font-family: var(--font-ui);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #ffffff;
   background: var(--text);
   text-align: center;
   padding: 0.42rem 0;
   border-bottom: 2px solid var(--border-gold);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
 }
 
 .cell {
@@ -93,6 +97,7 @@
   overflow: hidden;
   background: rgba(255, 255, 255, 0.55);
   border: 1px solid var(--cream-dark);
+  border-radius: var(--radius-sm);
   padding: 0.3rem 0.35rem;
   display: flex;
   flex-direction: column;
@@ -167,6 +172,7 @@
   line-height: 1.4;
   padding: 1px 4px;
   border-left: 2px solid var(--primary-dark);
+  border-radius: 4px;
   background: rgba(139, 107, 74, 0.12);
   color: var(--ink-mid);
   white-space: nowrap;
@@ -206,9 +212,10 @@
 }
 
 .detailHeader {
-  font-family: var(--font-main);
-  font-size: 0.72rem;
-  letter-spacing: 0.15em;
+  font-family: var(--font-ui);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--gold-dim);
   margin-bottom: 0.6rem;
@@ -228,6 +235,7 @@
   background: rgba(255, 255, 255, 0.6);
   border: 1px solid var(--cream-dark);
   border-left: 3px solid var(--border-gold);
+  border-radius: var(--radius-sm);
   padding: 0.55rem 0.8rem;
   margin-bottom: 0.45rem;
   animation: fadeSlideIn 0.25s ease both;
@@ -265,10 +273,11 @@
 }
 
 .eventMeta {
-  font-family: var(--font-main);
-  font-size: 0.62rem;
+  font-family: var(--font-ui);
+  font-size: 0.6rem;
+  font-weight: 500;
   color: var(--ink-soft);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
   margin-top: 2px;
 }
 
