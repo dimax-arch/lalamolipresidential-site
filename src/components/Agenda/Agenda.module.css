@@ -141,10 +141,11 @@
 .itemDesc {
   font-family: var(--font-main);
   font-style: italic;
-  font-size: 0.88rem;
+  font-size: 0.96rem;
   color: var(--ink-mid);
-  line-height: 1.55;
+  line-height: 1.65;
   margin-top: 0.35rem;
+  white-space: pre-wrap;
 }
 
 .itemActions {
