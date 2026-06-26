@@ -3,12 +3,20 @@
 -- Si ya ejecutaste una versión anterior, corre también supabase/migrate-security.sql
 
 -- ─── Helpers de rol (evitan suplantación de user_key) ───
+-- Debe coincidir con la definición de migrate-security.sql y now-playing.sql:
+-- app_metadata tiene prioridad (lo controla el servidor y sobrevive al login
+-- OAuth de Spotify); user_metadata queda como respaldo para sesiones de
+-- email/contraseña. Mantener idéntica en los tres archivos para que re-ejecutar
+-- cualquiera de ellos no degrade la función (todas usan create or replace).
 create or replace function public.auth_user_key()
 returns text
 language sql
 stable
 as $$
-  select case (auth.jwt() -> 'user_metadata' ->> 'role')
+  select case coalesce(
+      auth.jwt() -> 'app_metadata' ->> 'role',
+      auth.jwt() -> 'user_metadata' ->> 'role'
+    )
     when 'president' then 'presidente'
     when 'minister'  then 'ministro'
     else null
