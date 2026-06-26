@@ -188,6 +188,7 @@ optgroup {
    reloj) para que siempre comuniquen que son seleccionables. */
 input[type='date'].form-input,
 input[type='time'].form-input {
+  position: relative;
   min-height: 2.65rem;
   background-repeat: no-repeat;
   background-position: right 0.7rem center;
@@ -215,11 +216,19 @@ input[type='time'].form-input::-webkit-datetime-edit {
   color: var(--ink);
 }
 
-/* Ocultamos el indicador nativo para no duplicar con nuestro ícono
-   (el campo completo sigue abriendo el selector). */
+/* El indicador nativo se hace transparente y se estira para cubrir TODO el
+   campo, así un clic en cualquier parte abre el selector (sin duplicar el
+   ícono que dibujamos de fondo). */
 input[type='date'].form-input::-webkit-calendar-picker-indicator,
 input[type='time'].form-input::-webkit-calendar-picker-indicator {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
   opacity: 0;
+  cursor: pointer;
 }
 
 /* ═══════════════════════════════════════════════════════
