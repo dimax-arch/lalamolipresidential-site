@@ -100,10 +100,23 @@ it works on subpath hosting): `index.html` (main app → `src/main.jsx`),
 ### Providers & components
 `main.jsx` wraps the app in `ToastProvider` → `AuthProvider` → `ConfirmProvider`. Components
 are colocated with CSS Modules (`Component/Component.jsx` + `Component.module.css`).
-`Dashboard.jsx` composes the two-column layout from the panel components.
+`Dashboard.jsx` composes the two-column layout from the panel components. One exception to
+the colocation convention: `Toast/` has only `Toast.module.css` — the toast UI itself is
+rendered inside `ToastContext.jsx`, so there is no `Toast.jsx`.
 
 ## Deployment
 
 Production deploys via **Netlify** (`netlify.toml`: `npm run build` → `dist/`, Node 20).
-Supabase env vars are set in the Netlify dashboard. (SUPABASE.md still describes a GitHub
-Pages workflow, but Netlify is the live path.)
+Supabase env vars are set in the Netlify dashboard. The live domain is
+**`lalamoliypipe.com`** — it's the redirect URL that Spotify OAuth and Supabase Auth are
+configured against (see `.env.example`), so changing it means updating those provider
+settings too. (SUPABASE.md still describes a GitHub Pages workflow, but Netlify is the live
+path.)
+
+## Line endings
+
+Files are committed as **LF**, enforced by `.gitattributes` (`* text=auto eol=lf`). If your
+working tree shows every file modified with equal insertions/deletions in `git diff --stat`,
+that's CRLF churn from a Windows/WSL editor, not real changes — run
+`git add --renormalize .` to clear it. Don't reformat line endings as part of a change; keep
+diffs scoped to the lines you actually touched.
