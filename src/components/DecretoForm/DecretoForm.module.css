@@ -10,8 +10,12 @@
 }
 
 .gridWide {
+  flex: 1 1 auto;
+  min-height: 0;
   display: grid;
   grid-template-columns: 1fr 1.6fr;
+  /* La fila de la descripción absorbe todo el alto sobrante de la tarjeta */
+  grid-template-rows: auto auto minmax(0, 1fr);
   column-gap: 16px;
 }
 
@@ -31,9 +35,13 @@
 .descWide {
   grid-column: 1 / -1;
   margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .textareaWide {
+  flex: 1;
   min-height: 220px;
 }
 
