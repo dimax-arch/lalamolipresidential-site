@@ -7,7 +7,19 @@
   <link rel="icon" type="image/svg+xml" href="parthenon26.svg" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#1A1208" />
+  <meta name="theme-color" content="#1d1815" />
+  <!-- Aplica el tema guardado antes del primer render para evitar un destello -->
+  <script>
+    (function () {
+      var theme = 'dark';
+      try {
+        var stored = localStorage.getItem('palacio_theme');
+        if (stored === 'light' || stored === 'dark') theme = stored;
+        else if (matchMedia('(prefers-color-scheme: light)').matches) theme = 'light';
+      } catch (e) { /* sin localStorage */ }
+      document.documentElement.dataset.theme = theme;
+    })();
+  </script>
 
   <!-- PWA instalable en iOS ("Agregar a inicio") -->
   <meta name="mobile-web-app-capable" content="yes" />

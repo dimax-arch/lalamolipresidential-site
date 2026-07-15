@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { PRIORITY_LABELS, TYPE_LABELS, USERS } from '../../lib/constants';
 import Panel, { PanelBadge } from '../Panel/Panel.jsx';
+import Icon from '../Icons/Icons.jsx';
 import styles from './Calendar.module.css';
 
 const WEEKDAYS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
@@ -11,8 +12,8 @@ const MONTHS = [
 
 const STATUS_LABELS = {
   pending: 'Pendiente',
-  approved: 'Aprobado ✓',
-  rejected: 'Rechazado ✗',
+  approved: 'Aprobado',
+  rejected: 'Rechazado',
 };
 
 function dateKey(year, monthIndex, day) {
@@ -25,7 +26,6 @@ function formatSelectedDate(key) {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
-    year: 'numeric',
   });
   return label.charAt(0).toUpperCase() + label.slice(1);
 }
@@ -98,62 +98,66 @@ export default function Calendar({ items }) {
 
   const selectedEvents = (selectedKey && eventsByDate[selectedKey]) || [];
 
+  const toolbar = (
+    <>
+      <button
+        type="button"
+        className={styles.navBtn}
+        aria-label="Mes anterior"
+        onClick={() => changeMonth(-1)}
+      >
+        <Icon name="chevronLeft" size={13} />
+      </button>
+      <span className={styles.monthLabel}>
+        {MONTHS[month]} {year}
+      </span>
+      <button
+        type="button"
+        className={styles.navBtn}
+        aria-label="Mes siguiente"
+        onClick={() => changeMonth(1)}
+      >
+        <Icon name="chevronRight" size={13} />
+      </button>
+      <button type="button" className={styles.todayBtn} onClick={goToToday}>
+        Hoy
+      </button>
+      <span className={styles.sep} />
+      <span className={styles.legendItem}>
+        <span className={`${styles.legendDot} ${styles.dotPending}`} /> Pendiente
+      </span>
+      <span className={styles.legendItem}>
+        <span className={`${styles.legendDot} ${styles.dotApproved}`} /> Aprobado
+      </span>
+      <span className={styles.legendItem}>
+        <span className={`${styles.legendDot} ${styles.dotRejected}`} /> Rechazado
+      </span>
+    </>
+  );
+
   return (
     <Panel
-      icon="📅"
-      title="Calendario Oficial — Agenda del Gabinete"
-      badge={<PanelBadge>{monthCount} EVENTOS</PanelBadge>}
+      icon={<Icon name="calendar" />}
+      title="Calendario oficial"
+      badge={<PanelBadge>{monthCount} eventos este mes</PanelBadge>}
+      actions={toolbar}
       full
     >
-      <div className={styles.toolbar}>
-        <button
-          type="button"
-          className={`btn-small ${styles.navBtn}`}
-          aria-label="Mes anterior"
-          onClick={() => changeMonth(-1)}
-        >
-          ←
-        </button>
-        <div className={styles.monthLabel}>
-          {MONTHS[month]} {year}
-        </div>
-        <button
-          type="button"
-          className={`btn-small ${styles.navBtn}`}
-          aria-label="Mes siguiente"
-          onClick={() => changeMonth(1)}
-        >
-          →
-        </button>
-        <button type="button" className={`btn-small ${styles.todayBtn}`} onClick={goToToday}>
-          Hoy
-        </button>
-
-        <div className={styles.legend}>
-          <span className={styles.legendItem}>
-            <span className={`${styles.dot} ${styles.dotPending}`} /> Pendiente
-          </span>
-          <span className={styles.legendItem}>
-            <span className={`${styles.dot} ${styles.dotApproved}`} /> Aprobado
-          </span>
-          <span className={styles.legendItem}>
-            <span className={`${styles.dot} ${styles.dotRejected}`} /> Rechazado
-          </span>
-        </div>
-      </div>
-
-      <div className={styles.grid}>
+      <div className={styles.weekdays}>
         {WEEKDAYS.map((d) => (
           <div key={d} className={styles.weekday}>
             {d}
           </div>
         ))}
+      </div>
+      <div className={styles.grid}>
         {cells.map((cell) => {
           const events = eventsByDate[cell.key] || [];
+          const isToday = cell.key === todayKey;
           const cellClasses = [
             styles.cell,
             !cell.inMonth && styles.outside,
-            cell.key === todayKey && styles.today,
+            isToday && styles.today,
             cell.key === selectedKey && styles.selected,
           ]
             .filter(Boolean)
@@ -167,8 +171,9 @@ export default function Calendar({ items }) {
               onClick={() => setSelectedKey(cell.key)}
             >
               <span className={styles.dayNum}>
-                {cell.day}
+                <span>{cell.day}</span>
                 {events.length > 0 && <span className={styles.countBubble}>{events.length}</span>}
+                {isToday && <span className={styles.todayDot} />}
               </span>
               <span className={styles.chips}>
                 {events.slice(0, 3).map((ev) => (
@@ -177,7 +182,7 @@ export default function Calendar({ items }) {
                     className={[styles.chip, styles['chip_' + ev.status]].filter(Boolean).join(' ')}
                     title={ev.title}
                   >
-                    {ev.time && <span className={styles.chipTime}>{ev.time}</span>}
+                    {ev.time && <b className={styles.chipTime}>{ev.time}</b>}
                     {ev.title}
                   </span>
                 ))}
@@ -189,35 +194,32 @@ export default function Calendar({ items }) {
       </div>
 
       <div className={styles.detail}>
-        <div className={styles.detailHeader}>
+        <span className={styles.detailHeader}>
           {selectedKey ? formatSelectedDate(selectedKey) : '—'}
-        </div>
-        {selectedEvents.length === 0 ? (
-          <div className={styles.detailEmpty}>Sin eventos programados para este día.</div>
-        ) : (
-          selectedEvents.map((ev) => {
-            const author = USERS[ev.author];
-            return (
-              <div
-                key={ev.id}
-                className={[styles.eventRow, styles['row_' + ev.status]].filter(Boolean).join(' ')}
-              >
-                <div className={styles.eventTime}>{ev.time || 'Todo el día'}</div>
-                <div className={styles.eventBody}>
-                  <div className={styles.eventTitle}>{ev.title}</div>
-                  <div className={styles.eventMeta}>
-                    {TYPE_LABELS[ev.type] || ev.type} &nbsp;·&nbsp;{' '}
-                    {PRIORITY_LABELS[ev.priority] || ev.priority} &nbsp;·&nbsp; por{' '}
-                    {author ? author.short : ev.author}
-                  </div>
+        </span>
+        <div className={styles.detailBody}>
+          {selectedEvents.length === 0 ? (
+            <div className={styles.detailEmpty}>Sin eventos programados para este día.</div>
+          ) : (
+            selectedEvents.map((ev) => {
+              const author = USERS[ev.author];
+              return (
+                <div key={ev.id} className={styles.eventRow}>
+                  <span className={styles.eventTime}>{ev.time || 'Todo el día'}</span>
+                  <span className={`${styles.eventBar} ${styles['bar_' + ev.status] || ''}`} />
+                  <span className={styles.eventTitle}>{ev.title}</span>
+                  <span className={styles.eventMeta}>
+                    {TYPE_LABELS[ev.type] || ev.type} · {PRIORITY_LABELS[ev.priority] || ev.priority}{' '}
+                    · por {author ? author.short : ev.author}
+                  </span>
+                  <span className={`status-badge status-badge--${ev.status} ${styles.eventBadge}`}>
+                    {STATUS_LABELS[ev.status] || ev.status}
+                  </span>
                 </div>
-                <span className={`status-badge status-badge--${ev.status}`}>
-                  {STATUS_LABELS[ev.status] || ev.status}
-                </span>
-              </div>
-            );
-          })
-        )}
+              );
+            })
+          )}
+        </div>
       </div>
     </Panel>
   );

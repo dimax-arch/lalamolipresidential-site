@@ -98,11 +98,26 @@ it works on subpath hosting): `index.html` (main app → `src/main.jsx`),
 `reset-password.html` (→ `src/reset.jsx`), `spotify-callback.html` (→ `src/spotify-callback.jsx`).
 
 ### Providers & components
-`main.jsx` wraps the app in `ToastProvider` → `AuthProvider` → `ConfirmProvider`. Components
-are colocated with CSS Modules (`Component/Component.jsx` + `Component.module.css`).
-`Dashboard.jsx` composes the two-column layout from the panel components. One exception to
-the colocation convention: `Toast/` has only `Toast.module.css` — the toast UI itself is
-rendered inside `ToastContext.jsx`, so there is no `Toast.jsx`.
+`main.jsx` wraps the app in `ThemeProvider` → `ToastProvider` → `AuthProvider` →
+`ConfirmProvider`. Components are colocated with CSS Modules (`Component/Component.jsx` +
+`Component.module.css`). `Dashboard.jsx` composes the layout: a top grid (decreto form /
+chat / rail with Spotify + files) followed by full-width Calendar and Agenda panels, all in
+a single scroll container. One exception to the colocation convention: `Toast/` has only
+`Toast.module.css` — the toast UI itself is rendered inside `ToastContext.jsx`, so there is
+no `Toast.jsx`.
+
+### Theming (two themes, CSS custom properties)
+The visual design comes from the "Turno 1" redesign: **dark** (`1b — Sala de Situación`,
+default) and **light** (`1a — Despacho Claro`). All colors live as CSS custom properties in
+`src/index.css` — `:root` holds the dark palette and `:root[data-theme='light']` overrides
+it; component CSS must use tokens (`--surface`, `--accent`, `--status-*`, etc.), never raw
+hex values. `src/lib/theme.js` + `ThemeContext` manage the `data-theme` attribute, the
+`palacio_theme` localStorage key (a device preference — the one other localStorage exception
+besides Spotify tokens) and the `theme-color` meta. Each HTML entry point has an inline
+pre-paint script that applies the stored theme to avoid a flash. The toggle button
+(`ThemeToggle`) lives in the Header and the Login screen. One layout gotcha: panels use
+`overflow: hidden`, so any flex/grid scroll parent needs `flex-shrink: 0` on them or they
+collapse (see `.shell > *` in `Dashboard.module.css`).
 
 ## Deployment
 

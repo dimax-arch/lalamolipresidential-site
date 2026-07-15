@@ -1,127 +1,126 @@
 .header {
-  background: linear-gradient(180deg, var(--text) 0%, var(--bg-dark) 100%);
-  border-bottom: 3px double var(--border-gold);
-  padding: 1.5rem 2rem;
-  position: relative;
-}
-
-.header::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--gold);
-}
-
-.inner {
-  max-width: 1100px;
-  margin: 0 auto;
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--accent-border);
+  padding: 10px 28px;
+  min-height: 60px;
   display: flex;
   align-items: center;
-  gap: 1.25rem;
+  gap: 14px;
+  flex-shrink: 0;
 }
 
 .escudo {
-  width: 64px;
-  height: 64px;
+  width: 36px;
+  height: 36px;
   flex-shrink: 0;
-  border: 2px solid var(--border-gold);
+  border: 1.5px solid var(--logo-ring);
   border-radius: 50%;
-  background: radial-gradient(circle, #ffffff 40%, #0d1a0d 100%);
+  background: var(--logo-bg);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.8rem;
-  box-shadow: 0 0 24px rgba(139, 107, 74, 0.3), inset 0 0 12px rgba(0, 0, 0, 0.5);
-  animation: sealGlow 4s ease-in-out infinite;
 }
 
 .text {
-  flex: 1;
-}
-
-.eyebrow {
-  font-family: var(--font-ui);
-  font-size: 0.64rem;
-  font-weight: 600;
-  color: var(--gold-dim);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  margin-bottom: 0.2rem;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  min-width: 0;
 }
 
 .title {
   font-family: var(--font-main);
-  font-size: 1.75rem;
-  color: #ffffff;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
-  margin-bottom: 0.15rem;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-strong);
+  white-space: nowrap;
 }
 
-.decree {
-  font-family: var(--font-main);
-  font-style: italic;
-  font-size: 0.9rem;
-  color: rgba(165, 133, 104, 0.75);
-}
-
-.session {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
+.divider {
+  width: 1px;
+  height: 14px;
+  background: var(--border-input);
+  align-self: center;
   flex-shrink: 0;
 }
 
+.subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.session {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.rolePill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-border);
+}
+
 .dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: var(--gold-light);
+  background: var(--live);
   animation: blink 2s ease-in-out infinite;
 }
 
-.sessionLabel {
+.roleLabel {
   font-family: var(--font-ui);
-  font-size: 0.72rem;
+  font-size: 11px;
   font-weight: 600;
-  color: var(--gold-light);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  color: var(--role-president);
 }
 
 .logout {
   font-family: var(--font-ui);
-  font-size: 0.64rem;
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding: 0.34rem 0.85rem;
+  padding: 6px 14px;
   background: transparent;
-  border: 1px solid rgba(139, 107, 74, 0.35);
-  border-radius: var(--radius-pill);
-  color: rgba(165, 133, 104, 0.75);
+  border: 1px solid var(--border-input);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .logout:hover {
-  border-color: var(--red);
-  color: #ff9090;
+  border-color: var(--danger);
+  color: var(--danger-strong);
+}
+
+@media (max-width: 900px) {
+  .divider,
+  .subtitle {
+    display: none;
+  }
 }
 
 @media (max-width: 720px) {
-  .inner {
-    flex-wrap: wrap;
-    gap: 0.75rem;
+  .header {
+    padding: 10px 16px;
+    gap: 10px;
   }
-  .escudo {
-    width: 52px;
-    height: 52px;
-    font-size: 1.5rem;
-  }
+
   .title {
-    font-size: 1.35rem;
+    font-size: 16px;
   }
 }

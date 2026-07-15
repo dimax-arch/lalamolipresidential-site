@@ -1,25 +1,24 @@
+/* El chip del encabezado usa el verde Spotify en lugar del acento */
+.headIcon {
+  color: var(--spotify-text);
+}
+
 .grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.25rem;
+  gap: 12px;
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.55);
-  border: 1px solid var(--cream-dark);
-  border-left: 3px solid var(--gold);
-  border-radius: var(--radius-sm);
-  padding: 1rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
-  height: 176px;
+  gap: 10px;
+  min-height: 96px;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
-}
-
-.cardPlaying {
-  border-left-color: #1db954;
 }
 
 .cardHead {
@@ -31,73 +30,75 @@
 
 .member {
   font-family: var(--font-ui);
-  font-size: 0.64rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .president {
-  color: var(--gold-dim);
+  color: var(--role-president);
 }
 
 .minister {
-  color: var(--primary);
+  color: var(--role-minister);
 }
 
 .state {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 5px;
   font-family: var(--font-ui);
-  font-size: 0.56rem;
+  font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--ink-soft);
+  color: var(--text-muted);
   white-space: nowrap;
 }
 
 .dot {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: var(--ink-soft);
+  background: var(--border-strong);
   display: inline-block;
 }
 
 .dotLive {
-  background: #1db954;
+  background: var(--spotify);
   animation: blink 1.4s ease-in-out infinite;
+}
+
+.cardPlaying .state {
+  color: var(--spotify-text);
 }
 
 .track {
   display: flex;
-  gap: 0.85rem;
+  gap: 10px;
   align-items: center;
 }
 
 .art,
 .artPlaceholder {
-  width: 60px;
-  height: 60px;
+  width: 44px;
+  height: 44px;
   flex-shrink: 0;
-  border: 1px solid var(--cream-dark);
   border-radius: var(--radius-sm);
 }
 
 .art {
   object-fit: cover;
-  background: var(--bg-elevated);
+  background: var(--bubble-other);
 }
 
 .artPlaceholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-elevated);
-  color: var(--gold-light);
-  font-size: 1.4rem;
+  background: var(--bubble-other);
+  color: var(--text-muted);
 }
 
 .meta {
@@ -106,32 +107,32 @@
 }
 
 .trackName {
-  font-family: var(--font-main);
-  font-weight: 700;
-  font-size: 0.92rem;
-  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-strong);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .artist {
-  font-size: 0.78rem;
-  color: var(--ink-soft);
-  font-style: italic;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-top: 0.1rem;
+  margin-top: 1px;
 }
 
 .link {
   display: inline-block;
-  margin-top: 0.4rem;
-  color: #1a9c47;
+  margin-top: 4px;
+  color: var(--spotify-text);
   text-decoration: none;
   font-family: var(--font-ui);
-  font-size: 0.62rem;
+  font-size: 10.5px;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -147,40 +148,38 @@
 
 .bar {
   height: 4px;
-  background: var(--cream-dark);
+  background: var(--bubble-other);
   overflow: hidden;
   border-radius: var(--radius-pill);
 }
 
 .fill {
   height: 100%;
-  background: #1db954;
+  background: var(--spotify);
   transition: width 1s linear;
 }
 
 .times {
   display: flex;
   justify-content: space-between;
-  font-size: 0.62rem;
-  color: var(--ink-soft);
-  margin-top: 0.3rem;
+  font-family: var(--font-ui);
+  font-size: 10.5px;
+  color: var(--text-muted);
+  margin-top: 4px;
   font-variant-numeric: tabular-nums;
 }
 
 .idle {
   display: flex;
   align-items: center;
-  justify-content: center;
   flex: 1;
-  text-align: center;
-  min-height: 72px;
-  padding: 0.5rem 0;
+  padding: 2px 0;
 }
 
 .idleText {
-  color: var(--ink-soft);
-  font-style: italic;
-  font-size: 0.85rem;
+  font-family: var(--font-ui);
+  color: var(--text-muted);
+  font-size: 12.5px;
   line-height: 1.5;
   display: block;
 }
@@ -188,20 +187,15 @@
 .connectBox {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.4rem 0;
-}
-
-.connectBox .idleText {
-  max-width: 28ch;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
 }
 
 .connectBtn {
   width: auto;
-  margin: 0 auto;
-  padding: 0.5rem 1.4rem;
-  font-size: 0.66rem;
+  padding: 8px 16px;
+  font-size: 11px;
 }
 
 .selfActions {
@@ -213,8 +207,8 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--ink-soft);
-  font-size: 0.56rem;
+  color: var(--text-muted);
+  font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -224,5 +218,5 @@
 }
 
 .disconnect:hover {
-  color: var(--red);
+  color: var(--danger-strong);
 }

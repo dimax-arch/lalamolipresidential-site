@@ -2,13 +2,13 @@
 export const USERS = {
   presidente: {
     role: 'president',
-    label: '🎖 PRESIDENTE',
+    label: 'PRESIDENTE',
     short: 'Presidente',
     logClass: 'president',
   },
   ministro: {
     role: 'minister',
-    label: '📋 MINISTRO',
+    label: 'MINISTRO',
     short: 'Ministro',
     logClass: 'minister',
   },
@@ -20,25 +20,25 @@ export const ROLE_TO_USER_KEY = {
 };
 
 export const TYPE_LABELS = {
-  reunion: '📅 Reunión',
-  plan: '📝 Solicitud',
-  decreto: '📜 Decreto',
-  mision: '🪶 Petición Formal',
-  pelicula: '🎬 Cine',
-  juego: '🎮 Gaming',
+  reunion: 'Reunión',
+  plan: 'Solicitud',
+  decreto: 'Decreto',
+  mision: 'Petición formal',
+  pelicula: 'Cine',
+  juego: 'Gaming',
 };
 
 export const PRIORITY_LABELS = {
-  alta: '🔴 Alta',
-  media: '🟡 Media',
-  baja: '🟢 Baja',
+  alta: 'Alta',
+  media: 'Media',
+  baja: 'Baja',
 };
 
 export const EVENT_META = {
-  created: { label: 'PRESENTADO', badge: 'created', icon: '📜' },
-  approved: { label: 'APROBADO', badge: 'approved', icon: '✅' },
-  rejected: { label: 'RECHAZADO', badge: 'rejected', icon: '❌' },
-  deleted: { label: 'ELIMINADO', badge: 'deleted', icon: '🗑️' },
+  created: { label: 'Presentado', badge: 'created' },
+  approved: { label: 'Aprobado', badge: 'approved' },
+  rejected: { label: 'Rechazado', badge: 'rejected' },
+  deleted: { label: 'Eliminado', badge: 'deleted' },
 };
 
 export const CONFIRM_COPY = {

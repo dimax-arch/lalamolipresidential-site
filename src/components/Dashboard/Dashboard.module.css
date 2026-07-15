@@ -1,109 +1,82 @@
-/* App-shell de altura fija: el encabezado queda fijo arriba y las dos
-   columnas (contenido / carril) llenan el resto y scrollean por separado. */
+/* App-shell: encabezado fijo arriba y un único contenedor con scroll. */
 .wrapper {
   height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
 }
 
 .shell {
   flex: 1 1 auto;
-  min-height: 0; /* imprescindible para que las columnas internas scrolleen */
-  padding: 2rem;
-  display: flex;
-  align-items: stretch;
-  gap: 1.5rem;
-  overflow: hidden; /* el shell no scrollea; lo hacen sus columnas */
-}
-
-/* ── Columna izquierda: decreto, línea directa, calendario, agenda/logs
-      + pie de página, con scroll propio ──
-   El scroller (.content) es un bloque simple; la grilla vive en .contentInner
-   para que el contenido crezca libre y el contenedor scrollee de verdad
-   (una grilla que también es scroller recorta el contenido en vez de scrollear). */
-.content {
-  flex: 1 1 auto;
-  min-width: 0;
   min-height: 0;
   overflow-y: auto;
-  padding-right: 0.5rem;
-}
-
-.contentInner {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: start;
-  gap: 1.5rem;
-}
-
-/* ── Columna derecha: Spotify + Archivos, scroll propio e independiente
-      (para que muchos archivos no desborden ni afeen el resto) ── */
-.rail {
-  flex: 0 0 28%;
-  min-height: 0;
-  overflow-y: auto;
-  padding-right: 0.25rem;
-}
-
-.railInner {
+  padding: 24px 28px 12px;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 20px;
+}
+
+/* Los paneles tienen overflow:hidden (min-height automática = 0), así que sin
+   esto el flex los aplastaría para caber en el alto del scroller. */
+.shell > * {
+  flex-shrink: 0;
+}
+
+/* ── Fila superior: decreto / línea directa / carril (Spotify + archivos) ── */
+.topGrid {
+  display: grid;
+  grid-template-columns: 400px minmax(0, 1fr) 350px;
+  gap: 20px;
+  align-items: stretch;
+}
+
+.rail {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
 }
 
 .footer {
-  grid-column: 1 / -1;
   text-align: center;
-  padding: 1.5rem 2rem 0.5rem;
-  border-top: 1px solid rgba(139, 107, 74, 0.2);
-}
-
-.divider {
-  color: var(--border-gold);
-  font-size: 0.85rem;
-  letter-spacing: 0.4em;
-  opacity: 0.45;
-  margin-bottom: 0.6rem;
+  padding: 10px 0 8px;
 }
 
 .footer p {
-  font-family: var(--font-main);
-  font-style: italic;
-  font-size: 0.82rem;
-  color: rgba(141, 129, 120, 0.55);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--text-faint);
 }
 
-/* ── Responsive: por debajo de 1024px se apila y la página vuelve a
-      scrollear como una sola (sin altura fija ni scrolls anidados) ── */
-@media (max-width: 1024px) {
-  .wrapper {
-    height: auto;
-  }
-
-  .shell {
-    flex-direction: column;
-    overflow: visible;
-  }
-
-  .content,
-  .rail {
-    overflow: visible;
-    min-height: 0;
-    padding-right: 0;
+/* ── Responsive ── */
+@media (max-width: 1280px) {
+  .topGrid {
+    grid-template-columns: 1fr 1fr;
   }
 
   .rail {
-    flex: 1 1 auto;
-    width: 100%;
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
   }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 900px) {
   .shell {
-    padding: 1rem;
+    padding: 16px;
+    gap: 16px;
   }
 
-  .contentInner {
+  .topGrid {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .rail {
+    grid-column: 1;
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
 }

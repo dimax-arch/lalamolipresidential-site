@@ -11,27 +11,27 @@
 
 .toast {
   font-family: var(--font-ui);
-  font-size: 0.76rem;
+  font-size: 13px;
   font-weight: 500;
-  padding: 0.75rem 1.1rem;
-  border: 1px solid var(--gold);
-  background: var(--text);
-  color: var(--surface);
+  padding: 10px 16px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
   letter-spacing: 0.02em;
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-panel);
   animation: toastIn 0.3s ease both;
   max-width: 320px;
 }
 
 .error {
-  color: #ffb0b0;
-  border-color: var(--red);
+  color: var(--status-rejected-c);
+  border-color: var(--status-rejected-bd);
 }
 
 .success {
-  color: #b0ffb8;
-  border-color: #2a7a40;
+  color: var(--status-approved-c);
+  border-color: var(--status-approved-bd);
 }
 
 .leaving {

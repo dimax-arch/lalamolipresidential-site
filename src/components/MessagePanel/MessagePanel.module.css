@@ -1,64 +1,133 @@
+.live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-ui);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--live-text);
+}
+
+.liveDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--live);
+}
+
 .logArea {
-  background: rgba(60, 47, 47, 0.92);
-  border: 1px solid rgba(139, 107, 74, 0.25);
-  border-radius: var(--radius-sm);
-  padding: 0.85rem 1rem;
+  flex: 1;
+  min-height: 320px;
   max-height: 480px;
-  min-height: 360px;
   overflow-y: auto;
-  font-family: var(--font-main);
-  font-size: 0.75rem;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--surface-2);
 }
 
 .logArea::-webkit-scrollbar {
   width: 4px;
 }
-.logArea::-webkit-scrollbar-track {
-  background: var(--bg-dark);
-}
-.logArea::-webkit-scrollbar-thumb {
-  background: var(--primary-dark);
-}
 
-.entry {
-  margin-bottom: 0.4rem;
-  line-height: 1.55;
+.bubbleWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-width: 78%;
   animation: fadeSlideIn 0.3s ease both;
 }
 
-.ts {
-  color: var(--primary-light);
-  margin-right: 0.5rem;
+.theirs {
+  align-items: flex-start;
+  align-self: flex-start;
 }
 
-.role {
-  margin-right: 0.4rem;
+.mine {
+  align-items: flex-end;
+  align-self: flex-end;
+}
+
+.author {
+  font-family: var(--font-ui);
+  font-size: 10.5px;
   font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
 }
 
 .president {
-  color: #efbf04;
+  color: var(--role-president);
 }
 
 .minister {
-  color: #c26004;
+  color: var(--role-minister);
 }
 
-.msg {
-  color: var(--surface);
+.bubble {
+  font-family: var(--font-ui);
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text);
+  padding: 8px 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.theirs .bubble {
+  background: var(--bubble-other);
+  border: 1px solid var(--border-soft);
+  border-radius: 10px 10px 10px 3px;
+}
+
+.mine .bubble {
+  background: var(--accent-soft-strong);
+  border: 1px solid var(--accent-border);
+  border-radius: 10px 10px 3px 10px;
 }
 
 .system {
-  color: var(--text-muted);
-  font-style: italic;
+  text-align: center;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-faint);
+  letter-spacing: 0.04em;
+  margin-top: 8px;
 }
 
 .inputRow {
-  margin-top: 0.75rem;
+  padding: 12px 18px;
+  border-top: 1px solid var(--border-soft);
   display: flex;
-  gap: 0.5rem;
+  gap: 8px;
+  background: var(--surface);
 }
 
 .inputRow :global(.form-input) {
   flex: 1;
+  min-width: 0;
+}
+
+.sendBtn {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: var(--on-accent);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sendBtn:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
 }

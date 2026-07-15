@@ -4,105 +4,70 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #020202;
+  background-color: var(--bg);
+  background-image: var(--bg-page);
   z-index: 1000;
   overflow: hidden;
 }
 
+.themeCorner {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+}
+
 .box {
   position: relative;
-  background: var(--bg-elevated);
-  border: 1px solid rgba(139, 107, 74, 0.35);
-  border-top: 3px solid var(--border-gold);
-  border-radius: var(--radius-lg);
-  padding: 2.5rem 2.5rem 2rem;
+  background: var(--surface);
+  border: 1px solid var(--login-border);
+  border-radius: var(--radius-xl);
+  padding: 36px 36px 28px;
   width: 100%;
-  max-width: 420px;
-  box-shadow: 0 0 60px rgba(139, 107, 74, 0.12), 0 20px 60px rgba(0, 0, 0, 0.7);
+  max-width: 400px;
+  box-shadow: var(--shadow-card);
   animation: loginAppear 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.box::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--gold);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-}
-
-/* Inputs oscuros, solo dentro de la caja de login */
-.box :global(.form-input) {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(139, 107, 74, 0.25);
-  border-bottom-color: var(--gold-dim);
-  color: var(--cream);
-}
-
-.box :global(.form-input)::placeholder {
-  color: rgba(141, 129, 120, 0.45);
-}
-
-.box :global(.form-input):focus {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: var(--gold);
-  color: var(--cream);
-  box-shadow: 0 2px 8px rgba(139, 107, 74, 0.2);
-}
-
 .seal {
-  width: 72px;
-  height: 72px;
-  margin: 0 auto 1.25rem;
-  border: 2px solid var(--border-gold);
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 16px;
+  border: 1.5px solid var(--logo-ring);
   border-radius: 50%;
-  background: radial-gradient(circle, #ffffff 40%, #0d1a0d 100%);
+  background: var(--logo-bg);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
-  box-shadow: 0 0 28px rgba(139, 107, 74, 0.3), inset 0 0 12px rgba(0, 0, 0, 0.5);
-  animation: sealGlow 4s ease-in-out infinite;
+  box-shadow: var(--logo-glow);
 }
 
 .eyebrow {
   font-family: var(--font-ui);
-  font-size: 0.64rem;
+  font-size: 10.5px;
   font-weight: 600;
-  color: var(--gold-dim);
-  letter-spacing: 0.2em;
+  color: var(--text-muted);
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   text-align: center;
-  margin-bottom: 0.4rem;
+  margin-bottom: 6px;
 }
 
 .title {
   font-family: var(--font-main);
-  font-size: 1.9rem;
-  color: #ffffff;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-strong);
   text-align: center;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
-  margin-bottom: 0.25rem;
+  margin: 0 0 4px;
 }
 
 .subtitle {
-  font-family: var(--font-main);
-  font-style: italic;
-  font-size: 0.95rem;
-  color: rgba(141, 129, 120, 0.85);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-muted);
   text-align: center;
-  margin-bottom: 1.25rem;
-}
-
-.divider {
-  text-align: center;
-  color: var(--border-gold);
-  font-size: 0.75rem;
-  letter-spacing: 0.4em;
-  opacity: 0.5;
-  margin-bottom: 1.5rem;
+  margin: 0 0 24px;
 }
 
 .passwordWrap {
@@ -110,80 +75,87 @@
 }
 
 .passwordWrap :global(.form-input) {
-  padding-right: 2.5rem;
+  padding-right: 38px;
 }
 
 .togglePass {
   position: absolute;
-  right: 0.6rem;
+  right: 8px;
   top: 50%;
   transform: translateY(-50%);
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 0.9rem;
-  opacity: 0.5;
-  transition: opacity 0.2s;
+  color: var(--text-muted);
   padding: 0;
-  line-height: 1;
+  transition: color 0.2s;
 }
 
 .togglePass:hover {
-  opacity: 1;
+  color: var(--text);
 }
 
 .error {
   font-family: var(--font-ui);
-  font-size: 0.74rem;
+  font-size: 12px;
   font-weight: 500;
-  color: #ff8080;
+  color: var(--danger-strong);
   letter-spacing: 0.03em;
   text-align: center;
-  min-height: 1.2rem;
-  margin: 0.5rem 0;
+  min-height: 18px;
+  margin: 8px 0;
   animation: shake 0.3s ease;
 }
 
 .footer {
   font-family: var(--font-ui);
-  font-size: 0.62rem;
+  font-size: 10px;
   font-weight: 600;
-  color: rgba(141, 129, 120, 0.55);
+  color: var(--text-faint);
   letter-spacing: 0.08em;
   text-align: center;
-  margin-top: 1.25rem;
+  margin-top: 18px;
   text-transform: uppercase;
 }
 
 .forgot {
   display: block;
   width: 100%;
-  margin-top: 0.75rem;
-  padding: 0.4rem;
+  margin-top: 10px;
+  padding: 6px;
   background: transparent;
   border: none;
   cursor: pointer;
   font-family: var(--font-ui);
-  font-size: 0.72rem;
+  font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
   color: var(--text-muted);
   text-align: center;
   transition: color 0.2s;
   text-decoration: none;
 }
 
+.forgot:hover {
+  color: var(--accent);
+}
+
 .orSep {
   display: flex;
   align-items: center;
   text-align: center;
-  color: var(--text-muted);
+  color: var(--text-faint);
   font-family: var(--font-ui);
-  font-size: 0.62rem;
+  font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  margin: 0.9rem 0 0.6rem;
+  margin: 12px 0 10px;
 }
 
 .orSep::before,
@@ -191,8 +163,15 @@
   content: '';
   flex: 1;
   height: 1px;
-  background: rgba(139, 107, 74, 0.3);
-  margin: 0 0.7rem;
+  background: var(--border-soft);
+}
+
+.orSep::before {
+  margin-right: 10px;
+}
+
+.orSep::after {
+  margin-left: 10px;
 }
 
 .spotifyBtn {
@@ -200,15 +179,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.6rem;
+  gap: 9px;
   font-family: var(--font-ui);
-  font-size: 0.76rem;
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding: 0.65rem 1.5rem;
+  padding: 10px 24px;
   background: #1db954;
-  color: #04210f;
+  color: #063917;
   border: 1px solid #1db954;
   border-radius: var(--radius-sm);
   cursor: pointer;
@@ -218,32 +197,26 @@
 .spotifyBtn:hover {
   background: #1ed760;
   border-color: #1ed760;
-  transform: translateY(-1px);
 }
 
 .spotifyBtn:active {
-  transform: translateY(0);
+  transform: translateY(1px);
 }
 
 .spotifyIcon {
-  width: 18px;
-  height: 18px;
-  fill: #04210f;
+  width: 17px;
+  height: 17px;
+  fill: #063917;
   flex-shrink: 0;
 }
 
-.forgot:hover {
-  color: var(--primary-light);
-}
-
 .forgotHint {
-  font-family: var(--font-main);
-  font-style: italic;
-  font-size: 0.88rem;
-  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-secondary);
   text-align: center;
   line-height: 1.55;
-  margin-bottom: 1rem;
+  margin-bottom: 14px;
 }
 
 .forgotSuccess {
@@ -257,16 +230,20 @@
 }
 
 .successMsg {
-  font-family: 'Libre Baskerville', serif;
-  font-size: 0.8rem;
-  color: var(--gold-light);
-  letter-spacing: 0.08em;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
   line-height: 1.6;
+}
+
+.successMsg strong {
+  color: var(--text-strong);
 }
 
 @media (max-width: 720px) {
   .box {
     margin: 1rem;
-    padding: 2rem 1.5rem;
+    padding: 28px 22px 22px;
   }
 }

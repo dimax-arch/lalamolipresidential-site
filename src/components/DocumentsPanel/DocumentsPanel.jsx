@@ -3,6 +3,7 @@ import { useDocumentos } from '../../hooks/useDocumentos.js';
 import { useConfirm } from '../../context/ConfirmContext.jsx';
 import { USERS } from '../../lib/constants';
 import Panel, { PanelBadge } from '../Panel/Panel.jsx';
+import Icon from '../Icons/Icons.jsx';
 import styles from './DocumentsPanel.module.css';
 
 function hostOf(url) {
@@ -84,6 +85,7 @@ export default function DocumentsPanel() {
   const confirm = useConfirm();
   const [form, setForm] = useState(EMPTY);
   const [adding, setAdding] = useState(false);
+  const [formOpen, setFormOpen] = useState(false);
 
   const update = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
@@ -92,7 +94,10 @@ export default function DocumentsPanel() {
     setAdding(true);
     const result = await addDocumento(form);
     setAdding(false);
-    if (result?.ok) setForm(EMPTY);
+    if (result?.ok) {
+      setForm(EMPTY);
+      setFormOpen(false);
+    }
   }
 
   async function handleRemove(doc) {
@@ -106,17 +111,16 @@ export default function DocumentsPanel() {
 
   return (
     <Panel
-      icon="🗂️"
-      title="Archivos del Gabinete"
-      badge={<PanelBadge green>{documentos.length} ARCHIVOS</PanelBadge>}
+      icon={<Icon name="folder" />}
+      title="Archivos del gabinete"
+      actions={<PanelBadge>{documentos.length}</PanelBadge>}
     >
       {documentos.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-icon">🗂️</div>
           <p className="empty-text">Aún no hay archivos compartidos. Agrega el primero abajo.</p>
         </div>
       ) : (
-        <div className={styles.grid}>
+        <div className={styles.list}>
           {documentos.map((doc) => {
             const author = USERS[doc.addedBy];
             const kind = fileKind(doc.url);
@@ -125,24 +129,21 @@ export default function DocumentsPanel() {
             return (
               <a
                 key={doc.id}
-                className={styles.card}
-                style={{ borderLeftColor: meta.color }}
+                className={styles.row}
                 href={doc.url}
                 target="_blank"
                 rel="noopener noreferrer"
+                title={doc.description || doc.title}
               >
                 <FileIcon kind={kind} color={meta.color} />
-                <div className={styles.info}>
-                  <div className={styles.docTitle}>{doc.title}</div>
-                  {doc.description && <div className={styles.docDesc}>{doc.description}</div>}
-                  <div className={styles.docFoot}>
-                    <span className={styles.host}>{label}</span>
-                    {author && <span className={styles.by}>· {author.short}</span>}
-                    <span className={styles.open} style={{ color: meta.color }}>
-                      Abrir ▶
-                    </span>
-                  </div>
-                </div>
+                <span className={styles.info}>
+                  <span className={styles.docTitle}>{doc.title}</span>
+                  <span className={styles.docMeta}>
+                    {label}
+                    {author && ` · ${author.short}`}
+                  </span>
+                </span>
+                <Icon name="externalLink" size={14} className={styles.openIcon} />
                 <button
                   type="button"
                   className={styles.remove}
@@ -154,7 +155,7 @@ export default function DocumentsPanel() {
                     handleRemove(doc);
                   }}
                 >
-                  ✕
+                  <Icon name="x" size={12} />
                 </button>
               </a>
             );
@@ -162,37 +163,57 @@ export default function DocumentsPanel() {
         </div>
       )}
 
-      <div className={styles.addRow}>
-        <input
-          className="form-input"
-          type="text"
-          value={form.title}
-          onChange={update('title')}
-          onKeyDown={onKey}
-          placeholder="Nombre (ej: Presupuesto 2026)"
-          maxLength={120}
-        />
-        <input
-          className="form-input"
-          type="url"
-          value={form.url}
-          onChange={update('url')}
-          onKeyDown={onKey}
-          placeholder="Pega el enlace de Google Sheets…"
-        />
-        <input
-          className="form-input"
-          type="text"
-          value={form.description}
-          onChange={update('description')}
-          onKeyDown={onKey}
-          placeholder="Descripción (opcional)"
-          maxLength={120}
-        />
-        <button className="btn-decree" type="button" disabled={adding} onClick={handleAdd}>
-          {adding ? 'Añadiendo…' : 'Añadir ＋'}
+      {formOpen ? (
+        <div className={styles.addForm}>
+          <input
+            className="form-input"
+            type="text"
+            value={form.title}
+            onChange={update('title')}
+            onKeyDown={onKey}
+            placeholder="Nombre (ej: Presupuesto 2026)"
+            maxLength={120}
+            autoFocus
+          />
+          <input
+            className="form-input"
+            type="url"
+            value={form.url}
+            onChange={update('url')}
+            onKeyDown={onKey}
+            placeholder="Pega el enlace de Google Sheets…"
+          />
+          <input
+            className="form-input"
+            type="text"
+            value={form.description}
+            onChange={update('description')}
+            onKeyDown={onKey}
+            placeholder="Descripción (opcional)"
+            maxLength={120}
+          />
+          <div className={styles.addActions}>
+            <button
+              className={styles.cancelBtn}
+              type="button"
+              onClick={() => {
+                setFormOpen(false);
+                setForm(EMPTY);
+              }}
+            >
+              Cancelar
+            </button>
+            <button className="btn-decree" type="button" disabled={adding} onClick={handleAdd}>
+              {adding ? 'Añadiendo…' : 'Añadir'}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button className={styles.addBtn} type="button" onClick={() => setFormOpen(true)}>
+          <Icon name="plus" size={13} />
+          Añadir archivo
         </button>
-      </div>
+      )}
     </Panel>
   );
 }

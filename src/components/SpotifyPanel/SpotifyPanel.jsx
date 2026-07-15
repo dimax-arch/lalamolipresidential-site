@@ -3,6 +3,7 @@ import { useSpotify } from '../../hooks/useSpotify.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { USERS } from '../../lib/constants';
 import Panel from '../Panel/Panel.jsx';
+import Icon from '../Icons/Icons.jsx';
 import styles from './SpotifyPanel.module.css';
 
 const STALE_MS = 35000;
@@ -78,7 +79,9 @@ function MemberCard({
             {data.albumArtUrl ? (
               <img className={styles.art} src={data.albumArtUrl} alt="" />
             ) : (
-              <div className={styles.artPlaceholder}>🎵</div>
+              <div className={styles.artPlaceholder}>
+                <Icon name="music" size={18} />
+              </div>
             )}
             <div className={styles.meta}>
               <div className={styles.trackName} title={data.trackName}>
@@ -139,7 +142,7 @@ export default function SpotifyPanel() {
   }, []);
 
   return (
-    <Panel icon="🎧" title="Sala de Escucha — Spotify">
+    <Panel icon={<Icon name="headphones" className={styles.headIcon} />} title="Sala de escucha">
       <div className={styles.grid}>
         {ORDER.map((key) => (
           <MemberCard

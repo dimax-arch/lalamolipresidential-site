@@ -5,6 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Palacio Presidencial — Conectando Spotify</title>
   <link rel="icon" type="image/svg+xml" href="parthenon26.svg" />
+  <!-- Aplica el tema guardado antes del primer render para evitar un destello -->
+  <script>
+    (function () {
+      var theme = 'dark';
+      try {
+        var stored = localStorage.getItem('palacio_theme');
+        if (stored === 'light' || stored === 'dark') theme = stored;
+        else if (matchMedia('(prefers-color-scheme: light)').matches) theme = 'light';
+      } catch (e) { /* sin localStorage */ }
+      document.documentElement.dataset.theme = theme;
+    })();
+  </script>
 </head>
 <body>
   <div id="spotify-callback-root"></div>

@@ -1,7 +1,15 @@
 import { useState } from 'react';
 import Panel from '../Panel/Panel.jsx';
+import Icon from '../Icons/Icons.jsx';
+import styles from './DecretoForm.module.css';
 
 const EMPTY = { title: '', type: 'reunion', date: '', time: '', desc: '', priority: 'media' };
+
+const PRIORITIES = [
+  { key: 'alta', label: 'Alta' },
+  { key: 'media', label: 'Media' },
+  { key: 'baja', label: 'Baja' },
+];
 
 export default function DecretoForm({ onSubmit }) {
   const [form, setForm] = useState(EMPTY);
@@ -16,16 +24,16 @@ export default function DecretoForm({ onSubmit }) {
   }
 
   return (
-    <Panel icon="📜" title="Emitir Decreto / Propuesta">
+    <Panel icon={<Icon name="fileText" />} title="Emitir decreto o propuesta">
       <div className="form-group">
         <label className="form-label">Tipo de asunto</label>
         <select className="form-select" value={form.type} onChange={update('type')}>
-          <option value="reunion">📅 Reunión / Sesión</option>
-          <option value="plan">📝 Solicitud</option>
-          <option value="decreto">📜 Decreto Oficial</option>
-          <option value="mision">🪶 Petición Formal</option>
-          <option value="pelicula">🎬 Selección Cinematográfica</option>
-          <option value="juego">🎮 Operación Gaming</option>
+          <option value="reunion">Reunión / Sesión</option>
+          <option value="plan">Solicitud</option>
+          <option value="decreto">Decreto oficial</option>
+          <option value="mision">Petición formal</option>
+          <option value="pelicula">Selección cinematográfica</option>
+          <option value="juego">Operación gaming</option>
         </select>
       </div>
 
@@ -59,21 +67,32 @@ export default function DecretoForm({ onSubmit }) {
           value={form.desc}
           onChange={update('desc')}
           placeholder="Exponga los fundamentos del presente decreto ante el consejo…"
-          rows={3}
+          rows={4}
         />
       </div>
 
-      <div className="form-group">
+      <div className={`form-group ${styles.prioGroup}`}>
         <label className="form-label">Prioridad</label>
-        <select className="form-select" value={form.priority} onChange={update('priority')}>
-          <option value="alta">🔴 Alta — Asunto de Estado</option>
-          <option value="media">🟡 Media — Agenda regular</option>
-          <option value="baja">🟢 Baja — Cuando se pueda</option>
-        </select>
+        <div className={styles.prioRow}>
+          {PRIORITIES.map((p) => (
+            <button
+              key={p.key}
+              type="button"
+              className={[styles.prioBtn, form.priority === p.key && styles.prioActive]
+                .filter(Boolean)
+                .join(' ')}
+              onClick={() => setForm((f) => ({ ...f, priority: p.key }))}
+            >
+              <span className={styles.prioDot} data-prio={p.key} />
+              {p.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <button className="btn-decree" type="button" onClick={handleSubmit}>
-        Presentar ante el Consejo ⚑
+        <Icon name="flag" size={13} />
+        Presentar ante el consejo
       </button>
     </Panel>
   );

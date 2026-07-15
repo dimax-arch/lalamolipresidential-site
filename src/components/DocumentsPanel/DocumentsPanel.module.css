@@ -1,36 +1,29 @@
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.1rem;
+.list {
+  display: flex;
+  flex-direction: column;
+  margin: -4px 0 6px;
 }
 
-.card {
+.row {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 0.8rem;
-  min-width: 0;
-  padding: 0.8rem 1.3rem 0.8rem 0.95rem;
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid var(--cream-dark);
-  border-left: 3px solid #0f9d58;
+  gap: 11px;
+  padding: 10px 8px;
   border-radius: var(--radius-sm);
   text-decoration: none;
   color: inherit;
-  box-shadow: var(--shadow-sm);
-  transition: all 0.15s;
+  transition: background 0.15s;
+  min-width: 0;
 }
 
-.card:hover {
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
+.row:hover {
+  background: var(--surface-hover);
 }
 
 .icon {
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   flex-shrink: 0;
 }
 
@@ -40,61 +33,36 @@
 }
 
 .docTitle {
-  font-family: var(--font-main);
-  font-weight: 700;
-  font-size: 0.9rem;
-  color: var(--ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.docDesc {
-  font-size: 0.74rem;
-  color: var(--ink-soft);
-  font-style: italic;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-top: 1px;
-}
-
-.docFoot {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  margin-top: 0.4rem;
+  display: block;
   font-family: var(--font-ui);
-  font-size: 0.58rem;
+  font-size: 13.5px;
   font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
+  color: var(--text);
   white-space: nowrap;
-}
-
-.host {
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.by {
-  flex-shrink: 0;
+.docMeta {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.open {
-  margin-left: auto;
+.openIcon {
   flex-shrink: 0;
-  color: #1a9c47;
-  font-weight: 700;
+  color: var(--text-muted);
 }
 
 .remove {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  width: 20px;
-  height: 20px;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -102,27 +70,79 @@
   border: none;
   border-radius: 50%;
   cursor: pointer;
-  color: var(--ink-soft);
-  font-size: 0.68rem;
-  line-height: 1;
-  opacity: 0.4;
+  color: var(--text-muted);
+  opacity: 0;
   transition: opacity 0.15s, color 0.15s, background 0.15s;
 }
 
-.card:hover .remove,
+.row:hover .remove,
 .remove:focus {
   opacity: 1;
 }
 
 .remove:hover {
-  color: var(--red);
-  background: rgba(139, 26, 26, 0.1);
+  color: var(--danger-strong);
+  background: var(--status-rejected-bg);
 }
 
-.addRow {
+.addBtn {
+  margin-top: 4px;
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 9px 0;
+  background: transparent;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--accent);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.addBtn:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.addForm {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
-  border-top: 1px solid var(--cream-dark);
-  padding-top: 1rem;
+  gap: 8px;
+  border-top: 1px solid var(--border-soft);
+  padding-top: 12px;
+  margin-top: 4px;
+}
+
+.addActions {
+  display: flex;
+  gap: 8px;
+}
+
+.addActions :global(.btn-decree) {
+  flex: 1;
+  padding: 9px 16px;
+}
+
+.cancelBtn {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 9px 16px;
+  background: transparent;
+  border: 1px solid var(--border-input);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.cancelBtn:hover {
+  border-color: var(--border-strong);
+  color: var(--text);
 }

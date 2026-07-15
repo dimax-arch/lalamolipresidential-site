@@ -1,53 +1,226 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
 
 /* ═══════════════════════════════════════════════════════
-   PALACIO PRESIDENCIAL — globals (variables, reset, base,
-   keyframes y primitivas compartidas: formularios, botones,
-   badges, empty-state, partículas).
-   Los estilos específicos de cada componente viven en su
-   propio archivo *.module.css.
+   PALACIO PRESIDENCIAL — globals.
+   Dos temas (Rediseño "Turno 1"):
+     · dark  (1b — Sala de Situación): oscuro, oro como único acento. Default.
+     · light (1a — Despacho Claro): claro, paneles blancos, acento marrón.
+   El tema activo se fija con data-theme en <html> (ver src/lib/theme.js).
+   Los estilos específicos de cada componente viven en su *.module.css.
    ═══════════════════════════════════════════════════════ */
 
 :root {
-  --background: #f8f4ef;
-  --surface: #ede4d8;
-  --primary: #8b6b4a;
-  --primary-dark: #6d4c41;
-  --primary-light: #a58568;
-  --text: #3c2f2f;
-  --text-muted: #8d8178;
-  --bg-dark: #2a2321;
-  --bg-overlay: #1f1a18;
-  --bg-elevated: #332b28;
+  color-scheme: dark;
 
-  --cream: var(--background);
-  --cream-dark: var(--surface);
-  --gold: var(--primary);
-  --gold-light: var(--primary-light);
-  --gold-dim: var(--primary-dark);
-  --ink: var(--text);
-  --ink-mid: var(--primary-dark);
-  --ink-soft: var(--text-muted);
-  --parchment: var(--background);
-  --border-gold: var(--primary);
+  /* ─── Superficies y fondos (1b) ─── */
+  --bg: #1d1815;
+  --bg-page: radial-gradient(ellipse at 50% 40%, #241d18 0%, #14100d 70%);
+  --header-bg: #241e1a;
+  --surface: #2a231e; /* paneles */
+  --surface-2: #221c17; /* tarjetas/insets dentro de paneles */
+  --surface-3: #1f1a15; /* inputs */
+  --surface-hover: rgba(201, 161, 95, 0.07);
+  --bubble-other: #322a22;
 
+  /* ─── Bordes ─── */
+  --border: rgba(201, 161, 95, 0.16);
+  --border-soft: rgba(201, 161, 95, 0.12);
+  --border-input: rgba(201, 161, 95, 0.22);
+  --border-strong: rgba(201, 161, 95, 0.35);
+  --login-border: rgba(201, 161, 95, 0.3);
+
+  /* ─── Texto ─── */
+  --text: #ede3d3;
+  --text-strong: #f0e6d2;
+  --text-secondary: #b8a996;
+  --text-muted: #8f8172;
+  --text-faint: #6e6255;
+
+  /* ─── Acento (oro) ─── */
+  --accent: #c9a15f;
+  --accent-hover: #d9b578;
+  --on-accent: #241e18;
+  --accent-soft: rgba(201, 161, 95, 0.12);
+  --accent-soft-strong: rgba(201, 161, 95, 0.16);
+  --accent-border: rgba(201, 161, 95, 0.3);
+
+  /* ─── Títulos de panel (1b: uppercase espaciado) ─── */
+  --panel-title-color: #d9c9ae;
+  --panel-title-size: 0.78rem;
+  --panel-title-case: uppercase;
+  --panel-title-spacing: 0.1em;
+
+  /* ─── Semánticos ─── */
+  --danger: #d97062;
+  --danger-strong: #dd8073;
+  --live: #63b57f;
+  --live-text: #6cbd87;
+  --spotify: #1db954;
+  --spotify-text: #4ec97d;
+  --role-president: #e3b341;
+  --role-minister: #d97a3d;
+
+  /* Estados de decreto */
+  --status-pending-c: #d9aa5e;
+  --status-pending-bg: rgba(217, 170, 94, 0.1);
+  --status-pending-bd: rgba(217, 170, 94, 0.38);
+  --status-pending-bar: #d9aa5e;
+  --status-approved-c: #6cbd87;
+  --status-approved-bg: rgba(99, 181, 127, 0.1);
+  --status-approved-bd: rgba(99, 181, 127, 0.38);
+  --status-approved-bar: #63b57f;
+  --status-rejected-c: #dd8073;
+  --status-rejected-bg: rgba(217, 112, 98, 0.1);
+  --status-rejected-bd: rgba(217, 112, 98, 0.38);
+  --status-rejected-bar: #d97062;
+
+  /* Prioridades */
+  --prio-alta: #d97062;
+  --prio-media: #d9aa5e;
+  --prio-baja: #63b57f;
+
+  /* Historial */
+  --log-created: #82a8cf;
+
+  /* Chips del calendario */
+  --chip-pending-c: #e0b877;
+  --chip-pending-bg: rgba(217, 170, 94, 0.14);
+  --chip-approved-c: #84c79b;
+  --chip-approved-bg: rgba(99, 181, 127, 0.14);
+  --chip-rejected-c: #e39184;
+  --chip-rejected-bg: rgba(217, 112, 98, 0.14);
+
+  /* Celdas del calendario */
+  --cal-cell-bg: #2c251f;
+  --cal-cell-bd: rgba(201, 161, 95, 0.13);
+  --cal-sel-bg: rgba(201, 161, 95, 0.13);
+  --cal-num: #8f8172;
+  --cal-num-today: #e6d5b8;
+
+  /* Control segmentado (filtros) */
+  --seg-track: #221c17;
+  --seg-track-bd: rgba(201, 161, 95, 0.14);
+  --seg-active-bg: rgba(201, 161, 95, 0.2);
+  --seg-active-c: #f0e6d2;
+  --seg-idle-c: #8f8172;
+  --seg-shadow: none;
+
+  /* Logo / escudo */
+  --logo-ring: #c9a15f;
+  --logo-bg: radial-gradient(circle, #ffffff 42%, #0d1a0d 100%);
+  --logo-glow: 0 0 28px rgba(201, 161, 95, 0.25);
+
+  /* Sombras */
+  --shadow-panel: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-card: 0 0 60px rgba(201, 161, 95, 0.08), 0 20px 60px rgba(0, 0, 0, 0.7);
+  --shadow-seg: none;
+
+  --scroll-thumb: rgba(201, 161, 95, 0.35);
+  --particle-color: #ffffff;
+
+  /* ─── Tipografía y geometría (compartidos) ─── */
   --font-main: 'Libre Baskerville', Georgia, 'Times New Roman', serif;
   --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-  --red: #8b1a1a;
-  --red-light: #c22020;
-  --green-seal: #1a4a2a;
-  --shadow: rgba(60, 47, 47, 0.2);
-
-  /* ─── Geometría moderna: radios y elevación ─── */
   --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
   --radius-pill: 999px;
+}
 
-  --shadow-sm: 0 1px 2px rgba(60, 47, 47, 0.06), 0 1px 3px rgba(60, 47, 47, 0.08);
-  --shadow-md: 0 2px 6px rgba(60, 47, 47, 0.06), 0 6px 18px rgba(60, 47, 47, 0.1);
-  --shadow-lg: 0 4px 12px rgba(60, 47, 47, 0.08), 0 14px 40px rgba(60, 47, 47, 0.16);
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --bg: #f2ede4;
+  --bg-page: #f2ede4;
+  --header-bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #fdfbf7;
+  --surface-3: #faf7f1;
+  --surface-hover: #faf7f1;
+  --bubble-other: #ffffff;
+
+  --border: #e6ddcd;
+  --border-soft: #efe7d9;
+  --border-input: #e3dac9;
+  --border-strong: #d5c8b2;
+  --login-border: #e6ddcd;
+
+  --text: #2e2622;
+  --text-strong: #2e2622;
+  --text-secondary: #6f6357;
+  --text-muted: #9a8c7d;
+  --text-faint: #b3a695;
+
+  --accent: #8b6b4a;
+  --accent-hover: #6d4c41;
+  --on-accent: #ffffff;
+  --accent-soft: rgba(139, 107, 74, 0.1);
+  --accent-soft-strong: rgba(139, 107, 74, 0.12);
+  --accent-border: rgba(139, 107, 74, 0.22);
+
+  --panel-title-color: #2e2622;
+  --panel-title-size: 0.84rem;
+  --panel-title-case: none;
+  --panel-title-spacing: 0;
+
+  --danger: #c05e55;
+  --danger-strong: #a13232;
+  --live: #4d8a63;
+  --live-text: #178f43;
+  --spotify-text: #178f43;
+  --role-president: #6d4c41;
+  --role-minister: #b0722a;
+
+  --status-pending-c: #8a5a1f;
+  --status-pending-bg: #f5e9d7;
+  --status-pending-bd: #e3cba4;
+  --status-pending-bar: #c99a4e;
+  --status-approved-c: #2f6b45;
+  --status-approved-bg: #e4efe6;
+  --status-approved-bd: #bcd6c4;
+  --status-approved-bar: #4d8a63;
+  --status-rejected-c: #a13232;
+  --status-rejected-bg: #f6e3e1;
+  --status-rejected-bd: #e2b8b4;
+  --status-rejected-bar: #c05e55;
+
+  --prio-alta: #c05e55;
+  --prio-media: #c99a4e;
+  --prio-baja: #4d8a63;
+
+  --log-created: #2f5f8a;
+
+  --chip-pending-c: #7c5a2b;
+  --chip-pending-bg: #f5e9d7;
+  --chip-approved-c: #2f6b45;
+  --chip-approved-bg: #e4efe6;
+  --chip-rejected-c: #a13232;
+  --chip-rejected-bg: #f6e3e1;
+
+  --cal-cell-bg: #fdfbf7;
+  --cal-cell-bd: #eee5d6;
+  --cal-sel-bg: rgba(139, 107, 74, 0.1);
+  --cal-num: #9a8c7d;
+  --cal-num-today: #8b6b4a;
+
+  --seg-track: #f2ede4;
+  --seg-track-bd: transparent;
+  --seg-active-bg: #ffffff;
+  --seg-active-c: #2e2622;
+  --seg-idle-c: #8a7c6c;
+  --seg-shadow: 0 1px 3px rgba(46, 38, 30, 0.12);
+
+  --logo-ring: #c9b393;
+  --logo-bg: radial-gradient(circle, #ffffff 45%, #ece3d4 100%);
+  --logo-glow: none;
+
+  --shadow-panel: 0 1px 2px rgba(46, 38, 30, 0.04), 0 4px 16px rgba(46, 38, 30, 0.05);
+  --shadow-card: 0 2px 6px rgba(46, 38, 30, 0.05), 0 18px 50px rgba(46, 38, 30, 0.12);
+
+  --scroll-thumb: #d5c8b2;
+  --particle-color: #8b6b4a;
 }
 
 *,
@@ -60,17 +233,17 @@
 
 html {
   scroll-behavior: smooth;
-  font-family: var(--font-main);
+  font-family: var(--font-ui);
 }
 
 body {
-  background-color: var(--bg-dark);
-  background-image: radial-gradient(ellipse at 20% 20%, rgba(139, 107, 74, 0.08) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 80%, rgba(139, 26, 26, 0.05) 0%, transparent 60%);
+  background-color: var(--bg);
+  background-image: var(--bg-page);
+  background-attachment: fixed;
   min-height: 100vh;
-  font-family: inherit;
-  font-weight: 600;
-  color: var(--ink);
+  font-family: var(--font-ui);
+  font-weight: 400;
+  color: var(--text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -89,10 +262,10 @@ optgroup {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--bg-dark);
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--primary-dark);
+  background: var(--scroll-thumb);
   border-radius: var(--radius-pill);
 }
 
@@ -111,7 +284,7 @@ optgroup {
   width: 2px;
   height: 2px;
   border-radius: 50%;
-  background: #ffffff;
+  background: var(--particle-color);
   opacity: 0;
   animation: particleFade var(--dur, 6s) ease-in-out var(--delay, 0s) infinite;
 }
@@ -120,18 +293,18 @@ optgroup {
    PRIMITIVAS DE FORMULARIO (compartidas)
    ═══════════════════════════════════════════════════════ */
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 14px;
 }
 
 .form-label {
   display: block;
   font-family: var(--font-ui);
-  font-size: 0.66rem;
+  font-size: 11px;
   font-weight: 600;
-  color: var(--ink-soft);
-  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  margin-bottom: 0.4rem;
+  margin-bottom: 6px;
 }
 
 .form-input,
@@ -139,70 +312,78 @@ optgroup {
 .form-textarea {
   width: 100%;
   font-family: var(--font-ui);
-  font-size: 0.92rem;
+  font-size: 14px;
   font-weight: 500;
-  color: var(--ink);
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid var(--cream-dark);
-  padding: 0.6rem 0.85rem;
+  color: var(--text);
+  background-color: var(--surface-3);
+  border: 1px solid var(--border-input);
+  padding: 9px 12px;
   outline: none;
-  transition: all 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
   border-radius: var(--radius-sm);
   -webkit-appearance: none;
   appearance: none;
 }
 
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: var(--text-faint);
+}
+
 .form-input:focus,
 .form-select:focus,
 .form-textarea:focus {
-  background: #fff;
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(139, 107, 74, 0.15);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 .form-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238B6B4A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c9a15f' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 0.75rem center;
-  padding-right: 2rem;
+  background-position: right 12px center;
+  padding-right: 32px;
   cursor: pointer;
+}
+
+:root[data-theme='light'] .form-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238B6B4A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 
 .form-textarea {
   resize: vertical;
-  min-height: 120px;
-  font-size: 1rem;
-  line-height: 1.7;
+  min-height: 96px;
+  font-weight: 400;
+  line-height: 1.6;
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
+  gap: 12px;
 }
 
 /* ── Inputs de fecha/hora ──
    En iOS Safari no soportan placeholder y, con appearance:none, se ven como
-   cajas blancas vacías sin pista. Les damos altura consistente, alineamos el
-   valor a la izquierda (iOS lo centra) y agregamos un ícono fijo (calendario/
-   reloj) para que siempre comuniquen que son seleccionables. */
+   cajas vacías sin pista. Les damos altura consistente, alineamos el valor a
+   la izquierda (iOS lo centra) y agregamos un ícono fijo (calendario/reloj)
+   para que siempre comuniquen que son seleccionables. */
 input[type='date'].form-input,
 input[type='time'].form-input {
   position: relative;
-  min-height: 2.65rem;
+  min-height: 38px;
   background-repeat: no-repeat;
-  background-position: right 0.7rem center;
-  background-size: 16px 16px;
-  padding-right: 2.1rem;
+  background-position: right 10px center;
+  background-size: 15px 15px;
+  padding-right: 32px;
   cursor: pointer;
 }
 
 input[type='date'].form-input {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238B6B4A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='%239a8c7d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E");
 }
 
 input[type='time'].form-input {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238B6B4A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpolyline points='12 7 12 12 15 14'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='%239a8c7d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpolyline points='12 7 12 12 15 14'/%3E%3C/svg%3E");
 }
 
 /* Valor/placeholder alineado a la izquierda y visible (iOS) */
@@ -213,7 +394,7 @@ input[type='time'].form-input::-webkit-date-and-time-value {
 
 input[type='date'].form-input::-webkit-datetime-edit,
 input[type='time'].form-input::-webkit-datetime-edit {
-  color: var(--ink);
+  color: var(--text);
 }
 
 /* El indicador nativo se hace transparente y se estira para cubrir TODO el
@@ -236,31 +417,31 @@ input[type='time'].form-input::-webkit-calendar-picker-indicator {
    ═══════════════════════════════════════════════════════ */
 .btn-decree {
   font-family: var(--font-ui);
-  font-size: 0.74rem;
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 0.7rem 1.5rem;
-  background: var(--primary);
-  color: #fff;
-  border: 1px solid var(--primary);
+  padding: 11px 24px;
+  background: var(--accent);
+  color: var(--on-accent);
+  border: 1px solid var(--accent);
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.2s;
   width: 100%;
-  display: block;
-  box-shadow: var(--shadow-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .btn-decree:hover {
-  background: var(--primary-dark);
-  border-color: var(--primary-dark);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
 }
 
 .btn-decree:active {
-  transform: translateY(0);
+  transform: translateY(1px);
 }
 
 .btn-decree:disabled {
@@ -271,43 +452,71 @@ input[type='time'].form-input::-webkit-calendar-picker-indicator {
 
 .btn-send {
   width: auto;
-  padding: 0.5rem 1rem;
+  padding: 9px 14px;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .btn-small {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   font-family: var(--font-ui);
-  font-size: 0.62rem;
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 0.3rem 0.8rem;
+  padding: 5px 11px;
   background: transparent;
-  border: 1px solid currentColor;
+  border: 1px solid var(--border-input);
+  color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.15s;
   border-radius: var(--radius-pill);
 }
 
 .btn-small:hover {
-  opacity: 0.75;
-  transform: translateY(-1px);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .btn-small:disabled {
-  opacity: 0.3;
+  opacity: 0.35;
   cursor: default;
-  transform: none;
+}
+
+.btn-small:disabled:hover {
+  border-color: var(--border-input);
+  color: var(--text-secondary);
 }
 
 .btn-small--approve {
-  color: var(--green-seal);
+  background: var(--status-approved-bg);
+  border-color: var(--status-approved-bd);
+  color: var(--status-approved-c);
 }
+
+.btn-small--approve:hover {
+  border-color: var(--status-approved-c);
+  color: var(--status-approved-c);
+}
+
 .btn-small--reject {
-  color: var(--red);
+  border-color: var(--status-rejected-bd);
+  color: var(--danger-strong);
 }
+
+.btn-small--reject:hover {
+  background: var(--status-rejected-bg);
+  border-color: var(--danger-strong);
+  color: var(--danger-strong);
+}
+
 .btn-small--delete {
-  color: var(--ink-soft);
+  color: var(--text-muted);
+}
+
+.btn-small--delete:hover {
+  border-color: var(--danger);
+  color: var(--danger-strong);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -315,11 +524,10 @@ input[type='time'].form-input::-webkit-calendar-picker-indicator {
    ═══════════════════════════════════════════════════════ */
 .status-badge {
   font-family: var(--font-ui);
-  font-size: 0.58rem;
+  font-size: 10.5px;
   font-weight: 600;
-  padding: 0.2rem 0.6rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  padding: 3px 10px;
+  letter-spacing: 0.04em;
   border: 1px solid;
   border-radius: var(--radius-pill);
   white-space: nowrap;
@@ -327,19 +535,19 @@ input[type='time'].form-input::-webkit-calendar-picker-indicator {
 }
 
 .status-badge--pending {
-  color: var(--primary-dark);
-  border-color: var(--primary-dark);
-  background: rgba(139, 107, 74, 0.1);
+  color: var(--status-pending-c);
+  border-color: var(--status-pending-bd);
+  background: var(--status-pending-bg);
 }
 .status-badge--approved {
-  color: var(--green-seal);
-  border-color: var(--green-seal);
-  background: rgba(26, 74, 42, 0.08);
+  color: var(--status-approved-c);
+  border-color: var(--status-approved-bd);
+  background: var(--status-approved-bg);
 }
 .status-badge--rejected {
-  color: var(--red);
-  border-color: var(--red);
-  background: rgba(139, 26, 26, 0.08);
+  color: var(--status-rejected-c);
+  border-color: var(--status-rejected-bd);
+  background: var(--status-rejected-bg);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -348,18 +556,18 @@ input[type='time'].form-input::-webkit-calendar-picker-indicator {
 .empty-state {
   text-align: center;
   padding: 2rem 1rem;
-  color: var(--ink-soft);
+  color: var(--text-muted);
 }
 
 .empty-icon {
-  font-size: 2rem;
+  font-size: 1.6rem;
   margin-bottom: 0.5rem;
+  opacity: 0.7;
 }
 
 .empty-text {
-  font-family: var(--font-main);
-  font-style: italic;
-  font-size: 0.95rem;
+  font-family: var(--font-ui);
+  font-size: 13px;
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -390,16 +598,6 @@ input[type='time'].form-input::-webkit-calendar-picker-indicator {
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes sealGlow {
-  0%,
-  100% {
-    box-shadow: 0 0 20px rgba(139, 107, 74, 0.25), inset 0 0 10px rgba(0, 0, 0, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 40px rgba(139, 107, 74, 0.45), inset 0 0 10px rgba(0, 0, 0, 0.5);
   }
 }
 

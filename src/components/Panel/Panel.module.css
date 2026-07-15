@@ -1,11 +1,12 @@
 .panel {
-  background: var(--parchment);
-  border: 1px solid rgba(139, 107, 74, 0.18);
-  border-top: 3px solid var(--gold);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-panel);
   overflow: hidden;
   animation: fadeSlideIn 0.5s ease both;
+  display: flex;
+  flex-direction: column;
 }
 
 .full {
@@ -13,52 +14,91 @@
 }
 
 .header {
-  background: var(--text);
-  padding: 0.7rem 1.25rem;
+  padding: 14px 18px;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  border-bottom: 2px solid var(--border-gold);
+  gap: 10px;
+  border-bottom: 1px solid var(--border-soft);
+  flex-wrap: wrap;
 }
 
-.icon {
-  font-size: 1rem;
+.iconChip {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .title {
   font-family: var(--font-ui);
-  font-size: 0.7rem;
+  font-size: var(--panel-title-size);
   font-weight: 600;
-  color: #ffffff;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  flex: 1;
+  color: var(--panel-title-color);
+  letter-spacing: var(--panel-title-spacing);
+  text-transform: var(--panel-title-case);
+}
+
+.actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  min-width: 0;
 }
 
 .badge {
   font-family: var(--font-ui);
-  font-size: 0.58rem;
+  font-size: 11px;
   font-weight: 600;
-  background: var(--red);
-  color: #ffd0d0;
-  padding: 0.2rem 0.6rem;
-  letter-spacing: 0.08em;
-  border: 1px solid #c22020;
+  padding: 3px 10px;
   border-radius: var(--radius-pill);
+  white-space: nowrap;
 }
 
-.badgeGreen {
-  background: var(--green-seal);
-  color: #c0ffcc;
-  border-color: #2a7a40;
+.badgeNeutral {
+  color: var(--text-secondary);
+  background: var(--accent-soft);
+  border: 1px solid transparent;
+}
+
+.badgePending {
+  color: var(--status-pending-c);
+  background: var(--status-pending-bg);
+  border: 1px solid var(--status-pending-bd);
+}
+
+.badgeApproved {
+  color: var(--status-approved-c);
+  background: var(--status-approved-bg);
+  border: 1px solid var(--status-approved-bd);
 }
 
 .body {
-  padding: 1.4rem;
+  padding: 16px 18px;
+  flex: 1;
+  min-height: 0;
+}
+
+.bodyFlush {
+  padding: 0;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 @media (max-width: 720px) {
   .full {
     grid-column: 1;
+  }
+
+  .body {
+    padding: 14px;
   }
 }

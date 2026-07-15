@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { USERS } from '../../lib/constants';
 import Panel, { PanelBadge } from '../Panel/Panel.jsx';
+import Icon from '../Icons/Icons.jsx';
 import styles from './MessagePanel.module.css';
 
 export default function MessagePanel({ messages, onSend }) {
@@ -40,28 +41,35 @@ export default function MessagePanel({ messages, onSend }) {
     setText('');
   }
 
-  const badge = showBadge ? <PanelBadge>NUEVO</PanelBadge> : null;
+  const badge = showBadge ? <PanelBadge tone="pending">Nuevo</PanelBadge> : null;
+
+  const live = (
+    <span className={styles.live}>
+      <span className={styles.liveDot} />
+      Canal seguro
+    </span>
+  );
 
   return (
-    <Panel icon="📡" title="Línea Directa — Canal Seguro" badge={badge}>
+    <Panel icon={<Icon name="chat" />} title="Línea directa" badge={badge} actions={live} flush>
       <div className={styles.logArea} ref={areaRef}>
         {messages.length === 0 ? (
-          <div className={styles.entry}>
-            <span className={styles.ts}>──</span>
-            <span className={`${styles.msg} ${styles.system}`}>
-              Canal de comunicación activo. Bienvenido/a al Palacio.
-            </span>
-          </div>
+          <div className={styles.system}>Canal de comunicación activo. Bienvenido/a al Palacio.</div>
         ) : (
           messages.map((m) => {
             const user = USERS[m.userKey];
+            const mine = m.userKey === userKey;
+            const roleName = user ? user.short : m.userKey;
             const roleClass = user ? styles[user.logClass] : '';
-            const roleName = user ? user.short.toUpperCase() : m.userKey.toUpperCase();
             return (
-              <div className={styles.entry} key={m.id}>
-                <span className={styles.ts}>[{m.ts}]</span>
-                <span className={`${styles.role} ${roleClass}`}>{roleName}:</span>
-                <span className={styles.msg}>{m.text}</span>
+              <div
+                className={[styles.bubbleWrap, mine ? styles.mine : styles.theirs].join(' ')}
+                key={m.id}
+              >
+                <span className={`${styles.author} ${roleClass}`}>
+                  {roleName} · {m.ts}
+                </span>
+                <span className={styles.bubble}>{m.text}</span>
               </div>
             );
           })
@@ -77,11 +85,16 @@ export default function MessagePanel({ messages, onSend }) {
           onKeyDown={(e) => {
             if (e.key === 'Enter') handleSend();
           }}
-          placeholder="Transmitir mensaje cifrado…"
+          placeholder="Transmitir mensaje…"
           maxLength={300}
         />
-        <button className="btn-decree btn-send" type="button" onClick={handleSend}>
-          Enviar ▶
+        <button
+          className={styles.sendBtn}
+          type="button"
+          onClick={handleSend}
+          aria-label="Enviar mensaje"
+        >
+          <Icon name="send" />
         </button>
       </div>
     </Panel>

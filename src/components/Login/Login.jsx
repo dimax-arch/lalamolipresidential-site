@@ -3,6 +3,8 @@ import { useAuth } from '../../context/AuthContext.jsx';
 import { useToast } from '../../context/ToastContext.jsx';
 import { getSupabaseClient } from '../../lib/supabase';
 import Particles from '../Particles/Particles.jsx';
+import ThemeToggle from '../ThemeToggle/ThemeToggle.jsx';
+import Icon from '../Icons/Icons.jsx';
 import styles from './Login.module.css';
 
 const crown = `${import.meta.env.BASE_URL}coronalaureles.png`;
@@ -85,15 +87,17 @@ export default function Login() {
     <div className={styles.overlay}>
       <Particles />
 
+      <div className={styles.themeCorner}>
+        <ThemeToggle />
+      </div>
+
       <div className={styles.box}>
         <div className={styles.seal}>
-          <img src={crown} alt="Corona de laureles" width="72" height="72" />
+          <img src={crown} alt="Corona de laureles" width="50" height="50" />
         </div>
-        <div className={styles.eyebrow}>Documento Clasificado — Acceso Restringido</div>
-        <h1 className={styles.title}>Gestión presidencial</h1>
+        <div className={styles.eyebrow}>Acceso restringido</div>
+        <h1 className={styles.title}>Gestión Presidencial</h1>
         <p className={styles.subtitle}>Identifíquese ante el sistema</p>
-
-        <div className={styles.divider}>✦ ✦ ✦</div>
 
         {mode === 'login' && (
           <>
@@ -131,9 +135,10 @@ export default function Login() {
                   className={styles.togglePass}
                   type="button"
                   title="Mostrar/ocultar"
+                  aria-label="Mostrar/ocultar contraseña"
                   onClick={() => setShowPass((v) => !v)}
                 >
-                  👁
+                  <Icon name={showPass ? 'eyeOff' : 'eye'} />
                 </button>
               </div>
             </div>
@@ -141,7 +146,7 @@ export default function Login() {
             <div className={styles.error}>{error}</div>
 
             <button className="btn-decree" type="button" disabled={loading} onClick={handleLogin}>
-              {loading ? 'Verificando…' : 'Verificar Identidad ⚑'}
+              {loading ? 'Verificando…' : 'Verificar identidad'}
             </button>
             <button className={styles.forgot} type="button" onClick={openForgot}>
               ¿Olvidé mi contraseña?
@@ -178,7 +183,7 @@ export default function Login() {
             </div>
             <div className={styles.error}>{forgotError}</div>
             <button className="btn-decree" type="button" disabled={forgotLoading} onClick={sendReset}>
-              {forgotLoading ? 'Enviando…' : 'Enviar enlace de recuperación ✉'}
+              {forgotLoading ? 'Enviando…' : 'Enviar enlace de recuperación'}
             </button>
             <button className={styles.forgot} type="button" onClick={() => setMode('login')}>
               ← Volver al inicio de sesión
@@ -203,9 +208,7 @@ export default function Login() {
           </div>
         )}
 
-        <div className={styles.footer}>
-          Acceso disponible solo para miembros del Gabinete Presidencial.
-        </div>
+        <div className={styles.footer}>Solo miembros del Gabinete Presidencial</div>
       </div>
     </div>
   );

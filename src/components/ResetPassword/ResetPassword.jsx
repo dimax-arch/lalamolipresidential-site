@@ -2,16 +2,17 @@ import { useEffect, useRef, useState } from 'react';
 import { getSupabaseClient } from '../../lib/supabase';
 import Particles from '../Particles/Particles.jsx';
 import { useToast } from '../../context/ToastContext.jsx';
+import Icon from '../Icons/Icons.jsx';
 import styles from './ResetPassword.module.css';
 
 const crown = `${import.meta.env.BASE_URL}coronalaureles.png`;
 
 const STRENGTH_LEVELS = [
   { pct: '0%', color: 'transparent', text: '' },
-  { pct: '25%', color: '#C22020', text: 'Débil' },
-  { pct: '50%', color: '#8B6B4A', text: 'Regular' },
-  { pct: '75%', color: '#6D4C41', text: 'Buena' },
-  { pct: '100%', color: '#2A7A40', text: 'Fuerte ✓' },
+  { pct: '25%', color: '#c05e55', text: 'Débil' },
+  { pct: '50%', color: '#c99a4e', text: 'Regular' },
+  { pct: '75%', color: '#8b6b4a', text: 'Buena' },
+  { pct: '100%', color: '#4d8a63', text: 'Fuerte ✓' },
 ];
 
 function scorePassword(val) {
@@ -103,12 +104,10 @@ export default function ResetPassword() {
 
       <div className={styles.box}>
         <div className={styles.seal}>
-          <img src={crown} alt="Corona de laureles" width="72" height="72" />
+          <img src={crown} alt="Corona de laureles" width="50" height="50" />
         </div>
         <div className={styles.eyebrow}>Gabinete Presidencial</div>
         <h1 className={styles.title}>Nueva Contraseña</h1>
-
-        <div className={styles.divider}>✦ ✦ ✦</div>
 
         {view === 'loading' && (
           <div className={styles.centered}>
@@ -135,9 +134,10 @@ export default function ResetPassword() {
                 <button
                   className={styles.togglePass}
                   type="button"
+                  aria-label="Mostrar/ocultar contraseña"
                   onClick={() => setShow1((v) => !v)}
                 >
-                  👁
+                  <Icon name={show1 ? 'eyeOff' : 'eye'} />
                 </button>
               </div>
               <div className={styles.strengthBar}>
@@ -168,9 +168,10 @@ export default function ResetPassword() {
                 <button
                   className={styles.togglePass}
                   type="button"
+                  aria-label="Mostrar/ocultar contraseña"
                   onClick={() => setShow2((v) => !v)}
                 >
-                  👁
+                  <Icon name={show2 ? 'eyeOff' : 'eye'} />
                 </button>
               </div>
             </div>
@@ -178,7 +179,7 @@ export default function ResetPassword() {
             <div className={styles.error}>{error}</div>
 
             <button className="btn-decree" type="button" disabled={saving} onClick={doReset}>
-              {saving ? 'Guardando…' : 'Establecer nueva contraseña ⚑'}
+              {saving ? 'Guardando…' : 'Establecer nueva contraseña'}
             </button>
           </>
         )}
