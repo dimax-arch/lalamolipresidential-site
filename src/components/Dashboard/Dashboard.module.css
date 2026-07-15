@@ -22,10 +22,10 @@
   flex-shrink: 0;
 }
 
-/* ── Fila superior: decreto / línea directa / carril (Spotify + archivos) ── */
+/* ── Fila superior: línea directa (angosta) / decreto (ancho) / carril ── */
 .topGrid {
   display: grid;
-  grid-template-columns: 400px minmax(0, 1fr) 350px;
+  grid-template-columns: 360px minmax(0, 1fr) 350px;
   gap: 20px;
   align-items: stretch;
 }
@@ -72,6 +72,11 @@
   .topGrid {
     grid-template-columns: 1fr;
     gap: 16px;
+  }
+
+  /* En móvil el lanzador de decretos (2.º hijo) sube arriba del chat */
+  .topGrid > :nth-child(2) {
+    order: -1;
   }
 
   .rail {

@@ -23,8 +23,8 @@ export default function Dashboard() {
           calendario y agenda a lo ancho, como en el rediseño. */}
       <main className={styles.shell}>
         <div className={styles.topGrid}>
-          <DecretoForm onSubmit={submitItem} />
           <MessagePanel messages={messages} onSend={sendMessage} />
+          <DecretoForm onSubmit={submitItem} />
           <div className={styles.rail}>
             <SpotifyPanel />
             <DocumentsPanel />

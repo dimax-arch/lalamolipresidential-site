@@ -1,3 +1,43 @@
+/* ─── Formulario amplio (columna ancha del escritorio) ─── */
+.wideForm {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.wideForm > :global(.btn-decree) {
+  margin-top: auto;
+}
+
+.gridWide {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  column-gap: 16px;
+}
+
+/* Fecha + hora + prioridad en una sola fila a lo ancho */
+.rowWide {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.4fr;
+  column-gap: 16px;
+}
+
+/* El envoltorio fecha+hora se disuelve para que cada campo sea celda propia */
+.flatten {
+  display: contents;
+}
+
+.descWide {
+  grid-column: 1 / -1;
+  margin-bottom: 18px;
+}
+
+.textareaWide {
+  min-height: 220px;
+}
+
+/* ─── Prioridad segmentada ─── */
 .prioGroup {
   margin-bottom: 18px;
 }
@@ -52,4 +92,164 @@
 
 .prioDot[data-prio='baja'] {
   background: var(--prio-baja);
+}
+
+/* ─── Tarjeta lanzadora (móvil) ─── */
+.launcher {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  padding: 10px 0 4px;
+}
+
+.launcherIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.launcherText {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0 0 4px;
+}
+
+/* ─── Ventana modal ─── */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(15, 10, 5, 0.6);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  width: 100%;
+  max-width: 560px;
+  max-height: calc(100dvh - 32px);
+  display: flex;
+  flex-direction: column;
+  animation: loginAppear 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.modalHeader {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--border-soft);
+  flex-shrink: 0;
+}
+
+.modalIcon {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalTitle {
+  font-family: var(--font-ui);
+  font-size: var(--panel-title-size);
+  font-weight: 600;
+  color: var(--panel-title-color);
+  letter-spacing: var(--panel-title-spacing);
+  text-transform: var(--panel-title-case);
+  flex: 1;
+  min-width: 0;
+}
+
+.modalClose {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--border-input);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.modalClose:hover {
+  border-color: var(--danger);
+  color: var(--danger-strong);
+}
+
+.modalBody {
+  padding: 16px 18px 4px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.modalFooter {
+  padding: 12px 18px 16px;
+  display: flex;
+  gap: 8px;
+  border-top: 1px solid var(--border-soft);
+  flex-shrink: 0;
+}
+
+.modalFooter :global(.btn-decree) {
+  flex: 1;
+}
+
+.cancelBtn {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 9px 18px;
+  background: transparent;
+  border: 1px solid var(--border-input);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.cancelBtn:hover {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+/* En pantallas muy chicas el modal ocupa toda la pantalla */
+@media (max-width: 600px) {
+  .backdrop {
+    padding: 0;
+  }
+
+  .modal {
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    border-radius: 0;
+    border: none;
+  }
 }
