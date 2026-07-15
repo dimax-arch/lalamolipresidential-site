@@ -89,6 +89,9 @@
   --chip-approved-bg: rgba(99, 181, 127, 0.14);
   --chip-rejected-c: #e39184;
   --chip-rejected-bg: rgba(217, 112, 98, 0.14);
+  --chip-google-c: #93b9e4;
+  --chip-google-bg: rgba(106, 156, 216, 0.14);
+  --status-google-bar: #6a9cd8;
 
   /* Celdas del calendario */
   --cal-cell-bg: #2c251f;
@@ -198,6 +201,9 @@
   --chip-approved-bg: #e4efe6;
   --chip-rejected-c: #a13232;
   --chip-rejected-bg: #f6e3e1;
+  --chip-google-c: #2f5d8f;
+  --chip-google-bg: #e3ecf6;
+  --status-google-bar: #4a7ab0;
 
   --cal-cell-bg: #fdfbf7;
   --cal-cell-bd: #eee5d6;

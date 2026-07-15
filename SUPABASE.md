@@ -155,7 +155,65 @@ supabase functions deploy send-push --no-verify-jwt
 Si los secrets de email no están configurados, el push sigue funcionando y el
 email simplemente se omite (se registra en los logs).
 
-## 7. Probar
+## 7. Google: login y calendario (opcional)
+
+Habilita el botón **"Entrar con Google"** y la conexión del Google Calendar de cada
+usuario al calendario oficial (solo lectura, por dispositivo).
+
+### 7.1 Google Cloud Console
+
+1. Crea un proyecto en [console.cloud.google.com](https://console.cloud.google.com).
+2. **APIs & Services → Library**: habilita **Google Calendar API**.
+3. **APIs & Services → OAuth consent screen**: tipo **External**, y añade los correos
+   del presidente y del ministro como **Test users** (con la app en modo "Testing" solo
+   ellos podrán entrar, que es exactamente lo que queremos).
+4. **APIs & Services → Credentials → Create Credentials → OAuth client ID**:
+   - Tipo: **Web application**.
+   - Authorized redirect URI: `https://<PROJECT_REF>.supabase.co/auth/v1/callback`
+     (cópiala exacta del paso 7.2).
+   - Guarda el **Client ID** y el **Client Secret**.
+
+### 7.2 Supabase
+
+1. **Authentication → Providers → Google**: actívalo y pega Client ID y Client Secret.
+   Ahí mismo aparece la **Callback URL** que debes registrar en Google (paso 7.1.4).
+2. Los correos de las cuentas de Google **deben coincidir** con los de los usuarios del
+   gabinete; así Supabase enlaza la identidad de Google con la cuenta existente en vez
+   de crear un usuario huérfano sin rol.
+3. El rol debe vivir en `app_metadata` (controlado por el servidor, sobrevive al login
+   OAuth). En **SQL Editor**:
+
+   ```sql
+   update auth.users
+     set raw_app_meta_data = raw_app_meta_data || '{"role": "president"}'
+     where email = 'presidente@palacio.local';
+
+   update auth.users
+     set raw_app_meta_data = raw_app_meta_data || '{"role": "minister"}'
+     where email = 'ministro@palacio.local';
+   ```
+
+### 7.3 Edge Function `google-refresh`
+
+Refresca el access token de Google (el client secret nunca llega al navegador):
+
+```bash
+supabase secrets set GOOGLE_CLIENT_ID=... GOOGLE_CLIENT_SECRET=...
+supabase functions deploy google-refresh
+```
+
+Deben ser las **mismas** credenciales del provider de Google en Supabase Auth.
+
+### 7.4 Cómo funciona
+
+- "Entrar con Google" pide el scope `calendar.readonly` con `access_type=offline`, así
+  que iniciar sesión con Google ya conecta el calendario en ese dispositivo.
+- Quien entre con contraseña puede pulsar **"Conectar Google"** en el calendario: repite
+  el mismo flujo OAuth y vuelve a la app con los tokens.
+- Los tokens viven en `localStorage` (como los de Spotify): la conexión es por
+  dispositivo y cada usuario ve solo su propio calendario.
+
+## 8. Probar
 
 Levanta la app con `npm run dev` e inicia sesión con dos navegadores (presidente y ministro). Los decretos y mensajes deben aparecer al instante en ambos.
 

@@ -3,8 +3,14 @@ import { getConfigError, getSupabaseClient } from '../lib/supabase';
 import { USERS } from '../lib/constants';
 import { userKeyFromAuthUser } from '../lib/roles';
 import { disconnect as disconnectSpotify, seedProviderTokens } from '../lib/spotify';
+import { disconnect as disconnectGoogle, seedProviderTokens as seedGoogleTokens } from '../lib/google';
 
 const AuthContext = createContext(null);
+
+// Marca qué proveedor inició el OAuth (sessionStorage sobrevive a la
+// redirección). Sin ella no se puede saber de quién es el provider_token
+// que llega en SIGNED_IN.
+const SS_OAUTH_PROVIDER = 'oauth_provider';
 
 export { userKeyFromAuthUser };
 
@@ -60,14 +66,20 @@ export function AuthProvider({ children }) {
       if (!mounted) return;
       applySession(session);
 
-      // Login con Spotify (OAuth de Supabase): reutilizamos el token del
-      // proveedor para el panel "now playing" (una sola conexión).
+      // Login OAuth de Supabase: reutilizamos el token del proveedor
+      // (Spotify → panel "now playing"; Google → calendario). El flag de
+      // sessionStorage lo puso loginWithSpotify/loginWithGoogle antes de
+      // redirigir; si falta, se asume Spotify (comportamiento histórico).
       if (event === 'SIGNED_IN' && session?.provider_token) {
-        seedProviderTokens({
+        const provider = sessionStorage.getItem(SS_OAUTH_PROVIDER);
+        sessionStorage.removeItem(SS_OAUTH_PROVIDER);
+        const tokens = {
           accessToken: session.provider_token,
           refreshToken: session.provider_refresh_token,
           expiresIn: 3600,
-        });
+        };
+        if (provider === 'google') seedGoogleTokens(tokens);
+        else seedProviderTokens(tokens);
       }
     });
 
@@ -99,6 +111,7 @@ export function AuthProvider({ children }) {
     const supabase = getSupabaseClient();
     if (!supabase) return { error: getConfigError() || 'Supabase no configurado.' };
     setAuthNotice(null);
+    sessionStorage.setItem(SS_OAUTH_PROVIDER, 'spotify');
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'spotify',
       options: {
@@ -114,10 +127,32 @@ export function AuthProvider({ children }) {
     return { ok: true }; // el navegador redirige a Spotify
   }
 
+  async function loginWithGoogle() {
+    const supabase = getSupabaseClient();
+    if (!supabase) return { error: getConfigError() || 'Supabase no configurado.' };
+    setAuthNotice(null);
+    sessionStorage.setItem(SS_OAUTH_PROVIDER, 'google');
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        // calendar.readonly permite mostrar el Google Calendar del usuario
+        // en el calendario oficial. access_type=offline + prompt=consent son
+        // imprescindibles: sin ellos Google no entrega refresh token y la
+        // conexión moriría a la hora.
+        scopes: 'openid email https://www.googleapis.com/auth/calendar.readonly',
+        queryParams: { access_type: 'offline', prompt: 'consent' },
+        redirectTo: `${window.location.origin}/`,
+      },
+    });
+    if (error) return { error: error.message };
+    return { ok: true }; // el navegador redirige a Google
+  }
+
   async function logout() {
     const supabase = getSupabaseClient();
     if (supabase) await supabase.auth.signOut();
     disconnectSpotify();
+    disconnectGoogle();
     setUserKey(null);
     setAuthId(null);
   }
@@ -135,6 +170,7 @@ export function AuthProvider({ children }) {
         authNotice,
         login,
         loginWithSpotify,
+        loginWithGoogle,
         logout,
       }}
     >

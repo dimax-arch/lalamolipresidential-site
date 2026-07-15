@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { PRIORITY_LABELS, TYPE_LABELS, USERS } from '../../lib/constants';
+import { useGoogleCalendar } from '../../hooks/useGoogleCalendar.js';
 import Panel, { PanelBadge } from '../Panel/Panel.jsx';
 import Icon from '../Icons/Icons.jsx';
 import styles from './Calendar.module.css';
@@ -38,6 +39,9 @@ export default function Calendar({ items }) {
   const [month, setMonth] = useState(now.getMonth());
   const [selectedKey, setSelectedKey] = useState(todayKey);
 
+  // Google Calendar del usuario (solo lectura, opcional)
+  const google = useGoogleCalendar(year, month);
+
   // Agrupa los decretos con fecha por día (los sin fecha no aparecen)
   const eventsByDate = useMemo(() => {
     const map = {};
@@ -51,6 +55,19 @@ export default function Calendar({ items }) {
     }
     return map;
   }, [items]);
+
+  // Eventos de Google agrupados por día (los de día completo primero)
+  const googleByDate = useMemo(() => {
+    const map = {};
+    for (const ev of google.events) {
+      if (!map[ev.date]) map[ev.date] = [];
+      map[ev.date].push(ev);
+    }
+    for (const key of Object.keys(map)) {
+      map[key].sort((a, b) => (a.time || '00:00').localeCompare(b.time || '00:00'));
+    }
+    return map;
+  }, [google.events]);
 
   // Rejilla del mes: semanas de 7 celdas, rellenando con días vecinos
   const cells = useMemo(() => {
@@ -97,6 +114,7 @@ export default function Calendar({ items }) {
   }
 
   const selectedEvents = (selectedKey && eventsByDate[selectedKey]) || [];
+  const selectedGoogle = (selectedKey && googleByDate[selectedKey]) || [];
 
   const toolbar = (
     <>
@@ -132,6 +150,31 @@ export default function Calendar({ items }) {
       <span className={styles.legendItem}>
         <span className={`${styles.legendDot} ${styles.dotRejected}`} /> Rechazado
       </span>
+      <span className={styles.sep} />
+      {google.connected ? (
+        <>
+          <span className={styles.legendItem}>
+            <span className={`${styles.legendDot} ${styles.dotGoogle}`} /> Google
+          </span>
+          <button
+            type="button"
+            className={styles.todayBtn}
+            title="Desconectar Google Calendar de este dispositivo"
+            onClick={google.disconnect}
+          >
+            Google ✓
+          </button>
+        </>
+      ) : (
+        <button
+          type="button"
+          className={styles.todayBtn}
+          title="Mostrar aquí los eventos de tu Google Calendar"
+          onClick={google.connect}
+        >
+          Conectar Google
+        </button>
+      )}
     </>
   );
 
@@ -153,6 +196,22 @@ export default function Calendar({ items }) {
       <div className={styles.grid}>
         {cells.map((cell) => {
           const events = eventsByDate[cell.key] || [];
+          const gEvents = googleByDate[cell.key] || [];
+          // Chips combinados: decretos primero, luego Google
+          const chips = [
+            ...events.map((ev) => ({
+              key: ev.id,
+              className: styles['chip_' + ev.status],
+              time: ev.time,
+              title: ev.title,
+            })),
+            ...gEvents.map((ev) => ({
+              key: 'g_' + ev.id,
+              className: styles.chip_google,
+              time: ev.time,
+              title: ev.title,
+            })),
+          ];
           const isToday = cell.key === todayKey;
           const cellClasses = [
             styles.cell,
@@ -172,21 +231,21 @@ export default function Calendar({ items }) {
             >
               <span className={styles.dayNum}>
                 <span>{cell.day}</span>
-                {events.length > 0 && <span className={styles.countBubble}>{events.length}</span>}
+                {chips.length > 0 && <span className={styles.countBubble}>{chips.length}</span>}
                 {isToday && <span className={styles.todayDot} />}
               </span>
               <span className={styles.chips}>
-                {events.slice(0, 3).map((ev) => (
+                {chips.slice(0, 3).map((chip) => (
                   <span
-                    key={ev.id}
-                    className={[styles.chip, styles['chip_' + ev.status]].filter(Boolean).join(' ')}
-                    title={ev.title}
+                    key={chip.key}
+                    className={[styles.chip, chip.className].filter(Boolean).join(' ')}
+                    title={chip.title}
                   >
-                    {ev.time && <b className={styles.chipTime}>{ev.time}</b>}
-                    {ev.title}
+                    {chip.time && <b className={styles.chipTime}>{chip.time}</b>}
+                    {chip.title}
                   </span>
                 ))}
-                {events.length > 3 && <span className={styles.more}>+{events.length - 3} más</span>}
+                {chips.length > 3 && <span className={styles.more}>+{chips.length - 3} más</span>}
               </span>
             </button>
           );
@@ -198,7 +257,7 @@ export default function Calendar({ items }) {
           {selectedKey ? formatSelectedDate(selectedKey) : '—'}
         </span>
         <div className={styles.detailBody}>
-          {selectedEvents.length === 0 ? (
+          {selectedEvents.length === 0 && selectedGoogle.length === 0 ? (
             <div className={styles.detailEmpty}>Sin eventos programados para este día.</div>
           ) : (
             selectedEvents.map((ev) => {
@@ -219,6 +278,25 @@ export default function Calendar({ items }) {
               );
             })
           )}
+          {selectedGoogle.map((ev) => (
+            <div key={ev.id} className={styles.eventRow}>
+              <span className={styles.eventTime}>{ev.time || 'Todo el día'}</span>
+              <span className={`${styles.eventBar} ${styles.bar_google}`} />
+              {ev.link ? (
+                <a
+                  className={`${styles.eventTitle} ${styles.eventLink}`}
+                  href={ev.link}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {ev.title}
+                </a>
+              ) : (
+                <span className={styles.eventTitle}>{ev.title}</span>
+              )}
+              <span className={styles.eventMeta}>Google Calendar</span>
+            </div>
+          ))}
         </div>
       </div>
     </Panel>

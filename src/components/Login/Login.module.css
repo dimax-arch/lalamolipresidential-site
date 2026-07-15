@@ -210,6 +210,43 @@
   flex-shrink: 0;
 }
 
+/* Colores de marca de Google (excepción a los tokens, como Spotify) */
+.googleBtn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 10px 24px;
+  margin-top: 8px;
+  background: #ffffff;
+  color: #3c4043;
+  border: 1px solid #dadce0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.googleBtn:hover {
+  background: #f6f9ff;
+  border-color: #c6dafc;
+}
+
+.googleBtn:active {
+  transform: translateY(1px);
+}
+
+.googleIcon {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+}
+
 .forgotHint {
   font-family: var(--font-ui);
   font-size: 13px;

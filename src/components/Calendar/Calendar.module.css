@@ -85,6 +85,11 @@
   border-color: var(--status-rejected-bar);
 }
 
+.dotGoogle {
+  background: var(--chip-google-bg);
+  border-color: var(--status-google-bar);
+}
+
 /* ─── Rejilla del mes ─── */
 .weekdays {
   display: grid;
@@ -226,6 +231,11 @@
   color: var(--chip-rejected-c);
 }
 
+.chip_google {
+  background: var(--chip-google-bg);
+  color: var(--chip-google-c);
+}
+
 .more {
   font-size: 10px;
   color: var(--text-muted);
@@ -302,6 +312,18 @@
 
 .bar_rejected {
   background: var(--status-rejected-bar);
+}
+
+.bar_google {
+  background: var(--status-google-bar);
+}
+
+.eventLink {
+  text-decoration: none;
+}
+
+.eventLink:hover {
+  text-decoration: underline;
 }
 
 .eventTitle {

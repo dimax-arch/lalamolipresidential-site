@@ -41,14 +41,16 @@ non-obvious rules:
   gates on `userKey` (`App.jsx`: `Login` vs `Dashboard`).
 
 ### Data lives in Supabase, not the client
-There is no localStorage for app data (the only exception is Spotify tokens in
-`src/lib/spotify.js`). Each domain is one hook following the same pattern: initial fetch →
-Realtime `postgres_changes` subscription → **debounced (120ms) refetch** on change, plus
-optimistic local-state updates on writes.
+There is no localStorage for app data (the only exceptions are Spotify tokens in
+`src/lib/spotify.js` and Google tokens in `src/lib/google.js`). Each domain is one hook
+following the same pattern: initial fetch → Realtime `postgres_changes` subscription →
+**debounced (120ms) refetch** on change, plus optimistic local-state updates on writes.
 - `usePalacioData` — decretos (the agenda), mensajes (chat), decreto_logs (history). The core.
 - `useDocumentos` — shared link list.
 - `useSpotify` — `now_playing` table sync + polling Spotify while the tab is open.
 - `usePush` — service-worker registration + push subscription.
+- `useGoogleCalendar` — read-only Google Calendar events for the visible month (no
+  Realtime; plain fetch against the Google API, per-device tokens).
 
 `src/lib/mappers.js` converts DB rows (snake_case) ↔ UI objects (camelCase). When you add a
 column, update the mapper, not just the query.
@@ -74,6 +76,8 @@ in JS, change `auth_user_key()` to match.
   config degrade gracefully (one channel failing doesn't block the other).
 - `spotify-refresh` — refreshes Spotify provider tokens; holds the Spotify client secret so
   the browser never sees it.
+- `google-refresh` — same pattern for Google tokens (must use the same OAuth client as the
+  Google provider in Supabase Auth).
 
 These run server-side and are **not** exercised by `npm run dev`; deploy with
 `supabase functions deploy <name>`.
@@ -86,6 +90,18 @@ Tracked by `sp_token_source` in localStorage:
   through the `spotify-refresh` Edge Function because it needs the client secret.
 
 `forceRefresh()` branches on the source. Optional feature: gated by `VITE_SPOTIFY_CLIENT_ID`.
+
+### Google login + Google Calendar (read-only, per device)
+"Entrar con Google" is a Supabase OAuth login (`loginWithGoogle` in `AuthContext`) that also
+requests `calendar.readonly` with `access_type=offline` + `prompt=consent`, so logging in
+with Google seeds calendar tokens into localStorage (`src/lib/google.js`). Because Supabase
+only says *that* a provider token arrived — not *whose* — `AuthContext` stamps the provider
+in sessionStorage (`oauth_provider`) before every OAuth redirect and routes the token to the
+right store on `SIGNED_IN`. The Calendar panel merges each user's own Google events into the
+grid via `useGoogleCalendar`; nothing is written to Google or shared between users. Setup
+(Google Cloud + Supabase provider + `google-refresh` secrets) is in SUPABASE.md §7. The
+Google account email must match the cabinet account email, and the role must live in
+`app_metadata` to survive the OAuth path.
 
 ### Push notifications
 The VAPID **public** key is hardcoded in `src/lib/constants.js` and must match the
