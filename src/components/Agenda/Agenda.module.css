@@ -40,13 +40,15 @@
 .columns {
   display: grid;
   grid-template-columns: 1.5fr 1fr;
-  align-items: start;
 }
 
 .itemsCol {
   padding: 16px 18px;
   border-right: 1px solid var(--border-soft);
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .logsCol {
@@ -85,11 +87,14 @@
 }
 
 /* ─── Tarjetas de asuntos ─── */
+/* flex-basis 0: la lista llena la columna hasta el fondo de la tarjeta (la
+   altura la marca el historial) sin que su propio contenido infle la fila. */
 .itemList {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-height: 520px;
+  flex: 1 1 0;
+  min-height: 240px;
   overflow-y: auto;
   padding-right: 4px;
 }
@@ -405,6 +410,14 @@
   .itemsCol {
     border-right: none;
     border-bottom: 1px solid var(--border-soft);
+  }
+
+  /* En una sola columna no hay historial al lado que marque la altura:
+     la lista vuelve a crecer con su contenido, con tope de scroll. */
+  .itemList {
+    flex: 0 1 auto;
+    min-height: 0;
+    max-height: 520px;
   }
 }
 
