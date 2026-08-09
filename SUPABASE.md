@@ -213,7 +213,72 @@ Deben ser las **mismas** credenciales del provider de Google en Supabase Auth.
 - Los tokens viven en `localStorage` (como los de Spotify): la conexión es por
   dispositivo y cada usuario ve solo su propio calendario.
 
-## 8. Probar
+## 8. Genshin Impact: card "Estado de Teyvat" (opcional)
+
+La card muestra, para las dos cuentas, las **Notas en Tiempo Real** de HoYoLAB (resina,
+comisiones, jefes semanales, tetera, expediciones, transformador) y el perfil público de
+**Enka.Network** (nickname, AR, Abismo). Todo pasa por la Edge Function `genshin-notes`:
+HoYoLAB bloquea CORS y las cookies son credenciales de sesión completas, así que **nunca**
+tocan el navegador ni el repo.
+
+> ⚠️ Nada de esto es un API oficial de HoYoverse. Es el API interno de HoYoLAB, tolerado
+> desde hace años por las herramientas comunitarias, pero puede cambiar sin aviso.
+
+### 8.1 Preparar las cuentas (una vez, cada usuario)
+
+En [hoyolab.com](https://www.hoyolab.com), con la cuenta de cada uno:
+
+1. Perfil → Configuración → **Battle Chronicle en público**.
+2. Activar **Notas en Tiempo Real** (Real-Time Notes).
+
+Si falta alguno de los dos, el API responde `DataNotPublic` y la card lo dice explícitamente.
+
+### 8.2 Obtener las cookies
+
+Con sesión iniciada en HoYoLAB: ir al propio perfil → DevTools → pestaña **Network** con
+"Preserve Log" → refrescar → buscar la petición `getGameRecordCard` → pestaña **Cookies** →
+copiar `ltoken_v2` y `ltuid_v2` (si aparece `ltmid_v2`, cópiala también).
+
+### 8.3 Tabla de caché + secrets + deploy
+
+```bash
+# 1. Ejecutar supabase/genshin.sql en el SQL Editor (tabla genshin_cache, RLS deny-all)
+
+# 2. Secrets (los UID son los de juego, visibles en el perfil dentro del juego)
+supabase secrets set \
+  HOYO_PRESIDENTE_LTOKEN=... HOYO_PRESIDENTE_LTUID=... HOYO_PRESIDENTE_UID=... \
+  HOYO_MINISTRO_LTOKEN=... HOYO_MINISTRO_LTUID=... HOYO_MINISTRO_UID=...
+
+# Opcionales: HOYO_PRESIDENTE_LTMID / HOYO_MINISTRO_LTMID si la cookie existía,
+# y HOYO_DS_SALT si miHoYo llegara a rotar el salt del header DS.
+
+# 3. Deploy
+supabase functions deploy genshin-notes
+```
+
+El servidor del juego se deriva del UID (6xxxxxxxx = América, 7 = Europa, 8/18 = Asia,
+9 = TW/HK); no hay que configurarlo.
+
+### 8.4 Renovación de cookies (rutina)
+
+Las cookies de HoYoLAB **caducan cada varias semanas**. Cuando pase, la card muestra
+"Sesión de HoYoLAB expirada" (solo para la cuenta afectada). Renovar es repetir §8.2 y:
+
+```bash
+supabase secrets set HOYO_PRESIDENTE_LTOKEN=... HOYO_PRESIDENTE_LTUID=...
+```
+
+No hace falta redeploy: los secrets nuevos aplican solos.
+
+### 8.5 Caché y límites
+
+- Las notas se cachean **5 min** en `genshin_cache`; Enka según el `ttl` que él mismo
+  devuelve. Recargar la página no dispara llamadas extra a HoYoLAB.
+- El botón "Actualizar" de la card salta la caché de notas, con una guardia mínima de 30 s.
+- Ambas fuentes degradan por separado: si Enka falla, la card muestra los datos de HoYoLAB
+  con el rol como nombre, y viceversa.
+
+## 9. Probar
 
 Levanta la app con `npm run dev` e inicia sesión con dos navegadores (presidente y ministro). Los decretos y mensajes deben aparecer al instante en ambos.
 

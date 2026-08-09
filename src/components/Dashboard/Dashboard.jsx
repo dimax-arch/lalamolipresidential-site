@@ -7,6 +7,7 @@ import Agenda from '../Agenda/Agenda.jsx';
 import Calendar from '../Calendar/Calendar.jsx';
 import DocumentsPanel from '../DocumentsPanel/DocumentsPanel.jsx';
 import SpotifyPanel from '../SpotifyPanel/SpotifyPanel.jsx';
+import GenshinPanel from '../GenshinPanel/GenshinPanel.jsx';
 import PushPrompt from '../PushPrompt/PushPrompt.jsx';
 import styles from './Dashboard.module.css';
 
@@ -30,6 +31,8 @@ export default function Dashboard() {
             <DocumentsPanel />
           </div>
         </div>
+
+        <GenshinPanel />
 
         <Calendar items={items} />
         <Agenda

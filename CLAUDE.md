@@ -51,6 +51,8 @@ following the same pattern: initial fetch → Realtime `postgres_changes` subscr
 - `usePush` — service-worker registration + push subscription.
 - `useGoogleCalendar` — read-only Google Calendar events for the visible month (no
   Realtime; plain fetch against the Google API, per-device tokens).
+- `useGenshin` — both users' Genshin Impact data via the `genshin-notes` Edge Function
+  (no Realtime; re-invokes every 5 min, server caches in `genshin_cache`).
 
 `src/lib/mappers.js` converts DB rows (snake_case) ↔ UI objects (camelCase). When you add a
 column, update the mapper, not just the query.
@@ -78,6 +80,12 @@ in JS, change `auth_user_key()` to match.
   the browser never sees it.
 - `google-refresh` — same pattern for Google tokens (must use the same OAuth client as the
   Google provider in Supabase Auth).
+- `genshin-notes` — Genshin card backend: fetches HoYoLAB Real-Time Notes (needs the
+  session cookies, stored as `HOYO_*` secrets — they expire every few weeks, see
+  SUPABASE.md §8) and the Enka.Network profile for both accounts, caching results in the
+  `genshin_cache` table (RLS deny-all; only service role). Builds the `DS` header itself
+  (MD5; salt overridable via `HOYO_DS_SALT`). Typed errors (`cookie_expired`,
+  `data_not_public`, `not_configured`) map to distinct UI states in `GenshinPanel`.
 
 These run server-side and are **not** exercised by `npm run dev`; deploy with
 `supabase functions deploy <name>`.
@@ -117,8 +125,8 @@ it works on subpath hosting): `index.html` (main app → `src/main.jsx`),
 `main.jsx` wraps the app in `ThemeProvider` → `ToastProvider` → `AuthProvider` →
 `ConfirmProvider`. Components are colocated with CSS Modules (`Component/Component.jsx` +
 `Component.module.css`). `Dashboard.jsx` composes the layout: a top grid (decreto form /
-chat / rail with Spotify + files) followed by full-width Calendar and Agenda panels, all in
-a single scroll container. One exception to the colocation convention: `Toast/` has only
+chat / rail with Spotify + files) followed by full-width Genshin, Calendar and Agenda
+panels, all in a single scroll container. One exception to the colocation convention: `Toast/` has only
 `Toast.module.css` — the toast UI itself is rendered inside `ToastContext.jsx`, so there is
 no `Toast.jsx`.
 
