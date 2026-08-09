@@ -1,17 +1,83 @@
-/* El chip del encabezado usa el verde Spotify en lugar del acento */
-.headIcon {
-  color: var(--spotify-text);
-}
+/* ═══ Sala de escucha — skin Spotify ═══
+   Igual que la card de Genshin, excepción deliberada al sistema de tokens:
+   esta card viste los colores de marca de Spotify (negro #121212, cards
+   #181818, verde #1DB954) en tokens locales --sp-*. El tema claro usa la
+   variante blanca del reproductor. Radios y fuentes reutilizan los tokens
+   globales, y los colores de rol siguen siendo los del tema. */
 
-.grid {
-  display: grid;
-  grid-template-columns: 1fr;
+.panel {
+  /* — modo oscuro (default): la app de Spotify — */
+  --sp-green: #1db954;
+  --sp-green-bright: #1ed760;
+  --sp-on-green: #121212;
+  --sp-green-text: #1ed760;
+  --sp-bg: #121212;
+  --sp-card: #181818;
+  --sp-card-hover: #1f1f1f;
+  --sp-inset: #282828;
+  --sp-border: #282828;
+  --sp-text: #ffffff;
+  --sp-text-soft: #b3b3b3;
+  --sp-text-muted: #7f7f7f;
+  --sp-track: rgba(255, 255, 255, 0.18);
+  --sp-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+
+  background: var(--sp-bg);
+  border: 1px solid var(--sp-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--sp-shadow);
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
 }
 
+/* — variante blanca (1a · Despacho Claro) — */
+:global(:root[data-theme='light']) .panel {
+  --sp-green-text: #117a37;
+  --sp-bg: #ffffff;
+  --sp-card: #f6f6f6;
+  --sp-card-hover: #efefef;
+  --sp-inset: #e6e6e6;
+  --sp-border: #e2e2e2;
+  --sp-text: #121212;
+  --sp-text-soft: #5e5e5e;
+  --sp-text-muted: #8a8a8a;
+  --sp-track: rgba(0, 0, 0, 0.14);
+  --sp-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+}
+
+/* ── Cabecera: logo real + título en negrita, como la app ── */
+.head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.logo {
+  display: inline-flex;
+  color: var(--sp-green);
+  flex-shrink: 0;
+}
+
+.title {
+  font-family: var(--font-ui);
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--sp-text);
+}
+
+/* ── Cards de cada miembro ── */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
 .card {
-  background: var(--surface-2);
-  border: 1px solid var(--border-soft);
+  background: var(--sp-card);
+  border: 1px solid transparent;
   border-radius: var(--radius-md);
   padding: 12px;
   display: flex;
@@ -19,6 +85,15 @@
   gap: 10px;
   min-height: 96px;
   overflow: hidden;
+  transition: background 0.2s;
+}
+
+.card:hover {
+  background: var(--sp-card-hover);
+}
+
+.cardPlaying {
+  border-color: rgba(30, 215, 96, 0.25);
 }
 
 .cardHead {
@@ -36,6 +111,7 @@
   text-transform: uppercase;
 }
 
+/* Los colores de rol vienen del tema global: identifican a la persona */
 .president {
   color: var(--role-president);
 }
@@ -47,33 +123,70 @@
 .state {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   font-family: var(--font-ui);
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--sp-text-muted);
   white-space: nowrap;
+}
+
+.cardPlaying .state {
+  color: var(--sp-green-text);
 }
 
 .dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--border-strong);
+  background: var(--sp-inset);
+  border: 1px solid var(--sp-text-muted);
   display: inline-block;
 }
 
-.dotLive {
-  background: var(--spotify);
-  animation: blink 1.4s ease-in-out infinite;
+/* Ecualizador de tres barras, el "sonando ahora" de Spotify */
+.eq {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 11px;
 }
 
-.cardPlaying .state {
-  color: var(--spotify-text);
+.eq i {
+  width: 3px;
+  border-radius: 1px;
+  background: var(--sp-green);
+  transform-origin: bottom;
+  animation: eq 1.1s ease-in-out infinite;
 }
 
+.eq i:nth-child(1) {
+  height: 7px;
+}
+
+.eq i:nth-child(2) {
+  height: 11px;
+  animation-delay: 0.25s;
+}
+
+.eq i:nth-child(3) {
+  height: 8px;
+  animation-delay: 0.5s;
+}
+
+@keyframes eq {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.35);
+  }
+}
+
+/* ── Pista sonando ── */
 .track {
   display: flex;
   gap: 10px;
@@ -82,23 +195,24 @@
 
 .art,
 .artPlaceholder {
-  width: 44px;
-  height: 44px;
+  width: 46px;
+  height: 46px;
   flex-shrink: 0;
   border-radius: var(--radius-sm);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
 }
 
 .art {
   object-fit: cover;
-  background: var(--bubble-other);
+  background: var(--sp-inset);
 }
 
 .artPlaceholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bubble-other);
-  color: var(--text-muted);
+  background: var(--sp-inset);
+  color: var(--sp-text-muted);
 }
 
 .meta {
@@ -109,8 +223,8 @@
 .trackName {
   font-family: var(--font-ui);
   font-size: 13.5px;
-  font-weight: 600;
-  color: var(--text-strong);
+  font-weight: 700;
+  color: var(--sp-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -119,7 +233,7 @@
 .artist {
   font-family: var(--font-ui);
   font-size: 12px;
-  color: var(--text-muted);
+  color: var(--sp-text-soft);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -129,11 +243,11 @@
 .link {
   display: inline-block;
   margin-top: 4px;
-  color: var(--spotify-text);
+  color: var(--sp-green-text);
   text-decoration: none;
   font-family: var(--font-ui);
   font-size: 10.5px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -142,20 +256,22 @@
   text-decoration: underline;
 }
 
+/* ── Barra de progreso ── */
 .progress {
   margin-top: auto;
 }
 
 .bar {
   height: 4px;
-  background: var(--bubble-other);
+  background: var(--sp-track);
   overflow: hidden;
   border-radius: var(--radius-pill);
 }
 
 .fill {
   height: 100%;
-  background: var(--spotify);
+  background: var(--sp-green);
+  border-radius: var(--radius-pill);
   transition: width 1s linear;
 }
 
@@ -164,11 +280,12 @@
   justify-content: space-between;
   font-family: var(--font-ui);
   font-size: 10.5px;
-  color: var(--text-muted);
+  color: var(--sp-text-muted);
   margin-top: 4px;
   font-variant-numeric: tabular-nums;
 }
 
+/* ── Estados sin música / sin conectar ── */
 .idle {
   display: flex;
   align-items: center;
@@ -178,7 +295,7 @@
 
 .idleText {
   font-family: var(--font-ui);
-  color: var(--text-muted);
+  color: var(--sp-text-soft);
   font-size: 12.5px;
   line-height: 1.5;
   display: block;
@@ -192,10 +309,27 @@
   width: 100%;
 }
 
+/* CTA de Spotify: píldora verde con texto oscuro en negrita */
 .connectBtn {
-  width: auto;
-  padding: 8px 16px;
-  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--sp-green);
+  color: var(--sp-on-green);
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 9px 18px;
+  font-family: var(--font-ui);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+}
+
+.connectBtn:hover {
+  background: var(--sp-green-bright);
+  transform: scale(1.03);
 }
 
 .selfActions {
@@ -207,7 +341,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--text-muted);
+  color: var(--sp-text-muted);
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -218,5 +352,5 @@
 }
 
 .disconnect:hover {
-  color: var(--danger-strong);
+  color: var(--sp-text);
 }

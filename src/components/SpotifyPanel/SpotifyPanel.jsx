@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useSpotify } from '../../hooks/useSpotify.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { USERS } from '../../lib/constants';
-import Panel from '../Panel/Panel.jsx';
 import Icon from '../Icons/Icons.jsx';
 import styles from './SpotifyPanel.module.css';
 
@@ -55,7 +54,16 @@ function MemberCard({
       <div className={styles.cardHead}>
         <span className={`${styles.member} ${roleClass}`}>{name}</span>
         <span className={styles.state}>
-          <span className={[styles.dot, playing && styles.dotLive].filter(Boolean).join(' ')} />
+          {playing ? (
+            // Ecualizador animado, el indicador clásico de Spotify
+            <span className={styles.eq} aria-hidden="true">
+              <i />
+              <i />
+              <i />
+            </span>
+          ) : (
+            <span className={styles.dot} />
+          )}
           {stateLabel}
         </span>
       </div>
@@ -65,8 +73,8 @@ function MemberCard({
           {configured ? (
             <div className={styles.connectBox}>
               <p className={styles.idleText}>Conecta tu cuenta para compartir lo que escuchas.</p>
-              <button type="button" className={`btn-decree ${styles.connectBtn}`} onClick={onConnect}>
-                Conectar Spotify
+              <button type="button" className={styles.connectBtn} onClick={onConnect}>
+                <Icon name="spotify" size={14} /> Conectar Spotify
               </button>
             </div>
           ) : (
@@ -141,8 +149,17 @@ export default function SpotifyPanel() {
     return () => clearInterval(id);
   }, []);
 
+  // Contenedor propio (no el Panel compartido): la card lleva el look de
+  // Spotify — negro #121212 + verde #1DB954, o su variante blanca en el
+  // tema claro — con el logo real de la marca en la cabecera.
   return (
-    <Panel icon={<Icon name="headphones" className={styles.headIcon} />} title="Sala de escucha">
+    <section className={styles.panel}>
+      <div className={styles.head}>
+        <span className={styles.logo}>
+          <Icon name="spotify" size={20} />
+        </span>
+        <span className={styles.title}>Sala de escucha</span>
+      </div>
       <div className={styles.grid}>
         {ORDER.map((key) => (
           <MemberCard
@@ -159,6 +176,6 @@ export default function SpotifyPanel() {
           />
         ))}
       </div>
-    </Panel>
+    </section>
   );
 }

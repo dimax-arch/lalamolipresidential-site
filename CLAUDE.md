@@ -144,10 +144,11 @@ besides Spotify tokens) and the `theme-color` meta. Each HTML entry point has an
 pre-paint script that applies the stored theme to avoid a flash. The toggle button
 (`ThemeToggle`) lives in the Header and the Login screen. One layout gotcha: panels use
 `overflow: hidden`, so any flex/grid scroll parent needs `flex-shrink: 0` on them or they
-collapse (see `.shell > *` in `Dashboard.module.css`). **One deliberate exception to the
-token rule:** `GenshinPanel` ships its own HoYoverse skin (navy + gold in dark, parchment
-in light) via `--gi-*` custom properties scoped inside its module CSS, and doesn't use the
-shared `Panel` chrome — it still adapts to both themes through a
+collapse (see `.shell > *` in `Dashboard.module.css`). **Two deliberate exceptions to the
+token rule:** `GenshinPanel` (HoYoverse skin: navy + gold in dark, parchment in light, via
+`--gi-*`) and `SpotifyPanel` (Spotify brand skin: black #121212 + green #1DB954, white
+variant in light, via `--sp-*`) define their own scoped palettes in their module CSS and
+don't use the shared `Panel` chrome. Both still adapt to the theme through a
 `:global(:root[data-theme='light'])` override, and role colors (`--role-*`) still come
 from the global theme.
 
