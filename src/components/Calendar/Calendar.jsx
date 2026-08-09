@@ -158,21 +158,21 @@ export default function Calendar({ items }) {
           </span>
           <button
             type="button"
-            className={styles.todayBtn}
+            className={styles.googleBtn}
             title="Desconectar Google Calendar de este dispositivo"
             onClick={google.disconnect}
           >
-            Google ✓
+            <Icon name="google" size={14} /> Google ✓
           </button>
         </>
       ) : (
         <button
           type="button"
-          className={styles.todayBtn}
+          className={styles.googleBtn}
           title="Mostrar aquí los eventos de tu Google Calendar"
           onClick={google.connect}
         >
-          Conectar Google
+          <Icon name="google" size={14} /> Conectar Google
         </button>
       )}
     </>
