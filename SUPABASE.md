@@ -216,10 +216,12 @@ Deben ser las **mismas** credenciales del provider de Google en Supabase Auth.
 ## 8. Genshin Impact: card "Estado de Teyvat" (opcional)
 
 La card muestra, para las dos cuentas, las **Notas en Tiempo Real** de HoYoLAB (resina,
-comisiones, jefes semanales, tetera, expediciones, transformador) y el perfil público de
-**Enka.Network** (nickname, AR, Abismo). Todo pasa por la Edge Function `genshin-notes`:
-HoYoLAB bloquea CORS y las cookies son credenciales de sesión completas, así que **nunca**
-tocan el navegador ni el repo.
+comisiones, jefes semanales, tetera, expediciones, transformador), el **Diario del
+Viajero** del mes (protogemas y moras ganadas, comparativa y desglose por fuente — no
+existe API del saldo actual) y el perfil público de **Enka.Network** (nickname, AR,
+Abismo y la vitrina de personajes, con enlace al detalle en `enka.network/u/{uid}`).
+Todo pasa por la Edge Function `genshin-notes`: HoYoLAB bloquea CORS y las cookies son
+credenciales de sesión completas, así que **nunca** tocan el navegador ni el repo.
 
 > ⚠️ Nada de esto es un API oficial de HoYoverse. Es el API interno de HoYoLAB, tolerado
 > desde hace años por las herramientas comunitarias, pero puede cambiar sin aviso.
@@ -273,7 +275,9 @@ No hace falta redeploy: los secrets nuevos aplican solos.
 ### 8.5 Caché y límites
 
 - Las notas se cachean **5 min** en `genshin_cache`; Enka según el `ttl` que él mismo
-  devuelve. Recargar la página no dispara llamadas extra a HoYoLAB.
+  devuelve; el Diario del Viajero **1 h** (HoYoLAB lo actualiza con retraso de todas
+  formas); y el `characters.json` de Enka (mapa id→icono de la vitrina) **24 h**.
+  Recargar la página no dispara llamadas extra a HoYoLAB.
 - El botón "Actualizar" de la card salta la caché de notas, con una guardia mínima de 30 s.
 - Ambas fuentes degradan por separado: si Enka falla, la card muestra los datos de HoYoLAB
   con el rol como nombre, y viceversa.

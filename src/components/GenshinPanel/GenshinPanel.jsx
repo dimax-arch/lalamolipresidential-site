@@ -8,6 +8,7 @@ import {
   endTimeLabel,
   formatDuration,
   liveResin,
+  rateLabel,
   remainingSeconds,
 } from '../../lib/genshin.js';
 import styles from './GenshinPanel.module.css';
@@ -39,6 +40,15 @@ const NOTES_ERRORS = {
   },
 };
 
+// Versión corta de los errores para el bloque del diario (el aviso grande
+// ya lo da la sección de notas cuando la causa es la misma).
+const DIARY_ERRORS = {
+  cookie_expired: 'Sesión de HoYoLAB expirada.',
+  data_not_public: 'Diario no accesible (revisa la privacidad en HoYoLAB).',
+  not_configured: 'Cuenta sin configurar.',
+  error: 'Diario no disponible por ahora.',
+};
+
 function Stat({ label, value, detail, ready }) {
   return (
     <div className={styles.stat}>
@@ -57,6 +67,8 @@ function AccountColumn({ memberKey, info, clock }) {
   const enka = info?.enka;
   const notes = info?.notes;
   const notesError = info?.notesError;
+  const diary = info?.diary;
+  const diaryError = info?.diaryError;
   const fetchedMs = info?.notesFetchedAt ? new Date(info.notesFetchedAt).getTime() : clock;
 
   // ── Cabecera: identidad desde Enka; si Enka falla, la card degrada al rol ──
@@ -167,7 +179,7 @@ function AccountColumn({ memberKey, info, clock }) {
 
         {/* Expediciones: iconos de los personajes + cuándo terminan */}
         <div className={styles.expeditions}>
-          <span className={styles.expLabel}>
+          <span className={styles.sectionLabel}>
             Expediciones {notes.currentExpeditions}/{notes.maxExpeditions}
           </span>
           {notes.expeditions.length === 0 ? (
@@ -207,6 +219,108 @@ function AccountColumn({ memberKey, info, clock }) {
     );
   }
 
+  // ── Vitrina y Diario: independientes de las notas, degradan por separado ──
+  const enkaUrl = enka?.uid ? `https://enka.network/u/${enka.uid}` : null;
+  const characters = enka?.characters || [];
+
+  const vitrina = characters.length > 0 && (
+    <div className={styles.showcase}>
+      <div className={styles.showcaseHead}>
+        <span className={styles.sectionLabel}>Vitrina</span>
+        {enkaUrl && (
+          <a className={styles.enkaLink} href={enkaUrl} target="_blank" rel="noreferrer">
+            Ver en Enka ↗
+          </a>
+        )}
+      </div>
+      <div className={styles.charList}>
+        {characters.map((c) => (
+          <a
+            key={c.avatarId}
+            className={styles.charItem}
+            href={enkaUrl ?? undefined}
+            target="_blank"
+            rel="noreferrer"
+            title={[
+              `Nv. ${c.level}`,
+              c.constellations != null && `C${c.constellations}`,
+              c.weapon && `Arma Nv. ${c.weapon.level} · R${c.weapon.refinement}`,
+            ]
+              .filter(Boolean)
+              .join(' · ')}
+          >
+            <span
+              className={[styles.charFrame, c.fiveStar && styles.charFive]
+                .filter(Boolean)
+                .join(' ')}
+            >
+              {c.icon ? (
+                <img className={styles.charIcon} src={c.icon} alt="" loading="lazy" />
+              ) : (
+                <span className={styles.charIcon} />
+              )}
+              {c.constellations > 0 && <span className={styles.consBadge}>C{c.constellations}</span>}
+            </span>
+            <span className={styles.charLevel}>Nv. {c.level}</span>
+            {c.weapon && (
+              <span className={styles.weaponTag}>
+                {c.weapon.icon && (
+                  <img className={styles.weaponIcon} src={c.weapon.icon} alt="" loading="lazy" />
+                )}
+                R{c.weapon.refinement}
+              </span>
+            )}
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+
+  // Fuentes principales de protogemas del mes (top 3 + "otros").
+  const topSources = diary ? [...diary.groupBy].sort((a, b) => b.num - a.num).slice(0, 3) : [];
+  const othersPct = diary
+    ? diary.groupBy.reduce((sum, g) => sum + g.percent, 0) -
+      topSources.reduce((sum, g) => sum + g.percent, 0)
+    : 0;
+
+  const diario = diary ? (
+    <div className={styles.diary}>
+      <span className={styles.sectionLabel}>Diario del mes</span>
+      <div className={styles.statGrid}>
+        <Stat
+          label="Protogemas ganadas"
+          value={`✦ ${diary.currentPrimogems.toLocaleString('es')}`}
+          detail={`${rateLabel(diary.primogemRate)} vs mes pasado · hoy +${diary.todayPrimogems}`}
+        />
+        <Stat
+          label="Mora ganada"
+          value={diary.currentMora.toLocaleString('es')}
+          detail={`${rateLabel(diary.moraRate)} vs mes pasado`}
+        />
+      </div>
+      {topSources.length > 0 && (
+        <div className={styles.diaryBreakdown}>
+          {topSources.map((g) => (
+            <span key={g.action} className={styles.sourceChip}>
+              {g.action} · {g.percent}%
+            </span>
+          ))}
+          {othersPct > 0 && <span className={styles.sourceChip}>Otros · {othersPct}%</span>}
+        </div>
+      )}
+    </div>
+  ) : (
+    // Solo mostrar el mini-error si no es el mismo que ya anuncia la sección
+    // de notas (p. ej. cookie vencida rompería ambos: con un aviso basta).
+    diaryError &&
+    diaryError !== notesError && (
+      <div className={styles.diary}>
+        <span className={styles.sectionLabel}>Diario del mes</span>
+        <span className={styles.diaryError}>{DIARY_ERRORS[diaryError] || DIARY_ERRORS.error}</span>
+      </div>
+    )
+  );
+
   return (
     <div className={styles.column}>
       <div className={styles.colHead}>
@@ -222,6 +336,8 @@ function AccountColumn({ memberKey, info, clock }) {
         )}
       </div>
       {body}
+      {vitrina}
+      {diario}
     </div>
   );
 }

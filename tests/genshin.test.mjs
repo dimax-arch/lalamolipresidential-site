@@ -6,6 +6,7 @@ import {
   coinsPerHour,
   formatDuration,
   endTimeLabel,
+  rateLabel,
 } from '../src/lib/genshin.js';
 
 test('remainingSeconds descuenta el tiempo transcurrido y no baja de 0', () => {
@@ -43,6 +44,13 @@ test('formatDuration elige la unidad adecuada', () => {
   assert.equal(formatDuration(6 * 3600 + 24 * 60), '6 h 24 min');
   assert.equal(formatDuration(2 * 3600), '2 h');
   assert.equal(formatDuration(3 * 86400 + 2 * 3600), '3 d 2 h');
+});
+
+test('rateLabel señala subidas, bajadas y empates', () => {
+  assert.equal(rateLabel(8), '▲ 8 %');
+  assert.equal(rateLabel(-5), '▼ 5 %');
+  assert.equal(rateLabel(0), '≈ igual');
+  assert.equal(rateLabel(undefined), '≈ igual');
 });
 
 test('endTimeLabel distingue hoy, mañana y fechas lejanas', () => {

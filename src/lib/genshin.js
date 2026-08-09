@@ -42,6 +42,15 @@ export function formatDuration(seconds) {
   return `${Math.floor(seconds)} s`;
 }
 
+// Comparativa del Diario del Viajero vs el mes anterior: "▲ 8 %", "▼ 5 %"
+// o "≈ igual" cuando no hay cambio.
+export function rateLabel(rate) {
+  const n = Number(rate) || 0;
+  if (n > 0) return `▲ ${n} %`;
+  if (n < 0) return `▼ ${Math.abs(n)} %`;
+  return '≈ igual';
+}
+
 // Hora local en la que termina un countdown: "14:32", "mañana 07:12" o
 // "12 ago" si cae más allá. `nowMs` inyectable para tests.
 export function endTimeLabel(remaining, nowMs = Date.now()) {

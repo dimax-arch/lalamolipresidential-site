@@ -80,12 +80,15 @@ in JS, change `auth_user_key()` to match.
   the browser never sees it.
 - `google-refresh` — same pattern for Google tokens (must use the same OAuth client as the
   Google provider in Supabase Auth).
-- `genshin-notes` — Genshin card backend: fetches HoYoLAB Real-Time Notes (needs the
-  session cookies, stored as `HOYO_*` secrets — they expire every few weeks, see
-  SUPABASE.md §8) and the Enka.Network profile for both accounts, caching results in the
-  `genshin_cache` table (RLS deny-all; only service role). Builds the `DS` header itself
-  (MD5; salt overridable via `HOYO_DS_SALT`). Typed errors (`cookie_expired`,
-  `data_not_public`, `not_configured`) map to distinct UI states in `GenshinPanel`.
+- `genshin-notes` — Genshin card backend: fetches HoYoLAB Real-Time Notes + Traveler's
+  Diary (both need the session cookies, stored as `HOYO_*` secrets — they expire every
+  few weeks, see SUPABASE.md §8) and the Enka.Network profile with character showcase
+  for both accounts, caching results in the `genshin_cache` table (RLS deny-all; only
+  service role). Builds the `DS` header itself (MD5; salt overridable via
+  `HOYO_DS_SALT`). Showcase avatar ids are resolved to icons via Enka's
+  `characters.json` store (cached 24h, no names on purpose — the client links to
+  enka.network for detail). Typed errors (`cookie_expired`, `data_not_public`,
+  `not_configured`) map to distinct UI states in `GenshinPanel`.
 
 These run server-side and are **not** exercised by `npm run dev`; deploy with
 `supabase functions deploy <name>`.
