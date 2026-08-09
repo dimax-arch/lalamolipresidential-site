@@ -1,11 +1,128 @@
-/* Card de Genshin: las dos cuentas lado a lado. Todo con tokens de tema. */
+/* ═══ Card de Genshin — skin HoYoverse ═══
+   Excepción deliberada al sistema de tokens del tema: esta card debe
+   diferenciarse del resto del despacho, así que trae su propia paleta
+   (navy + dorado #d3bc8e del menú de Genshin) en tokens locales --gi-*.
+   El tema claro la convierte en su variante "pergamino". Radios y fuentes
+   sí reutilizan los tokens globales. */
 
-.headIcon {
-  color: var(--accent);
+.panel {
+  /* — paleta Sala de Situación (dark, default) — */
+  --gi-gold: #d3bc8e;
+  --gi-gold-strong: #e5d5ae;
+  --gi-gold-dim: rgba(211, 188, 142, 0.4);
+  --gi-gold-faint: rgba(211, 188, 142, 0.14);
+  --gi-bg: linear-gradient(160deg, #242b45 0%, #1b2033 55%, #181c2c 100%);
+  --gi-surface: rgba(38, 45, 70, 0.75);
+  --gi-inset: rgba(17, 21, 36, 0.55);
+  --gi-badge: #1c2236;
+  --gi-text: #ece5d8;
+  --gi-text-soft: #b9c0d4;
+  --gi-text-muted: #8d94ab;
+  --gi-resin: #74c2e3;
+  --gi-resin-deep: #3d7fb8;
+  --gi-resin-glow: rgba(116, 194, 227, 0.45);
+  --gi-ready: #92c873;
+  --gi-parchment: #ece5d8;
+  --gi-parchment-text: #3f4a63;
+  --gi-five-a: #945c39;
+  --gi-five-b: #b27330;
+  --gi-four-a: #5e5789;
+  --gi-four-b: #9c75b7;
+  --gi-shadow: 0 12px 30px rgba(8, 10, 20, 0.45);
+
+  position: relative;
+  background: var(--gi-bg);
+  border: 1px solid var(--gi-gold-dim);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    inset 0 0 0 1px rgba(211, 188, 142, 0.07),
+    var(--gi-shadow);
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
-/* ── Acciones del encabezado ── */
+/* — variante pergamino (1a · Despacho Claro) — */
+:global(:root[data-theme='light']) .panel {
+  --gi-gold: #a8894f;
+  --gi-gold-strong: #8a6d3b;
+  --gi-gold-dim: rgba(154, 124, 71, 0.5);
+  --gi-gold-faint: rgba(154, 124, 71, 0.16);
+  --gi-bg: linear-gradient(160deg, #f8f1e2 0%, #f1e7d0 60%, #ebdfc5 100%);
+  --gi-surface: rgba(255, 252, 244, 0.6);
+  --gi-inset: rgba(138, 109, 59, 0.08);
+  --gi-badge: #495366;
+  --gi-text: #3f4658;
+  --gi-text-soft: #5a6275;
+  --gi-text-muted: #8a8fa0;
+  --gi-resin: #2e6fa3;
+  --gi-resin-deep: #2e6fa3;
+  --gi-resin-glow: rgba(46, 111, 163, 0.3);
+  --gi-ready: #4f9440;
+  --gi-parchment: #495366;
+  --gi-parchment-text: #f0e9da;
+  --gi-shadow: 0 10px 24px rgba(90, 74, 40, 0.16);
+}
+
+/* Esquinas ornamentales, como los recuadros del menú del juego */
+.panel::after {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--gi-gold), var(--gi-gold)) left top / 16px 1px,
+    linear-gradient(var(--gi-gold), var(--gi-gold)) left top / 1px 16px,
+    linear-gradient(var(--gi-gold), var(--gi-gold)) right top / 16px 1px,
+    linear-gradient(var(--gi-gold), var(--gi-gold)) right top / 1px 16px,
+    linear-gradient(var(--gi-gold), var(--gi-gold)) left bottom / 16px 1px,
+    linear-gradient(var(--gi-gold), var(--gi-gold)) left bottom / 1px 16px,
+    linear-gradient(var(--gi-gold), var(--gi-gold)) right bottom / 16px 1px,
+    linear-gradient(var(--gi-gold), var(--gi-gold)) right bottom / 1px 16px;
+  background-repeat: no-repeat;
+  opacity: 0.5;
+}
+
+/* ── Cabecera ── */
+.head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding-bottom: 11px;
+  border-bottom: 1px solid var(--gi-gold-faint);
+}
+
+.headIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  color: var(--gi-gold);
+  border: 1px solid var(--gi-gold-dim);
+  background: var(--gi-gold-faint);
+  flex-shrink: 0;
+}
+
+.title {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gi-gold);
+  white-space: nowrap;
+}
+
+.ornament {
+  color: var(--gi-gold-dim);
+  font-size: 8px;
+}
+
 .actions {
+  margin-left: auto;
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -16,34 +133,35 @@
   font-size: 10px;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--text-faint);
+  color: var(--gi-text-muted);
   white-space: nowrap;
 }
 
+/* Botón "pergamino": píldora clara con tinta azul, como los del juego */
 .refreshBtn {
   display: inline-flex;
   align-items: center;
   gap: 5px;
   font-family: var(--font-ui);
   font-size: 11px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  background: transparent;
-  border: 1px solid var(--border-input);
+  font-weight: 700;
+  color: var(--gi-parchment-text);
+  background: var(--gi-parchment);
+  border: none;
   border-radius: var(--radius-pill);
-  padding: 4px 10px;
+  padding: 5px 12px;
   cursor: pointer;
-  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  box-shadow: 0 1px 3px rgba(8, 10, 20, 0.3);
+  transition: filter 0.15s, transform 0.15s;
 }
 
 .refreshBtn:hover:not(:disabled) {
-  color: var(--text-strong);
-  border-color: var(--border-strong);
-  background: var(--surface-hover);
+  filter: brightness(1.06);
+  transform: translateY(-1px);
 }
 
 .refreshBtn:disabled {
-  opacity: 0.5;
+  opacity: 0.55;
   cursor: default;
 }
 
@@ -65,9 +183,10 @@
 }
 
 .column {
-  background: var(--surface-2);
-  border: 1px solid var(--border-soft);
+  background: var(--gi-surface);
+  border: 1px solid var(--gi-gold-faint);
   border-radius: var(--radius-md);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
   padding: 14px;
   display: flex;
   flex-direction: column;
@@ -98,6 +217,7 @@
   text-transform: uppercase;
 }
 
+/* Los colores de rol sí vienen del tema global: identifican a la persona */
 .president {
   color: var(--role-president);
 }
@@ -110,7 +230,7 @@
   font-family: var(--font-ui);
   font-size: 14px;
   font-weight: 600;
-  color: var(--text-strong);
+  color: var(--gi-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -119,7 +239,7 @@
 .enkaMeta {
   font-family: var(--font-ui);
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--gi-text-muted);
   white-space: nowrap;
 }
 
@@ -140,49 +260,52 @@
 .resinLabel {
   font-family: var(--font-ui);
   font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--gi-gold);
 }
 
 .resinValue {
   font-family: var(--font-ui);
   font-size: 22px;
   font-weight: 700;
-  color: var(--text-strong);
+  color: var(--gi-text);
   font-variant-numeric: tabular-nums;
 }
 
 .resinMax {
   font-size: 13px;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--gi-text-muted);
 }
 
 .bar {
-  height: 5px;
+  height: 6px;
   border-radius: var(--radius-pill);
-  background: var(--surface-3);
-  border: 1px solid var(--border-soft);
+  background: var(--gi-inset);
+  border: 1px solid var(--gi-gold-faint);
   overflow: hidden;
 }
 
+/* La resina es azul; llena pasa a dorado (lo valioso brilla dorado) */
 .fill {
   height: 100%;
-  background: var(--accent);
+  background: linear-gradient(90deg, var(--gi-resin-deep), var(--gi-resin));
+  box-shadow: 0 0 8px var(--gi-resin-glow);
   border-radius: var(--radius-pill);
   transition: width 0.6s ease;
 }
 
 .fillFull {
-  background: var(--status-approved-bar);
+  background: linear-gradient(90deg, var(--gi-gold), var(--gi-gold-strong));
+  box-shadow: 0 0 8px var(--gi-gold-dim);
 }
 
 .resinEta {
   font-family: var(--font-ui);
   font-size: 11.5px;
-  color: var(--text-secondary);
+  color: var(--gi-text-soft);
   font-variant-numeric: tabular-nums;
 }
 
@@ -194,8 +317,8 @@
 }
 
 .stat {
-  background: var(--surface-3);
-  border: 1px solid var(--border-soft);
+  background: var(--gi-inset);
+  border: 1px solid var(--gi-gold-faint);
   border-radius: var(--radius-sm);
   padding: 8px 10px;
   display: flex;
@@ -207,28 +330,40 @@
 .statLabel {
   font-family: var(--font-ui);
   font-size: 9.5px;
-  font-weight: 600;
-  letter-spacing: 0.07em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--gi-gold);
+  opacity: 0.8;
 }
 
 .statValue {
   font-family: var(--font-ui);
   font-size: 15px;
   font-weight: 700;
-  color: var(--text-strong);
+  color: var(--gi-text);
   font-variant-numeric: tabular-nums;
 }
 
 .statReady {
-  color: var(--status-approved-c);
+  color: var(--gi-ready);
 }
 
 .statDetail {
   font-family: var(--font-ui);
   font-size: 10.5px;
-  color: var(--text-secondary);
+  color: var(--gi-text-soft);
+}
+
+/* ── Secciones (expediciones, vitrina, diario) ── */
+.sectionLabel {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gi-gold);
+  opacity: 0.85;
 }
 
 /* ── Expediciones ── */
@@ -238,20 +373,10 @@
   gap: 6px;
 }
 
-/* Etiqueta de sección dentro de la columna (expediciones, vitrina, diario) */
-.sectionLabel {
-  font-family: var(--font-ui);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-
 .expEmpty {
   font-family: var(--font-ui);
   font-size: 11.5px;
-  color: var(--text-faint);
+  color: var(--gi-text-muted);
 }
 
 .expList {
@@ -272,8 +397,8 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: var(--bubble-other);
-  border: 1px solid var(--border-soft);
+  background: var(--gi-inset);
+  border: 1px solid var(--gi-gold-dim);
   object-fit: cover;
   /* Los side-icons de HoYoLAB vienen descentrados hacia arriba */
   object-position: top;
@@ -283,13 +408,13 @@
 .expTime {
   font-family: var(--font-ui);
   font-size: 10px;
-  color: var(--text-secondary);
+  color: var(--gi-text-soft);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
 .expDone {
-  color: var(--status-approved-c);
+  color: var(--gi-ready);
   font-weight: 600;
 }
 
@@ -311,13 +436,13 @@
   font-family: var(--font-ui);
   font-size: 10.5px;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--gi-gold);
   text-decoration: none;
   white-space: nowrap;
 }
 
 .enkaLink:hover {
-  color: var(--accent-hover);
+  color: var(--gi-gold-strong);
   text-decoration: underline;
 }
 
@@ -336,19 +461,19 @@
   text-decoration: none;
 }
 
+/* Fondo con el degradado de rareza del juego: 4★ morado, 5★ dorado */
 .charFrame {
   position: relative;
   width: 40px;
   height: 40px;
   border-radius: var(--radius-sm);
-  background: var(--bubble-other);
-  border: 1px solid var(--border-soft);
+  background: linear-gradient(160deg, var(--gi-four-a), var(--gi-four-b));
+  border: 1px solid var(--gi-gold-dim);
 }
 
-/* Borde dorado para los 5★ */
 .charFive {
-  border-color: var(--accent-border);
-  background: var(--accent-soft);
+  background: linear-gradient(160deg, var(--gi-five-a), var(--gi-five-b));
+  border-color: var(--gi-gold);
 }
 
 .charIcon {
@@ -368,8 +493,9 @@
   font-family: var(--font-ui);
   font-size: 8.5px;
   font-weight: 700;
-  color: var(--on-accent);
-  background: var(--accent);
+  color: var(--gi-gold-strong);
+  background: var(--gi-badge);
+  border: 1px solid var(--gi-gold-dim);
   border-radius: var(--radius-pill);
   padding: 1px 4px;
   line-height: 1.2;
@@ -378,7 +504,7 @@
 .charLevel {
   font-family: var(--font-ui);
   font-size: 10px;
-  color: var(--text-secondary);
+  color: var(--gi-text-soft);
   font-variant-numeric: tabular-nums;
 }
 
@@ -388,7 +514,7 @@
   gap: 3px;
   font-family: var(--font-ui);
   font-size: 9.5px;
-  color: var(--text-muted);
+  color: var(--gi-text-muted);
   font-variant-numeric: tabular-nums;
 }
 
@@ -411,35 +537,39 @@
   gap: 6px;
 }
 
+/* Chips estilo tooltip del juego: pergamino con tinta azul */
 .sourceChip {
   font-family: var(--font-ui);
   font-size: 10px;
-  color: var(--text-secondary);
-  background: var(--surface-3);
-  border: 1px solid var(--border-soft);
+  font-weight: 600;
+  color: var(--gi-parchment-text);
+  background: var(--gi-parchment);
+  border: none;
   border-radius: var(--radius-pill);
-  padding: 2px 8px;
+  padding: 3px 9px;
   white-space: nowrap;
 }
 
 .diaryError {
   font-family: var(--font-ui);
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--gi-text-muted);
 }
 
 /* ── Estados especiales ── */
 .loading {
   font-family: var(--font-ui);
   font-size: 12.5px;
-  color: var(--text-muted);
+  color: var(--gi-text-muted);
   padding: 10px 0;
   text-align: center;
 }
 
+/* Los avisos reutilizan los tonos de estado globales (ya theme-aware);
+   solo el cuerpo de texto adopta la tinta de la card. */
 .notice {
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border-soft);
+  border: 1px solid var(--gi-gold-faint);
   padding: 10px 12px;
   display: flex;
   flex-direction: column;
@@ -459,7 +589,7 @@
   font-family: var(--font-ui);
   font-size: 11.5px;
   line-height: 1.45;
-  color: var(--text-secondary);
+  color: var(--gi-text-soft);
   margin: 0;
 }
 
@@ -476,7 +606,6 @@
 /* Perfil privado: acción del lado de HoYoLAB, tono informativo */
 .notice_info {
   background: var(--chip-google-bg);
-  border-color: var(--border-soft);
 }
 
 .notice_info .noticeTitle {
@@ -495,11 +624,11 @@
 
 /* Sin configurar */
 .notice_muted {
-  background: var(--surface-3);
+  background: var(--gi-inset);
 }
 
 .notice_muted .noticeTitle {
-  color: var(--text-muted);
+  color: var(--gi-text-muted);
 }
 
 /* ── Responsive: en pantallas angostas, una cuenta debajo de la otra ── */

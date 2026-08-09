@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useGenshin } from '../../hooks/useGenshin.js';
 import { USERS } from '../../lib/constants';
-import Panel from '../Panel/Panel.jsx';
 import Icon from '../Icons/Icons.jsx';
 import {
   coinsPerHour,
@@ -358,11 +357,19 @@ export default function GenshinPanel() {
   const newest = fetchedTimes.length > 0 ? Math.max(...fetchedTimes) : null;
   const ageMin = newest ? Math.floor((clock - newest) / 60000) : null;
 
+  // Contenedor propio (no el Panel compartido): la card lleva el skin
+  // HoYoverse — navy + dorado, o pergamino en el tema claro — para
+  // diferenciarse del resto del despacho.
   return (
-    <Panel
-      icon={<Icon name="star" className={styles.headIcon} />}
-      title="Estado de Teyvat"
-      actions={
+    <section className={styles.panel}>
+      <div className={styles.head}>
+        <span className={styles.headIcon}>
+          <Icon name="star" size={13} />
+        </span>
+        <span className={styles.title}>Estado de Teyvat</span>
+        <span className={styles.ornament} aria-hidden="true">
+          ◆
+        </span>
         <div className={styles.actions}>
           {ageMin !== null && (
             <span className={styles.updatedAt}>
@@ -380,8 +387,8 @@ export default function GenshinPanel() {
             Actualizar
           </button>
         </div>
-      }
-    >
+      </div>
+
       {loading ? (
         <div className={styles.loading}>Consultando el estado de Teyvat…</div>
       ) : error ? (
@@ -400,6 +407,6 @@ export default function GenshinPanel() {
           ))}
         </div>
       )}
-    </Panel>
+    </section>
   );
 }
