@@ -68,8 +68,12 @@ export function AuthProvider({ children }) {
 
       // Login OAuth de Supabase: reutilizamos el token del proveedor
       // (Spotify → panel "now playing"; Google → calendario). El flag de
-      // sessionStorage lo puso loginWithSpotify/loginWithGoogle antes de
-      // redirigir; si falta, se asume Spotify (comportamiento histórico).
+      // sessionStorage lo pone loginWithSpotify/loginWithGoogle justo antes
+      // de redirigir. Sin flag NO se siembra nada: Supabase persiste el
+      // provider_token del último OAuth y re-emite SIGNED_IN en cada carga,
+      // así que el viejo fallback "se asume Spotify" pisaba los tokens PKCE
+      // de Spotify con el token de Google del calendario (y el poll, al
+      // fallar el refresh, los borraba — la conexión "no agarraba" nunca).
       if (event === 'SIGNED_IN' && session?.provider_token) {
         const provider = sessionStorage.getItem(SS_OAUTH_PROVIDER);
         sessionStorage.removeItem(SS_OAUTH_PROVIDER);
@@ -79,7 +83,7 @@ export function AuthProvider({ children }) {
           expiresIn: 3600,
         };
         if (provider === 'google') seedGoogleTokens(tokens);
-        else seedProviderTokens(tokens);
+        else if (provider === 'spotify') seedProviderTokens(tokens);
       }
     });
 
