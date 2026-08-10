@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useGenshin } from '../../hooks/useGenshin.js';
-import { USERS } from '../../lib/constants';
 import Icon from '../Icons/Icons.jsx';
 import {
   coinsPerHour,
@@ -13,6 +12,14 @@ import {
 import styles from './GenshinPanel.module.css';
 
 const ORDER = ['presidente', 'ministro'];
+
+// Identidad propia de esta card: aquí la Presidenta es Lalamoli y el
+// Ministro es Pipe (el resto de la app usa las etiquetas de USERS). El
+// nombre lo pisa el nickname de Enka cuando la cuenta está configurada.
+const CARD_IDENTITY = {
+  presidente: { label: 'Presidenta', fallback: 'Lalamoli' },
+  ministro: { label: 'Ministro', fallback: 'Pipe' },
+};
 
 // Cada error de HoYoLAB tiene su propio mensaje: una cookie vencida es rutina
 // (se renueva cada pocas semanas) y no debe verse igual que un perfil privado.
@@ -61,7 +68,7 @@ function Stat({ label, value, detail, ready }) {
 }
 
 function AccountColumn({ memberKey, info, clock }) {
-  const user = USERS[memberKey];
+  const identity = CARD_IDENTITY[memberKey];
   const roleClass = memberKey === 'presidente' ? styles.president : styles.minister;
   const enka = info?.enka;
   const notes = info?.notes;
@@ -71,7 +78,7 @@ function AccountColumn({ memberKey, info, clock }) {
   const fetchedMs = info?.notesFetchedAt ? new Date(info.notesFetchedAt).getTime() : clock;
 
   // ── Cabecera: identidad desde Enka; si Enka falla, la card degrada al rol ──
-  const name = enka?.nickname || user.short;
+  const name = enka?.nickname || identity.fallback;
 
   let body;
   if (notes) {
@@ -324,7 +331,7 @@ function AccountColumn({ memberKey, info, clock }) {
     <div className={styles.column}>
       <div className={styles.colHead}>
         <div className={styles.identity}>
-          <span className={`${styles.member} ${roleClass}`}>{user.label}</span>
+          <span className={`${styles.member} ${roleClass}`}>{identity.label}</span>
           <span className={styles.nickname}>{name}</span>
         </div>
         {enka && (
