@@ -152,7 +152,7 @@ function AccountColumn({ memberKey, info, clock }) {
             }
           />
           <Stat
-            label="Té Serenitea"
+            label="Relajatetera"
             value={`${notes.currentHomeCoin.toLocaleString('es')} / ${notes.maxHomeCoin.toLocaleString('es')}`}
             ready={coinsFull}
             detail={
