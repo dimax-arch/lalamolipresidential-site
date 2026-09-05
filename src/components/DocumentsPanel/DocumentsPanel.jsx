@@ -14,7 +14,20 @@ function hostOf(url) {
   }
 }
 
-// Detecta el tipo de archivo a partir de la URL de Google.
+// Extensión de imagen al final de la ruta, ignorando query y hash
+// ("…/gato.gif?cid=abc" → "gif"). Devuelve null si no apunta a una imagen.
+function imageExt(url) {
+  let path = url;
+  try {
+    path = new URL(url).pathname;
+  } catch {
+    [path] = url.split(/[?#]/);
+  }
+  const match = path.match(/\.(gif|png|jpe?g|webp|avif)$/);
+  return match ? match[1] : null;
+}
+
+// Detecta el tipo de archivo a partir de la URL de Google o de la extensión.
 function fileKind(url) {
   const u = (url || '').toLowerCase();
   if (u.includes('/spreadsheets/')) return 'sheets';
@@ -22,6 +35,9 @@ function fileKind(url) {
   if (u.includes('/presentation/')) return 'slides';
   if (u.includes('/forms/')) return 'forms';
   if (u.includes('drive.google.com')) return 'drive';
+  const ext = imageExt(u);
+  if (ext === 'gif') return 'gif';
+  if (ext) return 'image';
   return 'link';
 }
 
@@ -31,6 +47,8 @@ const KIND_META = {
   slides: { label: 'Google Slides', color: '#e8910c' },
   forms: { label: 'Google Forms', color: '#7248b9' },
   drive: { label: 'Google Drive', color: '#00a98e' },
+  gif: { label: 'GIF', color: '#8b5cf6' },
+  image: { label: 'Imagen', color: '#8b5cf6' },
   link: { label: 'Enlace', color: '#8b6b4a' },
 };
 
@@ -75,6 +93,22 @@ function FileIcon({ kind, color }) {
         )}
       </g>
     </svg>
+  );
+}
+
+// Miniatura de imágenes y GIFs (se animan en el propio listado).
+// Si el enlace no carga, cae al ícono genérico de enlace.
+function Thumb({ url }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) return <FileIcon kind="link" color={KIND_META.link.color} />;
+  return (
+    <img
+      className={styles.thumb}
+      src={url}
+      alt=""
+      loading="lazy"
+      onError={() => setFailed(true)}
+    />
   );
 }
 
@@ -126,6 +160,7 @@ export default function DocumentsPanel() {
             const kind = fileKind(doc.url);
             const meta = KIND_META[kind];
             const label = kind === 'link' ? hostOf(doc.url) : meta.label;
+            const isImage = kind === 'gif' || kind === 'image';
             return (
               <a
                 key={doc.id}
@@ -135,7 +170,11 @@ export default function DocumentsPanel() {
                 rel="noopener noreferrer"
                 title={doc.description || doc.title}
               >
-                <FileIcon kind={kind} color={meta.color} />
+                {isImage ? (
+                  <Thumb url={doc.url} />
+                ) : (
+                  <FileIcon kind={kind} color={meta.color} />
+                )}
                 <span className={styles.info}>
                   <span className={styles.docTitle}>{doc.title}</span>
                   <span className={styles.docMeta}>
@@ -181,7 +220,7 @@ export default function DocumentsPanel() {
             value={form.url}
             onChange={update('url')}
             onKeyDown={onKey}
-            placeholder="Pega el enlace de Google Sheets…"
+            placeholder="Pega el enlace (Sheets, Drive, GIF…)"
           />
           <input
             className="form-input"

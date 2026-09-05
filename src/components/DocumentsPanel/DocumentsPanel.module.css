@@ -27,6 +27,16 @@
   flex-shrink: 0;
 }
 
+.thumb {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background: var(--surface-hover);
+  border: 1px solid var(--border-soft);
+}
+
 .info {
   flex: 1;
   min-width: 0;
